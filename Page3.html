@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – Gütekriterien & Auswahl von k</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <site-header active="page3" title="PRM – Gütekriterien & Auswahl von k"></site-header>
+
+  <nav class="chapter-nav">
+    <span>Kapitel:</span>
+    <a href="#">1</a>
+    <a href="#">2</a>
+    <a href="#">3</a>
+    <a href="Page1.html" class="active">4</a>
+    <a href="#">5</a>
+    <a href="#">6</a>
+    <a href="#">7</a>
+  </nav>
+
+  <div class="layout">
+    <site-sidebar active="page3"></site-sidebar>
+
+    <main class="content">
+
+      <!-- ═══════════════════════════════ -->
+    <section id="validierung">
+      <h2>Validierung von Clustering</h2>
+
+      <p>Cluster-Validitätskriterien bewerten nach folgenden Heuristiken:</p>
+      <ul>
+        <li>„Inter-Cluster-Ähnlichkeit" so gering wie möglich bzw. „-Distanz" so <strong>groß</strong> wie möglich</li>
+        <li>„Intra-Cluster-Ähnlichkeit" so hoch wie möglich bzw. „-Streuung" so <strong>niedrig</strong> wie möglich</li>
+      </ul>
+
+      <table>
+        <thead>
+          <tr><th>Art</th><th>Beschreibung</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Internal Evaluation</strong></td><td>Internes Gütemaß</td></tr>
+          <tr><td><strong>External Evaluation</strong></td><td>Vergleich mit Ground Truth</td></tr>
+          <tr><td><strong>Manual Evaluation</strong></td><td>Bewertung durch Experten</td></tr>
+          <tr><td><strong>Indirect Evaluation</strong></td><td>Bewertung über Folgeanwendung</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">Gutes Clustering: Inter-Cluster-Distanz <strong>groß</strong>, Intra-Cluster-Streuung <strong>klein</strong>.</div>
+    </section>
+      <!-- ═══════════════════════════════ -->
+      <section id="masse">
+      <h2>Validierungsmaße</h2>
+
+      <h3>Dunn-Index</h3>
+      <ul>
+        <li>Intuitives Maß zur Bewertung eines Clusterings basierend auf dem Verhältnis aus Inter-Cluster-Distanz zur Intra-Cluster-Distanz</li>
+        <li>Für die Inter-Cluster-Distanz: Abstände zwischen den Centroids</li>
+        <li>Für die Intra-Cluster-Distanz: Maximum der Abstände zwischen Datenpunkten innerhalb eines Clusters</li>
+      </ul>
+      <p>Formel:</p>
+      <div class="math-display">
+        \[ DI_m = \frac{\min_{1 \le i < j \le m} \delta(C_i, C_j)}{\max_{1 \le k \le m} \Delta_k} \]
+      </div>
+
+      <h3>Davies-Bouldin-Index</h3>
+      <ul>
+        <li>Weniger intuitives Maß als der Dunn-Index</li>
+        <li>Bewertet die Trennung zwischen den Clustern und die Streuung innerhalb der Cluster</li>
+        <li>\(s_i\): Streuung der Abstände aller Datenpunkte zum Centroid innerhalb des Clusters \(i\)</li>
+        <li>In sklearn: <code>davies_bouldin_score(X, y)</code></li>
+      </ul>
+      <p>Formel:</p>
+      <div class="math-display">
+        \[ DB = \frac{1}{m} \sum_{i=1}^{m} \max_{i \neq j} \left( \frac{s_i + s_j}{d(C_i, C_j)} \right) \]
+      </div>
+
+      <h3>Silhouette Score</h3>
+      <table>
+        <thead>
+          <tr><th>Wertebereich</th><th>Interpretation</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>nahe <strong>1</strong></td><td>Punkt liegt gut im eigenen Cluster</td></tr>
+          <tr><td>um <strong>0</strong></td><td>Punkt liegt zwischen zwei Clustern</td></tr>
+          <tr><td><strong>&lt; 0</strong></td><td>Anderer Cluster wäre besser</td></tr>
+        </tbody>
+      </table>
+      <p>Mittlerer Abstand im eigenen Cluster \(A\):</p>
+      <div class="math-display">
+        \[ \text{dist}(A, o) = \frac{1}{n_A - 1} \sum_{a \in A,\, a \neq o} \text{dist}(a, o) \]
+      </div>
+      <p>Abstand zum nächsten Cluster \(B\):</p>
+      <div class="math-display">
+        \[ \text{dist}(B, o) = \min_{C \neq A} \frac{1}{n_C} \sum_{c \in C} \text{dist}(c, o) \]
+      </div>
+      <p>Silhouette Score eines Punkts \(o\):</p>
+      <div class="math-display">
+        \[ S(o) = \frac{\text{dist}(B, o) - \text{dist}(A, o)}{\max\{\text{dist}(A, o),\, \text{dist}(B, o)\}} \]
+      </div>
+
+      <h3>Silhouette-Code</h3>
+      <pre><code>from sklearn.metrics import silhouette_score, silhouette_samples
+    from sklearn.cluster import KMeans
+    import matplotlib.pyplot as plt, matplotlib.cm as cm, numpy as np
+    from sklearn.datasets import make_blobs
+
+    X, y = make_blobs(n_samples=500, n_features=2, centers=4, cluster_std=1, random_state=1)
+    range_n_clusters = range(2, 11)
+
+    for n_clusters in range_n_clusters:
+        fig, (ax1, ax2) = plt.subplots(1, 2); fig.set_size_inches(18, 7)
+        ax1.set_xlim([-0.1, 1]); ax1.set_ylim([0, len(X) + (n_clusters + 1) * 10])
+        clusterer = KMeans(n_clusters=n_clusters, random_state=10)
+        cluster_labels = clusterer.fit_predict(X)
+        silhouette_avg = silhouette_score(X, cluster_labels)
+        print(f"n_clusters={n_clusters}  avg silhouette={silhouette_avg:.4f}")
+        sample_silhouette_values = silhouette_samples(X, cluster_labels)
+        y_lower = 10
+        for i in range(n_clusters):
+            ith_vals = sample_silhouette_values[cluster_labels == i]; ith_vals.sort()
+            y_upper = y_lower + ith_vals.shape[0]
+            color = cm.nipy_spectral(float(i) / n_clusters)
+            ax1.fill_betweenx(np.arange(y_lower, y_upper), 0, ith_vals, facecolor=color, edgecolor=color, alpha=0.7)
+            ax1.text(-0.05, y_lower + 0.5 * ith_vals.shape[0], str(i))
+            y_lower = y_upper + 10
+        ax1.axvline(x=silhouette_avg, color="red", linestyle="--")
+        colors = cm.nipy_spectral(cluster_labels.astype(float) / n_clusters)
+        ax2.scatter(X[:, 0], X[:, 1], marker='.', s=30, lw=0, alpha=0.7, c=colors, edgecolor='k')
+        centers = clusterer.cluster_centers_
+        ax2.scatter(centers[:, 0], centers[:, 1], marker='o', c="white", alpha=1, s=200, edgecolor='k')
+        for i, c in enumerate(centers):
+            ax2.scatter(c[0], c[1], marker=f'${i}$', alpha=1, s=50, edgecolor='k')
+    plt.show()</code></pre>
+    </section>
+
+      <!-- ═══════════════════════════════ -->
+    <section id="elbow">
+      <h2>SSE, Inertia und Elbow Plot</h2>
+      <ul>
+        <li>Eine weitere, einfachere Möglichkeit zur Validierung bietet die <strong>Sum of Squared Errors (SSE)</strong> bzw. Sum of Squared Distances</li>
+        <li>Berechnet wird die Summe der quadratischen Abstände zwischen allen Datenpunkten und ihren jeweiligen Centroids</li>
+        <li>In sklearn liegt dieser Wert unter dem Attribut <code>.inertia_</code> des Modells</li>
+        <li>Dieses Maß trägt man in einem sog. <strong>Elbow Plot</strong> (auch Knee Plot / Scree Plot) auf</li>
+        <li>Die optimale Anzahl an Clustern liegt vor, wenn der Graph einen „Knick" macht</li>
+        <li>Grundgedanke: ab diesem Punkt erklären weitere Cluster zu wenig Varianz der Daten</li>
+      </ul>
+      <div class="note">Merksatz: Die sinnvolle Clusteranzahl liegt dort, wo der Graph einen deutlichen Knick macht.</div>
+      <pre><code>from sklearn.cluster import KMeans
+    from sklearn.datasets import make_blobs
+    import matplotlib.pyplot as plt
+
+    X, y_true = make_blobs(n_samples=3000, centers=4, cluster_std=0.30, random_state=0)
+
+    list_of_inertias = []
+    for n_clusters in range(2, 11):
+        kmeans = KMeans(n_clusters); kmeans.fit(X)
+        list_of_inertias.append(kmeans.inertia_)
+
+    plt.plot(range(2, 11), list_of_inertias, 'go--')
+    plt.ylabel('Sum of squared distances')
+    plt.xlabel('k');</code></pre>
+    </section>
+
+      <!-- ═══════════════════════════════ -->
+    <section id="scaling">
+      <h2>Scaling bei Clustering</h2>
+      <ul>
+        <li>Die Kernfrage lautet: <em>Liegt ein geeignetes Distanzmaß vor?</em></li>
+        <li>Wenn Features unterschiedlich skaliert sind, bekommen Features mit größeren Differenzen mehr Gewicht</li>
+        <li>Soll jedes Feature gleich gewichtet werden → <strong>skalieren</strong></li>
+        <li>Soll ein Feature mehr Einfluss haben → <strong>nicht skalieren</strong></li>
+      </ul>
+      <div class="note">
+        Erkenntnis: Scaling kann helfen – aber es kann nicht pauschal behauptet werden, dass es immer angewendet werden muss/kann!
+      </div>
+      <pre><code>from sklearn.preprocessing import StandardScaler
+    scaler = StandardScaler()
+    X = scaler.fit_transform(X)</code></pre>
+    </section>
+
+    </main>
+  </div>
+
+</body>
+</html>

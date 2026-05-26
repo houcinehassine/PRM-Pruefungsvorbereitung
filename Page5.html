@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – Formelsammlung</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <site-header active="page5" title="PRM – Formelsammlung"></site-header>
+
+  <nav class="chapter-nav">
+    <span>Kapitel:</span>
+    <a href="#">1</a>
+    <a href="#">2</a>
+    <a href="#">3</a>
+    <a href="Page1.html" class="active">4</a>
+    <a href="#">5</a>
+    <a href="#">6</a>
+    <a href="#">7</a>
+  </nav>
+
+  <div class="layout">
+    <site-sidebar active="page5"></site-sidebar>
+
+    <main class="content">
+
+      <!-- ═══════════════════════════════ -->
+      <section id="formeln">
+        <h2>Formelsammlung</h2>
+
+        <p><strong>k-means Zuordnung:</strong></p>
+        <div class="math-display">
+          \[ \hat{z}_t = \arg\min_z \bigl( d(\mathbf{c}_z, \mathbf{x}_t) \bigr) \]
+        </div>
+
+        <p><strong>k-means Centroid-Update:</strong></p>
+        <div class="math-display">
+          \[ \mathbf{c}_z \leftarrow \frac{\sum_{t=1}^{T} u(t,z,\hat{z}_t)\,\mathbf{x}_t}{\sum_{t=1}^{T} u(t,z,\hat{z}_t)} \]
+        </div>
+
+        <p><strong>Indikatorfunktion:</strong></p>
+        <div class="math-display">
+          \[ u(t,z,\hat{z}_t) = \begin{cases} 1 & \text{falls } \hat{z}_t = z \\ 0 & \text{sonst} \end{cases} \]
+        </div>
+
+        <p><strong>Dunn-Index:</strong></p>
+        <div class="math-display">
+          \[ DI_m = \frac{\min_{1 \le i < j \le m} \delta(C_i, C_j)}{\max_{1 \le k \le m} \Delta_k} \]
+        </div>
+
+        <p><strong>Davies-Bouldin-Index:</strong></p>
+        <div class="math-display">
+          \[ DB = \frac{1}{m} \sum_{i=1}^{m} \max_{i \neq j} \left( \frac{s_i + s_j}{d(C_i, C_j)} \right) \]
+        </div>
+
+        <p><strong>Silhouette Score:</strong></p>
+        <div class="math-display">
+          \[ S(o) = \frac{\text{dist}(B, o) - \text{dist}(A, o)}{\max\{\text{dist}(A, o),\, \text{dist}(B, o)\}} \]
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="code">
+        <h2>Code-Sammlung (Kurzübersicht)</h2>
+        <ul>
+          <li><code>make_blobs(...)</code> – Testdaten erzeugen</li>
+          <li><code>KMeans(n_clusters=k).fit(X)</code> – k-means trainieren</li>
+          <li><code>find_clusters(X, k)</code> – k-means from Scratch</li>
+          <li><code>silhouette_score(X, labels)</code> – Silhouette</li>
+          <li><code>kmeans.inertia_</code> – SSE für Elbow Plot</li>
+          <li><code>SpectralClustering(...)</code> – für nichtlineare Strukturen</li>
+          <li><code>StandardScaler().fit_transform(X)</code> – Scaling</li>
+          <li><code>DBSCAN(eps=..., min_samples=...).fit(X)</code> – Dichtebasiertes Clustering</li>
+          <li><code>KNeighborsClassifier(...)</code> – neue Punkte nach DBSCAN zuordnen</li>
+        </ul>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="stichwort">
+        <h2>Stichwortverzeichnis</h2>
+        <table>
+          <thead>
+            <tr><th>Begriff</th><th>Kurzbeschreibung</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Centroid</strong></td><td>Mittelpunkt eines Clusters (arithmetisches Mittel)</td></tr>
+            <tr><td><strong>EM</strong></td><td>Iteratives Wechselspiel aus Zuordnung und Update</td></tr>
+            <tr><td><strong>n_init</strong></td><td>Mehrfache Initialisierungen in sklearn</td></tr>
+            <tr><td><strong>Dunn-Index</strong></td><td>Verhältnis Clustertrennung / Clusterstreuung</td></tr>
+            <tr><td><strong>Davies-Bouldin</strong></td><td>Streuung + Trennung aller Cluster</td></tr>
+            <tr><td><strong>Silhouette</strong></td><td>Ähnlichkeit zum eigenen vs. anderen Clustern</td></tr>
+            <tr><td><strong>SSE / Inertia</strong></td><td>Summe quadrierter Abstände zu Centroids</td></tr>
+            <tr><td><strong>Elbow Plot</strong></td><td>Heuristik zur Wahl von k</td></tr>
+            <tr><td><strong>Spectral Clustering</strong></td><td>Nichtlinear trennbare Strukturen</td></tr>
+            <tr><td><strong>k-means++</strong></td><td>Bessere Centroid-Initialisierung</td></tr>
+            <tr><td><strong>k-Median</strong></td><td>Manhattan-Distanz + Median</td></tr>
+            <tr><td><strong>DBSCAN</strong></td><td>Dichtebasiertes Clustering mit Noise</td></tr>
+            <tr><td><strong>eps</strong></td><td>Radius der Epsilon-Nachbarschaft</td></tr>
+            <tr><td><strong>min_samples</strong></td><td>Mindestpunkte für Core-Region</td></tr>
+            <tr><td><strong>Noise (Label -1)</strong></td><td>Punkte ohne Clusterzugehörigkeit</td></tr>
+            <tr><td><strong>kNN</strong></td><td>Neue Punkte per Mehrheitsvotum zuordnen</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>

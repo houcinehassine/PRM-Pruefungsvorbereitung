@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – Dichtebasiertes Clustering & Anwendung</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <site-header active="page4" title="PRM – Dichtebasiertes Clustering & Anwendung"></site-header>
+
+  <nav class="chapter-nav">
+    <span>Kapitel:</span>
+    <a href="#">1</a>
+    <a href="#">2</a>
+    <a href="#">3</a>
+    <a href="Page1.html" class="active">4</a>
+    <a href="#">5</a>
+    <a href="#">6</a>
+    <a href="#">7</a>
+  </nav>
+
+  <div class="layout">
+    <site-sidebar active="page4"></site-sidebar>
+
+    <main class="content">
+
+      <!-- ═══════════════════════════════ -->
+      <section id="dbscan">
+        <h2>DBSCAN – dichtebasiertes Clustering</h2>
+        <ul>
+            <li><strong>DBSCAN</strong> = Density-based Spatial Clustering of Applications with Noise</li>
+            <li>Grenzt dichte von weniger dichten Regionen ab → beliebige Clusterformen möglich</li>
+            <li>Noise-Punkte erhalten das Label <code>-1</code> und werden als eigene „Klasse" behandelt</li>
+            <li>Die DBSCAN-Klasse aus sklearn hat keine <code>.predict()</code>-Methode – dies ist bewusst so gestaltet</li>
+            <li>Für die Zuordnung neuer Datenpunkte kann z.B. ein <strong>k-Nearest-Neighbors Klassifikator</strong> genutzt werden</li>
+            <li>Wichtig: Hyperparameter-Suche im 2D-Raum (<code>eps</code> × <code>min_samples</code>) ist nötig</li>
+          </ul>        
+          <table>
+          <thead>
+            <tr><th>Begriff</th><th>Bedeutung</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>eps</code></td><td>Radius der Epsilon-Nachbarschaft</td></tr>
+            <tr><td><code>min_samples</code></td><td>Mindestanzahl Punkte für Core-Region</td></tr>
+            <tr><td><strong>Core Region</strong></td><td>Ausreichend dichte Region</td></tr>
+            <tr><td><strong>Density-reachable</strong></td><td>Über Core-Punkte erreichbar</td></tr>
+            <tr><td><strong>Noise</strong></td><td>Punkte außerhalb aller Cluster; Label <code>-1</code></td></tr>
+          </tbody>
+        </table>
+        <pre><code>from sklearn.datasets import make_moons
+from sklearn.cluster import DBSCAN
+import numpy as np, matplotlib.pyplot as plt
+
+X, y = make_moons(n_samples=1000, noise=0.05, random_state=42)
+
+# Zu kleines eps → zu viele Fragmente
+dbscan = DBSCAN(eps=0.05, min_samples=5); dbscan.fit(X)
+print(dbscan.labels_[:10])          # enthält -1 für Noise
+print(np.unique(dbscan.labels_))    # z.B. [-1  0  1  2  3  4  5  6]
+
+# Korrektes eps
+dbscan = DBSCAN(eps=0.20, min_samples=5); dbscan.fit(X)
+plt.scatter(X[:, 0], X[:, 1], c=dbscan.labels_, s=50, cmap='viridis');</code></pre>
+        <div class="note">DBSCAN hat keine <code>.predict()</code>-Methode. Für neue Punkte → kNN-Klassifikator nutzen.</div>
+        <table>
+          <thead>
+            <tr><th>Vorteile</th><th>Nachteile</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Clusteranzahl muss nicht vorab festgelegt werden</td><td>Nicht vollständig deterministisch (Border-Points)</td></tr>
+            <tr><td>Beliebige Formen möglich</td><td>Abhängig vom Distanzmaß</td></tr>
+            <tr><td>Noise explizit behandelt</td><td>Problematisch bei stark unterschiedlichen Dichten</td></tr>
+            <tr><td>Nur 2 Hyperparameter</td><td><code>eps</code> und <code>min_samples</code> nicht universell</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="knn">
+        <h2>Neue Punkte zu DBSCAN-Clustern zuordnen</h2>
+        <ul>
+          <li>Lösung: <strong>k-Nearest-Neighbors (kNN) Klassifikator</strong> wird auf den Core-Punkten des DBSCAN trainiert</li>
+          <li>Die Klassifizierung eines neuen Datenpunktes geschieht über ein <strong>Majoritätsvotum</strong> der k nächsten Nachbarn</li>
+          <li>Das „Lernen" des kNN besteht nur aus dem Abspeichern des Datensatzes und dessen Labels</li>
+          <li>Labels kommen aus dem DBSCAN-Training: <code>dbscan.labels_[dbscan.core_sample_indices_]</code></li>
+        </ul>
+        <pre><code>from sklearn.datasets import make_moons
+from sklearn.cluster import DBSCAN
+from sklearn.neighbors import KNeighborsClassifier
+import matplotlib.pyplot as plt
+
+X, y = make_moons(n_samples=1000, noise=0.05, random_state=42)
+dbscan = DBSCAN(eps=0.20, min_samples=5); dbscan.fit(X)
+
+knn = KNeighborsClassifier(n_neighbors=50)
+knn.fit(dbscan.components_, dbscan.labels_[dbscan.core_sample_indices_])
+
+new_point_1 = [[-0.5, 0.5]]
+new_point_2 = [[2, -0.5]]
+print(knn.predict(new_point_1))   # [1]
+print(knn.predict(new_point_2))   # [0]</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="brownfield">
+        <h2>Anwendungsbeispiel: Brownfield-Maschinen</h2>
+        <p>Ältere Maschinen ohne Zustandsausgabe → Betriebszustände datengetrieben bestimmen (Weihenstephaner Standard).</p>
+        <ul>
+          <li>Im Maschinenbau gibt es den sog. <strong>Weihenstephaner Standard</strong>, in dem verschiedene Maschinenzustände kodiert sind</li>
+          <li>Bei neueren Maschinen gibt es Schnittstellen, die diese Zustände ausgeben können</li>
+          <li>Bei älteren Maschinen (<strong>Brownfield / Retrofits</strong>) fehlen diese Schnittstellen oft</li>
+          <li>Ziel: datengetrieben Betriebszustände aus Vibrations- und Temperatursensordaten (1-minütige Snapshots) bestimmen</li>
+          <li>Vorgehen: k-means Clustering auf Sensordaten anwenden und Betriebszustände den Clustern zuordnen</li>
+        </ul>
+        <div class="note">
+          Erkenntnis: Scaling kann helfen – aber es kann nicht pauschal behauptet werden, dass es immer angewendet werden muss!
+        </div>        
+        <table>
+          <thead>
+            <tr><th>Zustand</th><th>Code</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Prepared</td><td>4</td></tr>
+            <tr><td>Mangel</td><td>8</td></tr>
+            <tr><td>Stau</td><td>16</td></tr>
+            <tr><td>Produktion</td><td>128</td></tr>
+            <tr><td>Eigenstörung</td><td>1024</td></tr>
+            <tr><td>Fremdstörung</td><td>4096</td></tr>
+          </tbody>
+        </table>
+        <pre><code>import numpy as np
+from sklearn.datasets import make_blobs
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from yellowbrick.cluster import SilhouetteVisualizer
+import matplotlib.pyplot as plt
+
+X, y = make_blobs(n_samples=3000, n_features=2, centers=6, cluster_std=0.55, random_state=2)
+X[:, 0] = np.abs(X[:, 0])      # Vibration
+X[:, 1] = np.abs(X[:, 1]) * 7  # Temperatur
+np.save('machine_state.npy', X)
+
+X = np.load('machine_state.npy')
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+
+list_of_k = range(2, 14)
+list_of_inertias, list_of_scores = [], []
+fig, ax = plt.subplots(6, 2, figsize=(15, 30))
+for n_clusters in list_of_k:
+    kmeans = KMeans(n_clusters)
+    cluster_labels = kmeans.fit_predict(X)
+    list_of_inertias.append(kmeans.inertia_)
+    list_of_scores.append(silhouette_score(X, cluster_labels))
+    visualizer = SilhouetteVisualizer(kmeans, colors='yellowbrick', ax=ax.flat[n_clusters - 2])
+    visualizer.fit(X)
+    ax.flat[n_clusters - 2].set_title(f'k: {n_clusters}')
+
+plt.figure(); plt.plot(list_of_k, list_of_inertias, 'go--'); plt.ylabel('Inertia'); plt.xlabel('k')
+plt.figure(); plt.plot(list_of_k, list_of_scores, 'go--'); plt.ylabel('Silhouette'); plt.xlabel('k')</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="vergleich">
+        <h2>Vergleich aller Algorithmen</h2>
+        <table>
+          <thead>
+            <tr><th>Algorithmus</th><th>Vorteile</th><th>Nachteile</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>k-means</strong></td>
+              <td>Schnell, einfach, breit anwendbar</td>
+              <td>Initialisierungsabhängig, nur lineare Trennung, Ausreißer problematisch</td>
+            </tr>
+            <tr>
+              <td><strong>k-means++</strong></td>
+              <td>Verbesserte Initialisierung, konvergiert schneller</td>
+              <td>Wie k-means, aber stabiler</td>
+            </tr>
+            <tr>
+              <td><strong>k-Median</strong></td>
+              <td>Robuster gegenüber Ausreißern</td>
+              <td>Langsamer als k-means</td>
+            </tr>
+            <tr>
+              <td><strong>Spectral Clustering</strong></td>
+              <td>Nicht-lineare Strukturen möglich</td>
+              <td>Rechenintensiv, Hyperparameter nötig</td>
+            </tr>
+            <tr>
+              <td><strong>DBSCAN</strong></td>
+              <td>Beliebige Formen, Noise-Behandlung, k nicht nötig</td>
+              <td>eps/min_samples schwer zu wählen, unterschiedliche Dichten problematisch</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>

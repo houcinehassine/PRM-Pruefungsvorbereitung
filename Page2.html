@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – Algorithmus & Grenzen</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <site-header active="page2" title="PRM – Algorithmus & Grenzen"></site-header>
+
+  <nav class="chapter-nav">
+    <span>Kapitel:</span>
+    <a href="#">1</a>
+    <a href="#">2</a>
+    <a href="#">3</a>
+    <a href="Page1.html" class="active">4</a>
+    <a href="#">5</a>
+    <a href="#">6</a>
+    <a href="#">7</a>
+  </nav>
+
+  <div class="layout">
+    <site-sidebar active="page2"></site-sidebar>
+
+    <main class="content">
+
+      <!-- ═══════════════════════════════ -->
+      <section id="scratch">
+        <h2>k-means from Scratch</h2>
+        <pre><code>import numpy as np
+from scipy.spatial.distance import cdist
+from sklearn.datasets import make_blobs
+
+X, _ = make_blobs(n_samples=300, centers=4, cluster_std=0.60, random_state=0)
+
+def find_clusters(X, num_clusters, threshold=0.0001):
+    centroids = X[np.random.permutation(X.shape[0])[:num_clusters]]
+    deviation = threshold + 1
+
+    while deviation > threshold:
+        distances = cdist(X, centroids)
+        labels = np.argmin(distances, axis=1)
+        new_centers = np.array([X[labels == n].mean(0) for n in range(num_clusters)])
+        deviation = np.sum((new_centers - centroids) ** 2)
+        centroids = new_centers
+
+    return centroids, labels
+
+centroids, labels = find_clusters(X, 4)</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="schwaechen">
+        <h2>Schwächen von k-means / EM</h2>
+        <ul>
+          <li><strong>Kein globales Optimum garantiert</strong> – abhängig von Initialbedingungen.</li>
+          <li>Mehrfache Initialisierungen nötig → <code>n_init</code> in sklearn (standardmäßig aktiv).</li>
+          <li><strong>Anzahl Cluster</strong> muss vorab festgelegt werden.</li>
+          <li>Nur für <strong>linear separierbare</strong> Strukturen geeignet.</li>
+          <li>Ausreißer beeinflussen das Ergebnis stark.</li>
+        </ul>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="varianten">
+        <h2>Varianten von k-means</h2>
+
+        <h3>Spectral Clustering</h3>
+        <ul>
+          <li>Mittels <strong>graphentheoretischer Maße</strong> werden die Daten in einen höherdimensionalen Raum projiziert</li>
+          <li>In diesem höherdimensionalen Raum kann k-means auch mit linearen Grenzen Cluster separieren, die im niedrigdimensionalen Raum nur <strong>nicht-linear separierbar</strong> wären</li>
+        </ul>
+        <pre><code>from sklearn.cluster import SpectralClustering
+model = SpectralClustering(n_clusters=2, affinity='nearest_neighbors', assign_labels='kmeans')
+labels = model.fit_predict(X)</code></pre>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Variante</th>
+              <th>Eigenschaft</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>k-means++</strong></td>
+              <td>Verbesserte Initialisierung; konvergiert schneller</td>
+            </tr>
+            <tr>
+              <td><strong>k-Median</strong></td>
+              <td>Manhattan-Distanz + Median statt Mittelwert</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="vor-nachteile">
+        <h2>Vorteile und Nachteile von k-means</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Vorteile</th>
+              <th>Nachteile</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Schnell und effizient</td>
+              <td>Initialisierungsabhängig</td>
+            </tr>
+            <tr>
+              <td>Leicht verständlich</td>
+              <td>Kein globales Optimum garantiert</td>
+            </tr>
+            <tr>
+              <td>Breit anwendbar</td>
+              <td>Nur lineare Trennung ohne Trick</td>
+            </tr>
+            <tr>
+              <td>–</td>
+              <td>Ausreißer haben großen Einfluss</td>
+            </tr>
+            <tr>
+              <td>–</td>
+              <td>Probleme bei unterschiedlichen Dichten/Größen</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>

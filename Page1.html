@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – Grundlagen</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <site-header active="page1" title="PRM – Grundlagen"></site-header>
+
+  <nav class="chapter-nav">
+    <span>Kapitel:</span>
+    <a href="#">1</a>
+    <a href="#">2</a>
+    <a href="#">3</a>
+    <a href="Page1.html" class="active">4</a>
+    <a href="#">5</a>
+    <a href="#">6</a>
+    <a href="#">7</a>
+  </nav>
+
+  <div class="layout">
+    <site-sidebar active="page1"></site-sidebar>
+
+    <main class="content">
+
+      <!-- ═══════════════════════════════ -->
+      <section id="ziel">
+        <h2>Ziel und Einordnung von Clustering</h2>
+        <ul>
+          <li>Clustering-Algorithmen versuchen aus den Eigenschaften der Daten eine optimale <strong>Unterteilung in Gruppen</strong> zu erreichen → diskrete Labels</li>
+          <li>Es handelt sich um <strong>Unsupervised Learning</strong> – es gibt keine vorgegebenen Ziel-Labels</li>
+        </ul>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="typen">
+        <h2>Grundtypen von Clustering-Verfahren</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Verfahrenstyp</th>
+              <th>Kerngedanke</th>
+              <th>Beispiele</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Partitionierendes Clustering</strong></td>
+              <td>Feste Anzahl Gruppen</td>
+              <td>k-means und Varianten</td>
+            </tr>
+            <tr>
+              <td><strong>Dichtebasiertes Clustering</strong></td>
+              <td>Cluster als dichte Regionen</td>
+              <td>DBSCAN, OPTICS</td>
+            </tr>
+            <tr>
+              <td><strong>Hierarchisches Clustering</strong></td>
+              <td>Baumstruktur</td>
+              <td>–</td>
+            </tr>
+            <tr>
+              <td><strong>Gitterbasierte Verfahren</strong></td>
+              <td>Raumzerlegung in Zellen</td>
+              <td>–</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="kmeans">
+        <h2>k-means – Grundidee</h2>
+        <ul>
+          <li>Wir beginnen mit dem <strong>k-means Algorithmus</strong></li>
+          <li>Der k-means Algorithmus sucht nach einer <strong>vorabbestimmten Anzahl</strong> an Clustern in einem <strong>nicht gelabelten</strong> Datensatz</li>
+          <li><strong>Heuristik</strong> des k-means Algorithmus:
+            <ul>
+              <li>Der Cluster-Mittelpunkt (== <strong>Centroid</strong>) ist das arithmetische Mittel aller Punkte des jeweiligen Clusters</li>
+              <li>Jeder Datenpunkt ist <strong>näher</strong> an seinem eigenen Centroid als an anderen</li>
+            </ul>
+          </li>
+        </ul>
+        <pre><code>import numpy as np, matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
+
+X, y_true = make_blobs(n_samples=300, centers=4, cluster_std=0.60, random_state=0)
+plt.scatter(X[:, 0], X[:, 1], s=50);</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="kmeans-sklearn">
+        <h2>k-means in sklearn</h2>
+        <ul>
+          <li>In sklearn weist der k-means Algorithmus die <strong>gleiche Struktur wie andere Modelle</strong> auf</li>
+          <li>Als wichtiger Zusatz bei der Instanziierung muss die <strong>Anzahl an Clustern</strong> angegeben werden (<code>n_clusters</code>)</li>
+          <li>Die Zugehörigkeit der Datenpunkte erhalten wir über die <code>.predict()</code>-Methode</li>
+          <li>Die erlernten Centroids stecken im <code>.cluster_centers_</code>-Attribut des Modells</li>
+        </ul>
+        <pre><code>from sklearn.cluster import KMeans
+
+kmeans = KMeans(n_clusters=4)
+kmeans.fit(X)
+y_kmeans = kmeans.predict(X)        # Labels
+centers  = kmeans.cluster_centers_  # Centroids</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="em">
+        <h2>Expectation-Maximization (EM)</h2>
+        <ul>
+          <li>Die Heuristik des k-means wird als sog. <strong>Expectation-Maximization-Algorithmus</strong> umgesetzt</li>
+          <li>Der EM-Algorithmus findet in <strong>vielen Machine Learning Modellen</strong> Anwendung</li>
+          <li>Es handelt sich um einen <strong>iterativen Algorithmus</strong></li>
+          <li>Generelle Idee:
+            <ul>
+              <li>Initialisiere eine zufällige Konfiguration des Modells</li>
+              <li><strong>E(xpectation)-Schritt:</strong> Zuordnung der Daten zu den einzelnen Teilen des Modells</li>
+              <li><strong>M(aximization)-Schritt:</strong> Parameter an die neueste Zuordnung anpassen</li>
+              <li><strong>Konvergenz:</strong> findet keine wesentliche Verbesserung mehr statt → Abbruch</li>
+            </ul>
+          </li>
+          <li><strong>Expectation</strong> beim k-means: unsere „Erwartung" updaten, zu welchem Cluster die Datenpunkte gehören</li>
+          <li><strong>Maximization</strong> beim k-means: ein Gütemaß wird maximiert (durch Berechnung des Mittelwerts)</li>
+        </ul>
+        <table>
+          <thead>
+            <tr>
+              <th>EM-Schritt</th>
+              <th>Bedeutung bei k-means</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Initialisierung</td>
+              <td>Centroids zufällig wählen</td>
+            </tr>
+            <tr>
+              <td><strong>E-Schritt</strong></td>
+              <td>Datenpunkte dem nächsten Centroid zuweisen</td>
+            </tr>
+            <tr>
+              <td><strong>M-Schritt</strong></td>
+              <td>Centroids als Mittelwert neu berechnen</td>
+            </tr>
+            <tr>
+              <td>Konvergenz</td>
+              <td>Abbruch ohne wesentliche Verbesserung</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="ablauf">
+        <h2>Formaler Ablauf von k-means</h2>
+
+        <h3>Input / Output</h3>
+        <ul>
+          <li><strong>Input:</strong>
+            <ul>
+              <li>\(\mathbf{X}\): Datenmatrix mit Dimensionen \(N \times T\)</li>
+              <li>\(N\): Anzahl der Beobachtungen</li>
+              <li>\(T\): Anzahl der Features (z.B. \(\bar{x}, \sigma^2, \ldots\))</li>
+              <li>\(k\): Anzahl zu extrahierender Cluster</li>
+            </ul>
+          </li>
+          <li><strong>Output:</strong>
+            <ul>
+              <li>\(\mathbf{c}_z\): Cluster-Centroids mit \(z = 1, \ldots, k\)</li>
+              <li>\(\hat{z}_t\): zugewiesener Cluster-Index des Datenpunkts \(\mathbf{x}_t\)</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>Schritt 1 – Initialisierung</h3>
+        <ul>
+          <li>Centroids \(\mathbf{c}_z\) werden <strong>zufällig gewählt</strong></li>
+        </ul>
+
+        <h3>Schritt 2 – E-Schritt: Zuordnung</h3>
+        <div class="math-display">
+          \[ \hat{z}_t = \arg\min_z \bigl( d(\mathbf{c}_z,\, \mathbf{x}_t) \bigr) \]
+        </div>
+
+        <h3>Schritt 3 – M-Schritt: Centroid-Update</h3>
+        <div class="math-display">
+          \[ \mathbf{c}_z \leftarrow \frac{\sum_{t=1}^{T} u(t,z,\hat{z}_t)\,\mathbf{x}_t}{\sum_{t=1}^{T} u(t,z,\hat{z}_t)} \]
+        </div>
+        <p>mit der Indikatorfunktion \(u(t, z, \hat{z}_t) = 1\) falls \(\hat{z}_t = z\), sonst \(0\).</p>
+
+        <h3>Schritt 4 – Wiederholen bis Konvergenz</h3>
+        <ol>
+          <li>Zufällige Initialisierung der Centroids.</li>
+          <li>Zuordnung jedes Punkts zum nächsten Centroid.</li>
+          <li>Berechnung neuer Centroids.</li>
+          <li>Wiederholung bis zur Konvergenz.</li>
+        </ol>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – Reflexion & Vertiefung</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <site-header active="page5" title="PRM – Reflexion & Vertiefung"></site-header>
+
+  <nav class="chapter-nav">
+    <span>Kapitel:</span>
+    <a href="#">1</a>
+    <a href="#">2</a>
+    <a href="#">3</a>
+    <a href="Page1.html" class="active">4</a>
+    <a href="#">5</a>
+    <a href="#">6</a>
+    <a href="#">7</a>
+  </nav>
+
+  <div class="layout">
+    <site-sidebar active="page5"></site-sidebar>
+
+    <main class="content">
+
+      <!-- ═══════════════════════════════ -->
+      <section id="reflexion">
+        <h2>💡 Reflexionsfragen (Was denken Sie?)</h2>
+        <ul>
+          <li>Wie findet der Algorithmus die Centroids, ohne alle möglichen Kombinationen explizit zu evaluieren?</li>
+          <li>Was sind die analogen Schritte beim k-means?</li>
+          <li>Wie würden Sie intuitiv bewerten, ob Ihr Clustering gut war?</li>
+          <li>Wie würden Sie eine Internal Evaluation durchführen?</li>
+          <li>Was könnte eine Heuristik sein?</li>
+          <li>Was tun wir mit den Validierungswerten?</li>
+          <li>Wie wird k-means bei nichtlinear separierbaren Problemen performen?</li>
+          <li>Welche Herangehensweise könnten wir aus anderen Modellen entleihen?</li>
+          <li>Was würden Sie bei DBSCAN intuitiv optimieren?</li>
+          <li>Was ist bei DBSCAN ein sinnvoller Suchraum für Hyperparameter?</li>
+          <li>Wie ordnen Sie neue Punkte nach DBSCAN-Clustering sinnvoll zu?</li>
+          <li>Welche Vor- und Nachteile sehen Sie bei DBSCAN?</li>
+        </ul>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="dbscan-hyper">
+        <h2>⚙️ DBSCAN: Hyperparameter-Suche</h2>
+        <p>Bei DBSCAN sucht man typischerweise im zweidimensionalen Hyperparameterraum nach einer guten Kombination aus <code>eps</code> und <code>min_samples</code>.</p>
+        <p>Wichtig ist dabei, dass es keine universell richtige Einstellung gibt. Stattdessen hängt die Wahl von der Datenstruktur, dem Distanzmaß und der gewünschten Clusterauflösung ab.</p>
+        <pre><code>from sklearn.cluster import DBSCAN
+
+best_score = -1
+best_params = None
+
+for eps in [0.05, 0.10, 0.15, 0.20, 0.25]:
+    for min_samples in [3, 5, 8, 10]:
+        dbscan = DBSCAN(eps=eps, min_samples=min_samples)
+        labels = dbscan.fit_predict(X)
+        # hier z. B. Silhouette Score oder manuelle Bewertung verwenden
+        if len(set(labels)) > 1:
+            pass</code></pre>
+        <p>Die <code>DBSCAN</code>-Klasse in sklearn besitzt bewusst keine <code>.predict()</code>-Methode, damit die Zuordnung neuer Datenpunkte flexibel gelöst werden kann.</p>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="dbscan-neue-punkte">
+        <h2>Neue Punkte zu DBSCAN-Clustern zuordnen</h2>
+        <p>Für neue Datenpunkte kann ein <strong>k-Nearest-Neighbors-Klassifikator</strong> auf den Core-Punkten des DBSCAN-Modells trainiert werden.</p>
+        <pre><code>from sklearn.neighbors import KNeighborsClassifier
+
+knn = KNeighborsClassifier(n_neighbors=50)
+knn.fit(dbscan.components_, dbscan.labels_[dbscan.core_sample_indices_])
+
+new_point_1 = [[-0.5, 0.5]]
+new_point_2 = [[2, -0.5]]
+print(knn.predict(new_point_1))
+print(knn.predict(new_point_2))</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="dbscan-pro-con">
+        <h2>Vor- und Nachteile von DBSCAN</h2>
+        <table>
+          <thead>
+            <tr><th>Vorteile</th><th>Nachteile</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Anzahl der Cluster muss nicht vorab festgelegt werden</td><td>Nicht vollständig deterministisch bei Border-Points</td></tr>
+            <tr><td>Cluster beliebiger Form möglich</td><td>Abhängig vom Distanzmaß</td></tr>
+            <tr><td>Noise wird explizit als Klasse behandelt</td><td>Probleme bei stark unterschiedlichen Dichten</td></tr>
+            <tr><td>Nur zwei Hyperparameter</td><td><code>eps</code> und <code>min_samples</code> nicht universell</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="vergleich">
+        <h2>Vergleich verschiedener Clustering-Verfahren</h2>
+        <p>Im Vergleich zu k-means ist DBSCAN robuster gegenüber Ausreißern und erkennt nicht-konvexe Formen. Für realistische Daten ist daher häufig ein empirischer Vergleich sinnvoll.</p>
+        <p>Wenn die Struktur stark nichtlinear ist oder Rauschen eine wichtige Rolle spielt, ist DBSCAN oft die bessere Wahl als k-means.</p>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>
