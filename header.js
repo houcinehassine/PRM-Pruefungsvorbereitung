@@ -29,6 +29,33 @@ class SiteHeader extends HTMLElement {
     css.href = 'style.css';
     document.head.appendChild(css);
 
+
+    // ==========================================
+    // --- NEU: Highlight.js für Python-Code ---
+    // ==========================================
+    
+    // 1. Highlight.js CSS laden (Theme: default)
+    const hljsCss = document.createElement('link');
+    hljsCss.rel = 'stylesheet';
+    hljsCss.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css';
+    document.head.appendChild(hljsCss);
+
+    // 2. Highlight.js Script laden
+    const hljsScript = document.createElement('script');
+    hljsScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js';
+    
+    // 3. Sobald Highlight.js geladen ist, alle Code-Blöcke auf der Seite färben
+    hljsScript.onload = () => {
+      document.querySelectorAll('pre code').forEach((block) => {
+        // Macht jeden Code-Block automatisch zu Python
+        block.classList.add('language-python');
+        window.hljs.highlightElement(block);
+      });
+    };
+    document.head.appendChild(hljsScript);
+    // ==========================================
+
+
     // --- Header HTML ---
     const page = this.getAttribute('active');
     const title = this.getAttribute('title') || 'PRM';
