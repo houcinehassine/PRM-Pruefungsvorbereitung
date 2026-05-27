@@ -65,12 +65,13 @@ class SiteHeader extends HTMLElement {
 
           <!-- MITTE: Kapitel-Navigation -->
           <nav class="chapter-nav-top">
-            <a href="../Kapitel4/Page1.html" ${page === 'page1' ? 'class="active"' : ''}>Übersicht</a>
-            <a href="../Kapitel4/Page2.html" ${page === 'page2' ? 'class="active"' : ''}>Algorithmus & Grenzen</a>
-            <a href="../Kapitel4/Page3.html" ${page === 'page3' ? 'class="active"' : ''}>Gütekriterien & Auswahl von k</a>
-            <a href="../Kapitel4/Page4.html" ${page === 'page4' ? 'class="active"' : ''}>Dichtebasiertes Clustering & Anwendung</a>
-            <a href="../Kapitel4/Page5.html" ${page === 'page5' ? 'class="active"' : ''}>Formelsammlung</a>
-            <a href="../Kapitel4/Page6.html" ${page === 'page6' ? 'class="active"' : ''}>Reflexion & Vertiefung</a>
+            <a href="../Kapitel1/Page1.html" ${page === 'page1' ? 'class="active"' : ''}>1</a>
+            <a href="../Kapitel2/Page1.html" ${page === 'page2' ? 'class="active"' : ''}>2</a>
+            <a href="../Kapitel3/Page1.html" ${page === 'page3' ? 'class="active"' : ''}>3</a>
+            <a href="../Kapitel4/Page1.html" ${page === 'page4' ? 'class="active"' : ''}>4-Clustering</a>
+            <a href="../Kapitel5/Page1.html" ${page === 'page5' ? 'class="active"' : ''}>5</a>
+            <a href="../Kapitel6/Page1.html" ${page === 'page6' ? 'class="active"' : ''}>6</a>
+            <a href="../Kapitel6/Page1.html" ${page === 'page6' ? 'class="active"' : ''}>7</a>
           </nav>
 
           <!-- RECHTS: Modus -->
