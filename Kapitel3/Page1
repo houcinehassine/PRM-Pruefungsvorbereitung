@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – SVM Grundlagen</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <site-header active="page1" title="PRM – SVM Grundlagen"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page1"></site-sidebar>
+
+    <main class="content">
+
+      <!-- ═══════════════════════════════ -->
+      <section id="einfuhrung">
+        <h2>Einführung & Grundkonzept</h2>
+        <ul>
+          <li><span style="color:#d63384;"><strong>SVMs</strong></span> (<strong>Support Vector Machines</strong>) sind eines der bekanntesten Modelle im Machine Learning.</li>
+          <li>Sie sind besonders für <span style="color:#0d6efd;"><strong>klein- und mittelgroße Datensätze</strong></span> geeignet.</li>
+          <li>SVMs sind <span style="color:#198754;"><strong>flexibel</strong></span> und können für <strong>Klassifikations-</strong> und <strong>Regressionsprobleme</strong> verwendet werden.</li>
+          <li>Im Klassifikationskontext sind SVMs <span style="color:#fd7e14;"><strong>diskriminative Klassifikatoren</strong></span>.</li>
+        </ul>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="ausgangssituation">
+        <h2>Unsere Ausgangssituation</h2>
+        <ul>
+          <li>Wir betrachten zwei Klassen in einem <strong>2D-Feature-Raum</strong>.</li>
+          <li>Ein Klassifikator soll diese beiden Klassen voneinander trennen.</li>
+        </ul>
+
+        <pre><code>import matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
+
+X, y = make_blobs(n_samples=100, centers=2, random_state=2, cluster_std=1.2)
+plt.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='autumn', edgecolors='gray')</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="margin">
+        <h2>Margin Maximierung</h2>
+        <ul>
+          <li>Anstatt nur eine einfache Trennlinie zu nutzen, wird um die Gerade ein <span style="color:#0d6efd;"><strong>Margin</strong></span> gelegt.</li>
+          <li>Dieser Margin reicht bis zu den nächstliegenden Punkten der Klassen.</li>
+          <li>Die optimale Trennlinie ist diejenige mit dem <strong>größten Margin</strong>.</li>
+          <li>SVMs sind deshalb <span style="color:#d63384;"><strong>Maximum Margin Estimators</strong></span>.</li>
+        </ul>
+
+        <pre><code>import numpy as np
+xfit = np.linspace(-3, 2)
+
+plt.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='autumn', edgecolors='gray')
+
+for m, b, d in [(-1.5, -6, 0.33), (0.5, -5, 0.55), (-0.1, -5.5, 0.2)]:
+    yfit = m * xfit + b
+    plt.plot(xfit, yfit, '-k')
+    plt.fill_between(xfit, yfit - d, yfit + d, edgecolor='none', color='#AAAAAA', alpha=0.4)
+
+plt.xlim(-3, 2)</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="decision-function">
+        <h2>Entscheidungsfunktion</h2>
+        <ul>
+          <li>Für die Visualisierung der SVM nutzen wir die <strong>decision function</strong>.</li>
+          <li>Sie zeigt Entscheidungsgrenze und Margin-Linien im 2D-Raum.</li>
+          <li>Die <strong>Support Vectors</strong> werden dabei besonders hervorgehoben.</li>
+        </ul>
+
+        <pre><code>def plot_svc_decision_function(model, ax=None, plot_support=True):
+    """Plot the decision function for a 2D SVC"""
+    if ax is None:
+        ax = plt.gca()
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+
+    x = np.linspace(xlim[0], xlim[1], 30)
+    y = np.linspace(ylim[0], ylim[1], 30)
+    Y, X = np.meshgrid(y, x)
+    xy = np.vstack([X.ravel(), Y.ravel()]).T
+    P = model.decision_function(xy).reshape(X.shape)
+
+    ax.contour(X, Y, P, colors='k', levels=[-1, 0, 1],
+               alpha=0.5, linestyles=['--', '-', '--'])
+
+    if plot_support:
+        ax.scatter(model.support_vectors_[:, 0], model.support_vectors_[:, 1],
+                   s=300, linewidth=1, facecolors='none')
+
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="svc">
+        <h2>SVC in sklearn</h2>
+        <ul>
+          <li><strong>SVC</strong> bedeutet <span style="color:#d63384;"><strong>Support Vector Classifier</strong></span>.</li>
+          <li>Eine SVM kann nicht nur klassifizieren, sondern auch regressiv eingesetzt werden.</li>
+          <li>Beim Erstellen einer SVC wird der Kernel über <code>kernel=&lt;kernel_type&gt;</code> festgelegt.</li>
+          <li>Der Regularisierungsparameter <code>C</code> steuert den Kompromiss zwischen Margin-Breite und Fehlklassifikationen.</li>
+          <li><code>.fit(X, y)</code> trainiert das Modell und findet die Trennlinie mit maximalem Margin.</li>
+        </ul>
+
+        <pre><code>from sklearn.svm import SVC
+
+fig, axi = plt.subplots(1, 1)
+model = SVC(kernel='linear').fit(X, y)
+axi.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='autumn', edgecolors='gray')
+plot_svc_decision_function(model, axi)
+axi.scatter(model.support_vectors_[:, 0], model.support_vectors_[:, 1],
+            s=300, lw=1, facecolors='none', edgecolors='blue')
+axi.set_title('C = {:.1f}'.format(1.0), size=14)</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="support-vectors">
+        <h2>Support Vectors</h2>
+        <ul>
+          <li>Der Fit des Modells hängt <strong>nur von den Support Vectors</strong> ab.</li>
+          <li>Diese Punkte liegen am Rand des Margins und bestimmen die Lage der Trennlinie.</li>
+          <li>Das Attribut <code>model.support_vectors_</code> enthält diese Punkte direkt.</li>
+        </ul>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>
