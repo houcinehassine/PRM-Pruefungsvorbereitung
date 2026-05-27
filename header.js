@@ -26,35 +26,24 @@ class SiteHeader extends HTMLElement {
     // --- CSS ---
     const css = document.createElement('link');
     css.rel = 'stylesheet';
-    css.href = 'style.css';
+    css.href = '../style.css';
     document.head.appendChild(css);
 
-
-    // ==========================================
-    // --- NEU: Highlight.js für Python-Code ---
-    // ==========================================
-    
-    // 1. Highlight.js CSS laden (Theme: default)
+    // --- Highlight.js ---
     const hljsCss = document.createElement('link');
     hljsCss.rel = 'stylesheet';
     hljsCss.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css';
     document.head.appendChild(hljsCss);
 
-    // 2. Highlight.js Script laden
     const hljsScript = document.createElement('script');
     hljsScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js';
-    
-    // 3. Sobald Highlight.js geladen ist, alle Code-Blöcke auf der Seite färben
     hljsScript.onload = () => {
       document.querySelectorAll('pre code').forEach((block) => {
-        // Macht jeden Code-Block automatisch zu Python
         block.classList.add('language-python');
         window.hljs.highlightElement(block);
       });
     };
     document.head.appendChild(hljsScript);
-    // ==========================================
-
 
     // --- Header HTML ---
     const page = this.getAttribute('active');
@@ -65,23 +54,24 @@ class SiteHeader extends HTMLElement {
       <header class="topbar">
         <div class="topbar-inner">
 
-          <!-- LINKS: Projektname -->
-          <div class="brand">
-            <div class="logo">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="7" cy="12" r="2.5"/>
-                <circle cx="17" cy="7" r="2.5"/>
-                <circle cx="17" cy="17" r="2.5"/>
-                <path d="M9.4 10.8l5.2-2.6M9.4 13.2l5.2 2.6"/>
-              </svg>
-            </div>
-            PRM – Prüfungsvorbereitung
-          </div>
+          <!-- LINKS: Home-Button -->
+          <a href="../index.html" class="home-btn" title="Alle Kapitel">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+              <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/>
+              <path d="M9 21V12h6v9"/>
+            </svg>
+          </a>
 
-          <!-- MITTE: Kapitel-Titel -->
-          <div class="topbar-title">
-            Kapitel 4: Clustering
-          </div>
+          <!-- MITTE: Kapitel-Navigation -->
+          <nav class="chapter-nav-top">
+            <a href="../Kapitel4/Page1.html" ${page === 'page1' ? 'class="active"' : ''}>Übersicht</a>
+            <a href="../Kapitel4/Page2.html" ${page === 'page2' ? 'class="active"' : ''}>Algorithmus & Grenzen</a>
+            <a href="../Kapitel4/Page3.html" ${page === 'page3' ? 'class="active"' : ''}>Gütekriterien & Auswahl von k</a>
+            <a href="../Kapitel4/Page4.html" ${page === 'page4' ? 'class="active"' : ''}>Dichtebasiertes Clustering & Anwendung</a>
+            <a href="../Kapitel4/Page5.html" ${page === 'page5' ? 'class="active"' : ''}>Formelsammlung</a>
+            <a href="../Kapitel4/Page6.html" ${page === 'page6' ? 'class="active"' : ''}>Reflexion & Vertiefung</a>
+          </nav>
 
           <!-- RECHTS: Modus -->
           <button class="theme-toggle" data-theme-toggle>🌙 Modus</button>
@@ -89,6 +79,14 @@ class SiteHeader extends HTMLElement {
         </div>
       </header>
     `;
+
+    // --- Theme Toggle ---
+    this.querySelector('[data-theme-toggle]').addEventListener('click', () => {
+      const html = document.documentElement;
+      html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+      this.querySelector('[data-theme-toggle]').textContent =
+        html.dataset.theme === 'dark' ? '☀️ Modus' : '🌙 Modus';
+    });
   }
 }
 customElements.define('site-header', SiteHeader);
