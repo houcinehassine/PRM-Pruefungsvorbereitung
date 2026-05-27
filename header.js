@@ -67,7 +67,7 @@ class SiteHeader extends HTMLElement {
           <nav class="chapter-nav-top">
             <a href="../Kapitel1/Page1.html" ${page === 'page1' ? 'class="active"' : ''}>1 | </a>
             <a href="../Kapitel2/Page1.html" ${page === 'page2' ? 'class="active"' : ''}>2 | </a>
-            <a href="../Kapitel3/Page1.html" ${page === 'page3' ? 'class="active"' : ''}>3 | </a>
+            <a href="../Kapitel3/Page1.html" ${page === 'page3' ? 'class="active"' : ''}>3-Klasifikation | </a>
             <a href="../Kapitel4/Page1.html" ${page === 'page4' ? 'class="active"' : ''}>4-Clustering | </a>
             <a href="../Kapitel5/Page1.html" ${page === 'page5' ? 'class="active"' : ''}>5 | </a>
             <a href="../Kapitel6/Page1.html" ${page === 'page6' ? 'class="active"' : ''}>6 | </a>
