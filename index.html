@@ -2,23 +2,201 @@
 <html lang="de" data-theme="light">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PRM – Prüfungsvorbereitung</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    .index-hero {
+      text-align: center;
+      padding: 3rem 2rem 2rem;
+    }
+    .index-hero h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .index-hero p {
+      color: var(--color-text-muted);
+      font-size: 1rem;
+    }
+
+    .kapitel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 2rem 4rem;
+    }
+
+    .kapitel-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 1rem;
+      overflow: hidden;
+      text-decoration: none;
+      color: var(--color-text);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .kapitel-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+
+    .kapitel-card .card-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      background: var(--color-primary-highlight);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+    }
+
+    .kapitel-card .card-body {
+      padding: 1.2rem;
+    }
+    .kapitel-card .card-nummer {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      margin-bottom: 0.25rem;
+    }
+    .kapitel-card .card-titel {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .kapitel-card .card-desc {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+
+    .kapitel-card.locked {
+      opacity: 0.5;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+    .kapitel-card.locked .card-img::after {
+      content: "🔒";
+      font-size: 2rem;
+    }
+  </style>
 </head>
 <body>
+
   <header class="topbar">
     <div class="topbar-inner">
-      <div class="brand">PRM – Prüfungsvorbereitung</div>
+      <div class="brand">
+        <div class="logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="7" cy="12" r="2.5"/>
+            <circle cx="17" cy="7" r="2.5"/>
+            <circle cx="17" cy="17" r="2.5"/>
+            <path d="M9.4 10.8l5.2-2.6M9.4 13.2l5.2 2.6"/>
+          </svg>
+        </div>
+        PRM – Prüfungsvorbereitung
+      </div>
+      <button class="theme-toggle" data-theme-toggle>🌙 Modus</button>
     </div>
   </header>
 
-  <main class="content" style="max-width:800px; margin:4rem auto; padding:2rem;">
-    <h1>Kapitelübersicht</h1>
-    <ul>
-      <li><a href="Kapitel4/Page1.html">📘 Kapitel 4 – Clustering</a></li>
-      <!-- später hinzufügen: -->
-      <!-- <li><a href="Kapitel1/Page1.html">📘 Kapitel 1 – ...</a></li> -->
-    </ul>
-  </main>
+  <div class="index-hero">
+    <h1>Willkommen zur PRM-Prüfungsvorbereitung</h1>
+    <p>Wähle ein Kapitel aus, um mit dem Lernen zu beginnen.</p>
+  </div>
+
+  <div class="kapitel-grid">
+
+    <!-- Kapitel 1 – noch nicht verfügbar -->
+    <div class="kapitel-card locked">
+      <div class="card-img">📊</div>
+      <div class="card-body">
+        <div class="card-nummer">Kapitel 1</div>
+        <div class="card-titel">Einführung</div>
+        <div class="card-desc">Grundlagen und Überblick</div>
+      </div>
+    </div>
+
+    <!-- Kapitel 2 – noch nicht verfügbar -->
+    <div class="kapitel-card locked">
+      <div class="card-img">📈</div>
+      <div class="card-body">
+        <div class="card-nummer">Kapitel 2</div>
+        <div class="card-titel">Regression</div>
+        <div class="card-desc">Lineare und logistische Regression</div>
+      </div>
+    </div>
+
+    <!-- Kapitel 3 – noch nicht verfügbar -->
+    <div class="kapitel-card locked">
+      <div class="card-img">🧠</div>
+      <div class="card-body">
+        <div class="card-nummer">Kapitel 3</div>
+        <div class="card-titel">Klassifikation</div>
+        <div class="card-desc">SVM, Entscheidungsbäume, kNN</div>
+      </div>
+    </div>
+
+    <!-- Kapitel 4 – verfügbar ✅ -->
+    <a class="kapitel-card" href="Kapitel4/Page1.html">
+      <div class="card-img">🔵</div>
+      <div class="card-body">
+        <div class="card-nummer">Kapitel 4</div>
+        <div class="card-titel">Clustering</div>
+        <div class="card-desc">k-means, DBSCAN, Validierungsmaße und Anwendungen</div>
+      </div>
+    </a>
+
+    <!-- Kapitel 5 – noch nicht verfügbar -->
+    <div class="kapitel-card locked">
+      <div class="card-img">🌲</div>
+      <div class="card-body">
+        <div class="card-nummer">Kapitel 5</div>
+        <div class="card-titel">Ensemble-Methoden</div>
+        <div class="card-desc">Random Forest, Boosting</div>
+      </div>
+    </div>
+
+    <!-- Kapitel 6 – noch nicht verfügbar -->
+    <div class="kapitel-card locked">
+      <div class="card-img">🔗</div>
+      <div class="card-body">
+        <div class="card-nummer">Kapitel 6</div>
+        <div class="card-titel">Neuronale Netze</div>
+        <div class="card-desc">Grundlagen Deep Learning</div>
+      </div>
+    </div>
+
+    <!-- Kapitel 7 – noch nicht verfügbar -->
+    <div class="kapitel-card locked">
+      <div class="card-img">📉</div>
+      <div class="card-body">
+        <div class="card-nummer">Kapitel 7</div>
+        <div class="card-titel">Dimensionsreduktion</div>
+        <div class="card-desc">PCA und weitere Methoden</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const btn = document.querySelector('[data-theme-toggle]');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        const html = document.documentElement;
+        html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+        btn.textContent = html.dataset.theme === 'dark' ? '☀️ Modus' : '🌙 Modus';
+      });
+    }
+  </script>
+
 </body>
 </html>
