@@ -26,7 +26,7 @@ class SiteHeader extends HTMLElement {
     // --- CSS ---
     const css = document.createElement('link');
     css.rel = 'stylesheet';
-    css.href = '../style.css';
+    css.href = 'style.css';
     document.head.appendChild(css);
 
     // --- Highlight.js ---
