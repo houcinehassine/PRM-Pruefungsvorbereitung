@@ -1,1 +1,192 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – Nicht-lineare Probleme & Kernel-Trick</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  /style.css">
+</head>
+<body>
 
+  <site-header active="page5" title="PRM – Nicht-lineare Probleme & Kernel-Trick"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page5"></site-sidebar>
+
+    <main class="content">
+
+      <section id="nicht-linear">
+        <h2>Nicht-lineare Probleme</h2>
+        <p>
+          Im bisherigen Digits-Beispiel wurde implizit angenommen, dass die Klassen
+          <span style="color:#0d6efd;"><strong>linear</strong></span> trennbar sind.
+        </p>
+        <p>
+          Falls keine lineare Hyperebene beide Klassen trennen kann, liegt ein
+          <span style="color:#dc3545;"><strong>nicht-linear separierbares</strong></span> Problem vor.
+        </p>
+        <p>
+          SVMs können auch solche Probleme lösen, indem die Daten in einen höherdimensionalen Raum projiziert werden [web:59][web:61].
+        </p>
+      </section>
+
+      <section id="rbf">
+        <h2>Radial Basis Functions</h2>
+        <p>
+          Eine Möglichkeit zur Projektion ist die Verwendung von
+          <span style="color:#198754;"><strong>Radial Basis Functions</strong></span> (RBFs).
+          Das sind skalare Funktionen \(\phi(r)\), die nur vom Abstand zum Ursprung abhängen [web:61][web:62].
+        </p>
+
+        <div class="math-display">
+          \[
+          r = \exp\left(-\sum_j x_j^2\right)
+          \]
+        </div>
+
+        <p>
+          Dadurch wird aus einem 2D-Datensatz ein Datensatz in einer höheren Dimension.
+          In dieser höheren Dimension kann das Problem wieder linear separierbar werden [web:61][web:62].
+        </p>
+      </section>
+
+      <section id="make-circles">
+        <h2>Beispiel mit make_circles</h2>
+        <p>
+          Für das Beispiel werden nicht-linear separierbare Daten mit
+          de>make_circles</code> erzeugt und zunächst mit einem linearen SVC modelliert [web:45].
+        </p>
+
+<pre>de>from sklearn.datasets import make_circles
+from sklearn.svm import SVC
+
+
+# Nicht linear separierbare Daten erzeugen
+X, y = make_circles(100, factor=.1, noise=.1)
+clf = SVC(kernel='linear').fit(X, y)
+
+
+plt.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='autumn')
+plot_svc_decision_function(clf, plot_support=False)</code></pre>
+
+        <p>
+          Mit einem linearen Kernel bleibt die Trennung im 2D-Raum unzureichend [web:59][web:61].
+        </p>
+      </section>
+
+      <section id="projektion">
+        <h2>Projektion in höhere Dimensionen</h2>
+        <p>
+          Der RBF-Term wird als zusätzliche Dimension an die Merkmale angehängt.
+          Damit entsteht ein erweitertes Feature-Set, das im Beispiel als \(X_{5d}\) gespeichert wird.
+        </p>
+
+<pre>de># RBF Projektion zeigen
+r = np.exp(-(X**2).sum(axis=1))
+X_5d = np.hstack([X, r.reshape(-1, 1)])
+print(X_5d[:5])</code></pre>
+
+        <p>
+          Die Funktion de>plot_3D</code> zeigt diese Projektion im 3D-Raum:
+          Die Klassen werden dort deutlich besser voneinander getrennt [web:61][web:62].
+        </p>
+
+<pre>de>def plot_3D(elev=30, azim=30, X=X, y=y):
+    ax = plt.subplot(projection='3d')
+    r = np.exp(-(X**2).sum(axis=1))
+    ax.scatter(X[:, 0], X[:, 1], r, c=y, s=50, cmap='autumn', edgecolors='gray')
+    ax.view_init(elev=elev, azim=azim)
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('r')
+
+
+plt.figure(figsize=(10, 7))
+plot_3D()</code></pre>
+      </section>
+
+      <section id="kernel-trick">
+        <h2>Kernel-Trick</h2>
+        <p>
+          Der <span style="color:#d63384;"><strong>Kernel-Trick</strong></span> geht noch weiter:
+          Er fügt die zusätzliche Dimension <em>implizit</em> hinzu, ohne die Projektion explizit auszurechnen [web:59][web:62].
+        </p>
+        <p>
+          In diesem höherdimensionalen Raum wird eine linear separierende Hyperebene gesucht.
+          Im ursprünglichen Raum erscheint diese dann als <strong>nicht-lineare Entscheidungsgrenze</strong>.
+        </p>
+        <p>
+          In de>sklearn</code> wird das über de>kernel='rbf'</code> umgesetzt [web:38][web:65].
+        </p>
+
+<pre>de>clf = SVC(kernel='rbf', C=1E6)
+clf.fit(X, y)
+
+
+plt.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='autumn', edgecolors='gray')
+plot_svc_decision_function(clf)
+plt.scatter(clf.support_vectors_[:, 0], clf.support_vectors_[:, 1],
+            s=300, lw=1, facecolors='none')</code></pre>
+      </section>
+
+      <section id="multi-class">
+        <h2>Multi-Class SVMs</h2>
+        <p>
+          Liegen mehr als zwei Klassen vor, kann der binäre SVM-Ansatz nicht direkt eins-zu-eins angewandt werden.
+        </p>
+        <p>
+          Eine Möglichkeit ist <span style="color:#198754;"><strong>one-vs-one</strong></span>:
+          Für jede Klassenpaarung wird ein eigener Klassifikator trainiert [web:38][web:60][web:63].
+        </p>
+        <p>
+          Für \(N\) Klassen müssen dann
+        </p>
+
+        <div class="math-display">
+          \[
+          \frac{N(N-1)}{2}
+          \]
+        </div>
+
+        <p>
+          SVMs trainiert werden. Die Entscheidungsgrenzen ergeben sich aus der Kombination aller Klassifikatoren [web:38][web:60].
+        </p>
+      </section>
+
+      <section id="vergleich">
+        <h2>Einordnung</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Thema</th>
+              <th>Kernaussage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span style="color:#0d6efd;"><strong>Nicht-linear</strong></span></td>
+              <td>Eine Gerade trennt die Klassen nicht ausreichend.</td>
+            </tr>
+            <tr>
+              <td><span style="color:#198754;"><strong>RBF</strong></span></td>
+              <td>Erweitert den Merkmalsraum um eine zusätzliche Dimension.</td>
+            </tr>
+            <tr>
+              <td><span style="color:#d63384;"><strong>Kernel-Trick</strong></span></td>
+              <td>Die Projektion wird implizit berechnet, ohne den Raum explizit aufzubauen.</td>
+            </tr>
+            <tr>
+              <td><span style="color:#6f42c1;"><strong>One-vs-One</strong></span></td>
+              <td>Für jede Klassenpaarung wird ein binärer SVM-Klassifikator trainiert [web:38].</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>
