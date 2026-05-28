@@ -4,7 +4,7 @@ class SiteSidebar extends HTMLElement {
     this.innerHTML = `
       <aside class="sidebar">
         <nav class="toc">
-          <p class="toc-title">INHALTSVERZEICHNIS</p>
+          <p class="toc-title">Kapitel 3: Klassifikation</p>
           <ul>
 
             <!-- Kapitel 1 -->
