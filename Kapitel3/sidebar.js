@@ -56,34 +56,16 @@ class SiteSidebar extends HTMLElement {
             <li class="toc-page">
               <a href="Page6_1.html" class="${active === 'page6' ? 'active' : ''}">6.1 gesichtserkennung</a>
             </li>
-            <li><a href="Page6_1.html#gesichtserkennung">6.1 <span style="color:#0d6efd;"><strong>Gesichtserkennung</strong></span></a></li>
-            <li><a href="Page6_1.html#gesichter-anzeigen">2: Beispiel-Gesichter anzeigen</a></li>
-            <li><a href="Page6_1.html#train-test-split">3: Features und Labels vorbereiten (Train/Test Split)</a></li>
-            <li><a href="Page6_1.html#pca">Schritt 4: <span style="color:#d63384;"><strong>PCA</strong></span> anwenden (Dimensionsreduktion)</a></li>
-            <li><a href="Page6_1.html#gridsearch-face">5: <span style="color:#198754;"><strong>GridSearchCV</strong></span> – Hyperparameter optimieren</a></li>
-            <li><a href="Page6_1.html#accuracy-face">6: Quantitative Evaluation – Accuracy berechnen</a></li>
-            <li><a href="Page6_1.html#galerie-face">7: Qualitative Evaluation – Galerie mit Vorhersagen</a></li>
 
             <!-- Kapitel 6-2 -->
             <li class="toc-page">
               <a href="Page6_2.html" class="${active === 'page6' ? 'active' : ''}">6.2 classification</a>
             </li>
-            <li><a href="Page6_2.html#fault-classification">6.2 <span style="color:#dc3545;"><strong>Fault Classification</strong></span> – Kugellager</a></li>
-            <li><a href="Page6_2.html#daten-laden">1: Daten laden und Zeitsignale stacken</a></li>
-            <li><a href="Page6_2.html#fenster">2: Signale in Fenster aufteilen</a></li>
-            <li><a href="Page6_2.html#features">3: Features berechnen (Std, Skewness, Kurtosis)</a></li>
-            <li><a href="Page6_2.html#reshaping">4: <span style="color:#fd7e14;"><strong>Reshaping</strong></span> – Erklärung + Anwendung</a></li>
-            <li><a href="Page6_2.html#gridsearch-bearing">5: SVM mit GridSearchCV trainieren</a></li>
 
             <!-- Kapitel 6-3 -->
             <li class="toc-page">
-              <a href="Page6_3.html" class="${active === 'page6' ? 'active' : ''}">6.3 classification</a>
+              <a href="Page6_3.html" class="${active === 'page6' ? 'active' : ''}">6.3 Handschrifterkennung</a>
             </li>
-            <li><a href="Page6_3.html#digits">6.3 <span style="color:#6f42c1;"><strong>Handschrifterkennung</strong></span> – Digits Dataset</a></li>
-            <li><a href="Page6_3.html#digits-laden">1: Digits-Dataset laden</a></li>
-            <li><a href="Page6_3.html#digits-train">2: Train/Test Split + SVC trainieren + vorhersagen</a></li>
-            <li><a href="Page6_3.html#drive-mount">3: Drive mounten</a></li>
-            <li><a href="Page6_3.html#eigenes-bild">4: [BONUS] Eigenes Bild aus Drive laden + scoren</a></li>
 
             <!-- Kapitel 7 -->
             <li class="toc-page">
