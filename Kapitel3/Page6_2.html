@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – Praxisanwendungen</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <site-header active="page6" title="PRM – Praxisanwendungen"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page6_2"></site-sidebar>
+
+    <main class="content">
+
+      <!-- 6.2 Fault Classification -->
+      <section id="fault-classification">
+        <h2>6.2 Fault Classification – Kugellager</h2>
+        <p>
+          Im Kugellager-Beispiel werden Zeitreihensignale aus mehreren Dateien geladen, gestackt und anschließend in Fenster aufgeteilt.
+          Ziel ist es, den Zustand des Lagers datengetrieben zu klassifizieren [web:76][web:79].
+        </p>
+      </section>
+
+      <section id="daten-laden">
+        <h2>Schritt 1: Daten laden und Zeitsignale stacken</h2>
+        <p>
+          Die Daten werden aus einem Google-Drive-Verzeichnis geladen.
+          Danach werden die einzelnen Signale in ein gemeinsames Zeitreihen-Array zusammengeführt.
+        </p>
+
+<pre><code>from scipy.io import loadmat
+import os
+from sklearn.svm import SVC
+from sklearn.model_selection import GridSearchCV
+from scipy.stats import skew, kurtosis
+import glob
+import numpy as np
+import matplotlib.pyplot as plt
+
+from google.colab import drive
+drive.mount('/content/drive')
+
+path_to_data = '/content/drive/MyDrive/Colab Notebooks/PRM-Vorbereitung/03-Daten_Beisp_SVM/bearing/'
+
+print(os.listdir(path_to_data))
+
+data = np.load(path_to_data + 'normal.npy')
+print(data.shape)  # (100000,)
+plt.plot(data)
+
+files = glob.glob(path_to_data + '*.npy')
+
+timeseries_array = np.zeros((100000, 4))
+for i, filepath in enumerate(files):
+    timeseries_array[:, i] = np.load(filepath).reshape(-1)</code></pre>
+      </section>
+
+      <section id="fenster">
+        <h2>Schritt 2: Signale in Fenster aufteilen</h2>
+        <p>
+          Die Zeitreihen werden in 100 Teilstücke zerlegt, damit später pro Fenster Features berechnet werden können.
+        </p>
+
+<pre><code>split_array = np.array_split(timeseries_array, 100)</code></pre>
+      </section>
+
+      <section id="features">
+        <h2>Schritt 3: Features berechnen</h2>
+        <p>
+          Aus jedem Fenster werden typische statistische Merkmale berechnet:
+          <span style="color:#0d6efd;"><strong>Standardabweichung</strong></span>,
+          <span style="color:#d63384;"><strong>Skewness</strong></span> und
+          <span style="color:#198754;"><strong>Kurtosis</strong></span>.
+        </p>
+
+<pre><code>features_array = np.zeros((100, 4, 3))
+for nsplit, split in enumerate(split_array):
+    features_array[nsplit, :, 0] = split.std(axis=0)
+    features_array[nsplit, :, 1] = skew(split)
+    features_array[nsplit, :, 2] = kurtosis(split)</code></pre>
+      </section>
+
+      <section id="reshaping">
+        <h2>Schritt 4: Reshaping – Erklärung</h2>
+        <p>
+          <code>reshape</code> ändert nur die Form eines Arrays, nicht die enthaltenen Werte.
+          Entscheidend ist, dass die Gesamtzahl der Elemente gleich bleibt.
+        </p>
+
+<pre><code>a = np.arange(60).reshape(5, 4, 3)
+print(a)  # 5x4x3 = 60 Elemente
+
+a.reshape(20, 3)  # 20x3 = 60 Elemente</code></pre>
+      </section>
+
+      <section id="gridsearch-bearing">
+        <h2>Schritt 5: SVM mit GridSearchCV trainieren</h2>
+        <p>
+          Für die Klassifikation wird eine SVM mit <code>kernel='rbf'</code> und <code>class_weight='balanced'</code> trainiert.
+          Die Hyperparameter werden per Grid Search optimiert [web:76][web:79].
+        </p>
+
+<pre><code>model = SVC(kernel='rbf', class_weight='balanced')
+param_grid = {
+    'C': np.arange(1, 51, 5),
+    'gamma': np.linspace(0.0001, 0.005, 10)
+}
+grid = GridSearchCV(model, param_grid, n_jobs=-1)
+grid.fit(X_train, y_train)
+print(grid.best_params_)
+
+model = grid.best_estimator_
+y_fit = model.predict(X_test)
+
+from sklearn.metrics import accuracy_score
+accuracy_score(y_test, y_fit)  # ~0.95</code></pre>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>
