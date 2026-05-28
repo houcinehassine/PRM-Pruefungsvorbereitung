@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – Praxisanwendungen</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <site-header active="page6" title="PRM – Praxisanwendungen"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page6_1"></site-sidebar>
+
+    <main class="content">
+
+      <!-- 6.1 Gesichtserkennung -->
+      <section id="gesichtserkennung">
+        <h2>6.1 Gesichtserkennung</h2>
+        <p>
+          Für das Gesichtserkennungsbeispiel wird der LFW-Datensatz mit
+          <code>fetch_lfw_people(min_faces_per_person=70, resize=0.4)</code> geladen.
+          In der Vorlesung wird daraus ein Klassifikationsproblem für mehrere Personen [web:70][web:71].
+        </p>
+        <p>
+          Die Bildstruktur hat typischerweise die Form <code>(1288, 50, 37)</code>, also 1288 Bilder mit je 50 × 37 Pixeln.
+        </p>
+      </section>
+
+      <section id="gesichter-anzeigen">
+        <h2>Schritt 2: Beispiel-Gesichter anzeigen</h2>
+        <p>
+          Zur ersten Inspektion werden mehrere Gesichter in einer Galerie dargestellt.
+          So kann man die Heterogenität des Datensatzes direkt sehen [web:70].
+        </p>
+
+<pre><code>fig, ax = plt.subplots(3, 5, figsize=(8, 7))
+for i, axi in enumerate(ax.flat):
+    axi.imshow(lfw_people.images[i], cmap='bone')
+    axi.set(xticks=[], yticks=[], xlabel=lfw_people.target_names[lfw_people.target[i]])</code></pre>
+      </section>
+
+      <section id="train-test-split">
+        <h2>Schritt 3: Features und Labels vorbereiten</h2>
+        <p>
+          Die Bilder werden zunächst in eine Feature-Matrix <code>X</code> und ein Zielarray <code>y</code> überführt.
+          Danach erfolgt der <span style="color:#0d6efd;"><strong>Train/Test Split</strong></span> [web:70][web:71].
+        </p>
+
+<pre><code>n_samples, h, w = lfw_people.images.shape
+
+X = lfw_people.data
+y = lfw_people.target
+target_names = lfw_people.target_names
+print(target_names)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)</code></pre>
+      </section>
+
+      <section id="pca">
+        <h2>Schritt 4: PCA anwenden</h2>
+        <p>
+          Um die hohe Dimensionalität zu reduzieren, wird eine
+          <span style="color:#d63384;"><strong>PCA</strong></span> mit 150 Komponenten berechnet.
+          Danach werden die Trainings- und Testdaten projiziert [web:72][web:74].
+        </p>
+
+<pre><code>print("Computing PCA...\n")
+n_components = 150
+pca = PCA(n_components=n_components, svd_solver='randomized', whiten=True).fit(X_train)
+X_train_pca = pca.transform(X_train)
+X_test_pca = pca.transform(X_test)</code></pre>
+      </section>
+
+      <section id="gridsearch-face">
+        <h2>Schritt 5: GridSearchCV – Hyperparameter optimieren</h2>
+        <p>
+          Für das Klassifikationsmodell wird ein SVC mit <code>kernel='rbf'</code> verwendet.
+          Die Hyperparameter <span style="color:#198754;"><strong>C</strong></span> und <span style="color:#6f42c1;"><strong>gamma</strong></span> werden per Grid Search bestimmt [web:70][web:71][web:65].
+        </p>
+
+<pre><code>print("Doing Grid Search...")
+
+param_grid = {
+    'C': [0.1, 1, 10, 1e2, 5e2],
+    'gamma': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1]
+}
+
+clf = GridSearchCV(SVC(kernel='rbf'), param_grid, n_jobs=-1)
+clf = clf.fit(X_train_pca, y_train)
+print(clf.best_estimator_)</code></pre>
+      </section>
+
+      <section id="accuracy-face">
+        <h2>Schritt 6: Quantitative Evaluation</h2>
+        <p>
+          Die Qualität des Modells wird mit der
+          <span style="color:#198754;"><strong>Accuracy</strong></span> auf den Testdaten gemessen.
+          In deinem Beispiel liegt sie bei ungefähr <strong>0.854</strong> [web:70].
+        </p>
+
+<pre><code>y_pred = clf.predict(X_test_pca)
+print(f"Accuracy of used model... {accuracy_score(y_test, y_pred)}")</code></pre>
+      </section>
+
+      <section id="galerie-face">
+        <h2>Schritt 7: Qualitative Evaluation</h2>
+        <p>
+          Zusätzlich zur Accuracy wird eine Galerie mit Vorhersagen erstellt.
+          Dabei werden vorhergesagter und wahrer Klassenname direkt verglichen [web:70].
+        </p>
+
+<pre><code>def plot_gallery(images, titles, h, w, n_row=3, n_col=4):
+    """Helper function to plot a gallery of portraits"""
+    plt.figure(figsize=(1.8 * n_col, 2.4 * n_row))
+    plt.subplots_adjust(bottom=0, left=.01, right=.99, top=.90, hspace=.35)
+    for i in range(n_row * n_col):
+        plt.subplot(n_row, n_col, i + 1)
+        plt.imshow(images[i].reshape(h, w), cmap=plt.cm.gray)
+        plt.title(titles[i], size=12)
+        plt.xticks(())
+        plt.yticks(())
+
+def title(y_pred, y_test, target_names, i):
+    pred_name = target_names[y_pred[i]].split()[-1]
+    true_name = target_names[y_test[i]].split()[-1]
+    return f'predicted: {pred_name}\ntrue: {true_name}'</code></pre>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>
