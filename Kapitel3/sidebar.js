@@ -35,21 +35,17 @@ class SiteSidebar extends HTMLElement {
             <li class="toc-page">
               <a href="Page4.html" class="${active === 'page4' ? 'active' : ''}">Implementierung from Scratch</a>
             </li>
-            <!--
             <li><a href="Page4.html#loss-function">    1 <span style="color:#dc3545;"><strong>Loss Function</strong></span></a></li>
             <li><a href="Page4.html#gradienten">    2 <span style="color:#198754;"><strong>Gradienten</strong></span></a></li>
             <li><a href="Page4.html#gradientenabstieg">    3 <span style="color:#0d6efd;"><strong>Gradientenabstieg</strong></span> – Algorithmus</a></li>
             <li><a href="Page4.html#visualisierung">    4 <span style="color:#d63384;"><strong>Visualisierung</strong></span></a></li>
-            -->
 
             <!-- Kapitel 5 -->
             <li class="toc-page">
               <a href="Page5.html" class="${active === 'page5' ? 'active' : ''}">Nicht-lineare Probleme & Kernel-Trick</a>
             </li>
-            <!--
-            <li><a href="Page5.html#kernel-trick">    <span style="color:#6f42c1;"><strong>Kernel-Trick</strong></span> – Projektion in höhere Dimensionen</a></li>
-            <li><a href="Page5.html#multi-class">    <span style="color:#198754;"><strong>Multi-Class SVMs</strong></span></a></li>
-            -->
+            <li><a href="Page5.html#kernel-trick">    <span style="color:#6f42c1;">    <strong>Kernel-Trick</strong></span> – Projektion in höhere Dimensionen</a></li>
+            <li><a href="Page5.html#multi-class">    <span style="color:#198754;">    <strong>Multi-Class SVMs</strong></span></a></li>
 
             <!-- Kapitel 6 -->
             <li class="toc-page">
