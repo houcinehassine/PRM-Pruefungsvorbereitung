@@ -16,6 +16,7 @@
     <site-sidebar active="page1"></site-sidebar>
 
     <main class="content">
+        <h1>1. Einführung & Grundkonzept</h1>
 
       <!-- ═══════════════════════════════ -->
       <section id="einfuhrung">
@@ -75,7 +76,8 @@ plt.xlim(-3, 2)</code></pre>
           <li>Die <strong>Support Vectors</strong> werden dabei besonders hervorgehoben.</li>
         </ul>
 
-        <pre><code>def plot_svc_decision_function(model, ax=None, plot_support=True):
+        <pre><code>
+    def plot_svc_decision_function(model, ax=None, plot_support=True):
     """Plot the decision function for a 2D SVC"""
     if ax is None:
         ax = plt.gca()
