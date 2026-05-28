@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – Implementierung from Scratch</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <site-header active="page4" title="PRM – Implementierung from Scratch"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page4"></site-sidebar>
+
+    <main class="content">
+
+      <section id="loss-function">
+        <h2>4.1 Loss Function</h2>
+        <p>
+          Durch die mathematische Herleitung erhält man für die Soft-Margin-SVM eine gut nutzbare
+          <span style="color:#dc3545;"><strong>Kostenfunktion</strong></span>, die sich direkt in Python implementieren lässt [web:41][web:35].
+        </p>
+
+        <div class="math-display">
+          \[
+          \min_{\mathbf{w}, b}
+          \frac{1}{2}\|\mathbf{w}\|^2
+          + C \sum_i \max \{0, 1 - y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b)\}
+          \]
+        </div>
+
+        <p>
+          Der erste Term ist die <span style="color:#d63384;"><strong>Regularisierung</strong></span>,
+          der zweite Term ist die <span style="color:#198754;"><strong>Hinge Loss</strong></span> [web:41][web:35].
+        </p>
+      </section>
+
+      <section id="import-daten">
+        <h2>Import & Daten</h2>
+        <p>
+          Für ein einfaches Beispiel werden künstliche Daten mit <code>make_blobs</code> erzeugt,
+          anschließend mit <code>StandardScaler</code> skaliert und die Labels von \(\{0,1\}\) nach \(\{-1,1\}\) umkodiert [web:50][web:51].
+        </p>
+
+<pre><code>import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import make_blobs
+from sklearn.preprocessing import StandardScaler
+
+
+# Data and parameters
+X, y = make_blobs(n_samples=1000, centers=2, cluster_std=0.1)
+X = StandardScaler().fit_transform(X)
+y = 2*y - 1  # convert 0,1 to -1,1
+
+
+w = np.random.rand(X.shape[1])
+b = np.random.rand()</code></pre>
+      </section>
+
+      <section id="svm-loss-code">
+        <h2>Loss Function in Python</h2>
+        <p>
+          Die Hinge Loss lautet \( \max(0, 1 - y \cdot f(\mathbf{x})) \), wobei
+          \( f(\mathbf{x}) = \langle \mathbf{w}, \mathbf{x} \rangle + b \) die lineare Entscheidungsfunktion ist [web:35][web:33].
+        </p>
+
+<pre><code>def svm_loss_function(X, y, w, b, C):
+    penalties = 1 - y * np.dot(X, w) - b
+    penalties[penalties &lt; 0] = 0  # equivalent to max{0, distance} = hinge_loss
+    hinge_loss = C * np.mean(penalties)  # scaling with 1/m for independence of data size
+    loss = 1/2 * np.dot(w, w) + hinge_loss
+    return loss
+
+
+svm_loss_function(X, y, w, b, 1)</code></pre>
+
+        <p>
+          Punkte mit negativem Penalty tragen nichts zur Hinge Loss bei, während Punkte innerhalb des Margins oder auf der falschen Seite bestraft werden [web:35][web:33].
+        </p>
+      </section>
+
+      <section id="gradienten">
+        <h2>4.2 Gradienten</h2>
+        <p>
+          Um die Kostenfunktion zu minimieren, benötigt man die
+          <span style="color:#198754;"><strong>Gradienten</strong></span> nach \(\mathbf{w}\) und \(b\).
+          Aktiv sind dabei nur Datenpunkte, für die der Margin-Ausdruck größer als 0 ist [web:33][web:41].
+        </p>
+
+<pre><code>def svm_gradients(X, y, w, b, C):
+    m = X.shape[0]
+    margins = 1 - y * (X.dot(w) + b)
+    active = margins &gt; 0  # indices where hinge loss is active
+    dw = w - C/m * X[active].T.dot(y[active])  # scaling with 1/m
+    db = -C/m * np.sum(y[active])
+    return dw, db
+
+
+svm_gradients(X, y, w, b, 1)</code></pre>
+
+        <p>
+          Der Term \(dw\) enthält sowohl den Regularisierungsteil \(\mathbf{w}\) als auch den Beitrag der aktiven Hinge-Loss-Punkte [web:41][web:33].
+        </p>
+      </section>
+
+      <section id="gradientenabstieg">
+        <h2>4.3 Gradientenabstieg – Algorithmus</h2>
+        <p>
+          Beim <span style="color:#0d6efd;"><strong>Gradientenabstieg</strong></span> werden die Parameter iterativ
+          in Richtung des negativen Gradienten aktualisiert.
+        </p>
+
+        <div class="math-display">
+          \[
+          \Delta \mathbf{w}^{(i)} = - \eta \nabla \Lambda \mid_{\mathbf{w}^{(i)}}
+          \]
+        </div>
+
+        <div class="math-display">
+          \[
+          \mathbf{w}^{(i+1)} = \mathbf{w}^{(i)} + \Delta \mathbf{w}^{(i)}
+          \]
+        </div>
+
+        <p>
+          Dabei ist \(\eta\) die <span style="color:#fd7e14;"><strong>Lernrate</strong></span>.
+        </p>
+
+<pre><code>def svm_train(X, y, w, b, C, lr, epochs):
+    list_of_costs = []
+    for epoch in range(epochs):
+        dw, db = svm_gradients(X, y, w, b, C)
+        w -= lr * dw
+        b -= lr * db
+        list_of_costs.append(svm_loss_function(X, y, w, b, C))
+    return w, b, list_of_costs
+
+
+# Anwenden
+w, b, list_of_costs = svm_train(X, y, w, b, 1, 0.01, 1000)
+
+
+plt.plot(list_of_costs)
+plt.xlabel('Epochs')
+plt.ylabel('Loss')</code></pre>
+
+        <p>
+          Wenn das Training funktioniert, sollte der Loss über die Epochen typischerweise sinken, weil die Parameter schrittweise verbessert werden [web:41].
+        </p>
+      </section>
+
+      <section id="visualisierung">
+        <h2>4.4 Visualisierung</h2>
+        <p>
+          Nach dem Training kann man die gelernte
+          <span style="color:#d63384;"><strong>Hyperebene</strong></span> in den Feature-Raum einzeichnen.
+          Für eine stabile geometrische Interpretation wird \(\mathbf{w}\) dabei normalisiert [web:41].
+        </p>
+
+<pre><code>def plot_decision_line(w, b, x_range):
+    fig, ax = plt.subplots(figsize=(6,5))
+    xmin, xmax = x_range
+    xs = np.linspace(xmin, xmax, 400)
+    norm = np.linalg.norm(w)
+    w = w / norm
+    b = b / norm
+    ys = -w[0] * xs - b / w[1]
+    ax.plot(xs, ys, linewidth=2, label='decision line')
+    ax.set_xlabel('x1')
+    ax.set_ylabel('x2')
+    ax.legend()
+    ax.grid(True)
+    return ys
+
+
+ys = plot_decision_line(w, b, x_range=(X[:, 0].min(), X[:, 0].max()))
+plt.scatter(X[:, 0], X[:, 1], c=y)</code></pre>
+
+        <p>
+          Die Gerade trennt die beiden Klassen entsprechend der gelernten Parameter \(w\) und \(b\). Ein möglicher Bonus ist eine Funktion
+          <code>animate_svm_training</code>, die Zwischenstände speichert und den Lernprozess dynamisch zeigt.
+        </p>
+      </section>
+
+      <section id="einordnung">
+        <h2>Einordnung</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Teil</th>
+              <th>Bedeutung</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span style="color:#dc3545;"><strong>Loss Function</strong></span></td>
+              <td>Bewertet, wie gut die aktuelle Hyperebene ist [web:35][web:41].</td>
+            </tr>
+            <tr>
+              <td><span style="color:#198754;"><strong>Gradienten</strong></span></td>
+              <td>Geben die Richtung an, in der die Parameter verbessert werden [web:33][web:41].</td>
+            </tr>
+            <tr>
+              <td><span style="color:#0d6efd;"><strong>Gradientenabstieg</strong></span></td>
+              <td>Aktualisiert \(\mathbf{w}\) und \(b\) iterativ bis zu einer guten Lösung [web:41].</td>
+            </tr>
+            <tr>
+              <td><span style="color:#d63384;"><strong>Visualisierung</strong></span></td>
+              <td>Zeigt die resultierende lineare Trennfläche direkt im Merkmalsraum.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>
