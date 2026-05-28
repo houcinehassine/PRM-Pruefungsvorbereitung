@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – Praxisanwendungen</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <site-header active="page6" title="PRM – Praxisanwendungen"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page6_3"></site-sidebar>
+
+    <main class="content">
+
+      <!-- 6.3 Digits -->
+      <section id="digits">
+        <h2>6.3 Handschrifterkennung – Digits Dataset</h2>
+        <p>
+          Das Digits-Dataset enthält 8×8-Bilder handgeschriebener Ziffern.
+          Es ist ein klassisches Multi-Class-Beispiel für SVMs [web:78][web:81].
+        </p>
+      </section>
+
+      <section id="digits-laden">
+        <h2>Schritt 1: Digits-Dataset laden</h2>
+        <p>
+          Mit <code>load_digits(return_X_y=True)</code> erhält man direkt die Datenmatrix und die Zielwerte.
+          Die Form ist typischerweise <code>(1797, 64)</code> für die Features und <code>(1797,)</code> für die Labels [web:78][web:81].
+        </p>
+
+<pre><code>from sklearn.datasets import load_digits
+from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+
+X, y = load_digits(return_X_y=True)
+print(X.shape)  # (1797, 64)
+print(y.shape)  # (1797,)
+
+plt.imshow(X[15, :].reshape(8, 8), cmap=plt.cm.gray_r)
+plt.figure()
+plt.imshow(X[200, :].reshape(8, 8), cmap=plt.cm.gray_r)</code></pre>
+      </section>
+
+      <section id="digits-train">
+        <h2>Schritt 2: Train/Test Split und SVC</h2>
+        <p>
+          Nach dem Split wird ein Standard-SVC trainiert und auf den Testdaten ausgewertet.
+          Danach kann eine einzelne Vorhersage direkt visualisiert werden [web:78][web:38].
+        </p>
+
+<pre><code>X_train, X_test, y_train, y_test = train_test_split(X, y)
+print(X_train.shape)  # (1347, 64)
+print(X_test.shape)   # (450, 64)
+
+model = SVC()
+model.fit(X_train, y_train)
+
+predicted = model.predict(X_test)
+
+ndigit = 440
+plt.imshow(X_test[ndigit].reshape(8, 8), cmap=plt.cm.gray_r)
+plt.title(f'Predicted: {predicted[ndigit]}')</code></pre>
+      </section>
+
+      <section id="drive-mount">
+        <h2>Schritt 3: Drive mounten</h2>
+        <p>
+          Für eigene Bilddateien aus Google Drive wird das Laufwerk eingebunden.
+        </p>
+
+<pre><code>from google.colab import drive
+drive.mount('/content/drive')
+# Output: "Drive already mounted at /content/drive; to attempt to forcibly remount, call drive.mount('/content/drive', force_remount=True)"</code></pre>
+      </section>
+
+      <section id="eigenes-bild">
+        <h2>Schritt 4: Eigenes Bild aus Drive laden</h2>
+        <p>
+          Ein eigenes Bild wird geladen, auf 8×8 skaliert, als Graustufenbild normalisiert und anschließend vom Modell klassifiziert [web:78].
+        </p>
+
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+from PIL import Image
+
+img_path = '/content/drive/MyDrive/Colab Notebooks/PRM-Vorbereitung/03-Daten_Beisp_SVM/digits/3b.jpg'
+img = Image.open(img_path).convert('L').resize((8, 8))
+img_array = np.asarray(img) / 255. * -1 + 1
+
+plt.imshow(img_array)
+plt.colorbar()
+plt.show()
+
+model.predict(img_array.reshape(1, -1))  # array([4])</code></pre>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>
