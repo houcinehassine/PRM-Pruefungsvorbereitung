@@ -51,26 +51,39 @@ class SiteSidebar extends HTMLElement {
             <li class="toc-page">
               <a href="Page6.html" class="${active === 'page6' ? 'active' : ''}">Praxisanwendungen</a>
             </li>
-            <li><a href="Page6.html#gesichtserkennung">6.1 <span style="color:#0d6efd;"><strong>Gesichtserkennung</strong></span></a></li>
-            <li><a href="Page6.html#gesichter-anzeigen">2: Beispiel-Gesichter anzeigen</a></li>
-            <li><a href="Page6.html#train-test-split">3: Features und Labels vorbereiten (Train/Test Split)</a></li>
-            <li><a href="Page6.html#pca">Schritt 4: <span style="color:#d63384;"><strong>PCA</strong></span> anwenden (Dimensionsreduktion)</a></li>
-            <li><a href="Page6.html#gridsearch-face">5: <span style="color:#198754;"><strong>GridSearchCV</strong></span> – Hyperparameter optimieren</a></li>
-            <li><a href="Page6.html#accuracy-face">6: Quantitative Evaluation – Accuracy berechnen</a></li>
-            <li><a href="Page6.html#galerie-face">7: Qualitative Evaluation – Galerie mit Vorhersagen</a></li>
 
-            <li><a href="Page6.html#fault-classification">6.2 <span style="color:#dc3545;"><strong>Fault Classification</strong></span> – Kugellager</a></li>
-            <li><a href="Page6.html#daten-laden">1: Daten laden und Zeitsignale stacken</a></li>
-            <li><a href="Page6.html#fenster">2: Signale in Fenster aufteilen</a></li>
-            <li><a href="Page6.html#features">3: Features berechnen (Std, Skewness, Kurtosis)</a></li>
-            <li><a href="Page6.html#reshaping">4: <span style="color:#fd7e14;"><strong>Reshaping</strong></span> – Erklärung + Anwendung</a></li>
-            <li><a href="Page6.html#gridsearch-bearing">5: SVM mit GridSearchCV trainieren</a></li>
+            <!-- Kapitel 6-1 -->
+            <li class="toc-page">
+              <a href="Page6_1.html" class="${active === 'page6' ? 'active' : ''}">6.1 gesichtserkennung</a>
+            </li>
+            <li><a href="Page6_1.html#gesichtserkennung">6.1 <span style="color:#0d6efd;"><strong>Gesichtserkennung</strong></span></a></li>
+            <li><a href="Page6_1.html#gesichter-anzeigen">2: Beispiel-Gesichter anzeigen</a></li>
+            <li><a href="Page6_1.html#train-test-split">3: Features und Labels vorbereiten (Train/Test Split)</a></li>
+            <li><a href="Page6_1.html#pca">Schritt 4: <span style="color:#d63384;"><strong>PCA</strong></span> anwenden (Dimensionsreduktion)</a></li>
+            <li><a href="Page6_1.html#gridsearch-face">5: <span style="color:#198754;"><strong>GridSearchCV</strong></span> – Hyperparameter optimieren</a></li>
+            <li><a href="Page6_1.html#accuracy-face">6: Quantitative Evaluation – Accuracy berechnen</a></li>
+            <li><a href="Page6_1.html#galerie-face">7: Qualitative Evaluation – Galerie mit Vorhersagen</a></li>
 
-            <li><a href="Page6.html#digits">6.3 <span style="color:#6f42c1;"><strong>Handschrifterkennung</strong></span> – Digits Dataset</a></li>
-            <li><a href="Page6.html#digits-laden">1: Digits-Dataset laden</a></li>
-            <li><a href="Page6.html#digits-train">2: Train/Test Split + SVC trainieren + vorhersagen</a></li>
-            <li><a href="Page6.html#drive-mount">3: Drive mounten</a></li>
-            <li><a href="Page6.html#eigenes-bild">4: [BONUS] Eigenes Bild aus Drive laden + scoren</a></li>
+            <!-- Kapitel 6-2 -->
+            <li class="toc-page">
+              <a href="Page6_2.html" class="${active === 'page6' ? 'active' : ''}">6.2 classification</a>
+            </li>
+            <li><a href="Page6_2.html#fault-classification">6.2 <span style="color:#dc3545;"><strong>Fault Classification</strong></span> – Kugellager</a></li>
+            <li><a href="Page6_2.html#daten-laden">1: Daten laden und Zeitsignale stacken</a></li>
+            <li><a href="Page6_2.html#fenster">2: Signale in Fenster aufteilen</a></li>
+            <li><a href="Page6_2.html#features">3: Features berechnen (Std, Skewness, Kurtosis)</a></li>
+            <li><a href="Page6_2.html#reshaping">4: <span style="color:#fd7e14;"><strong>Reshaping</strong></span> – Erklärung + Anwendung</a></li>
+            <li><a href="Page6_2.html#gridsearch-bearing">5: SVM mit GridSearchCV trainieren</a></li>
+
+            <!-- Kapitel 6-3 -->
+            <li class="toc-page">
+              <a href="Page6_3.html" class="${active === 'page6' ? 'active' : ''}">6.3 classification</a>
+            </li>
+            <li><a href="Page6_3.html#digits">6.3 <span style="color:#6f42c1;"><strong>Handschrifterkennung</strong></span> – Digits Dataset</a></li>
+            <li><a href="Page6_3.html#digits-laden">1: Digits-Dataset laden</a></li>
+            <li><a href="Page6_3.html#digits-train">2: Train/Test Split + SVC trainieren + vorhersagen</a></li>
+            <li><a href="Page6_3.html#drive-mount">3: Drive mounten</a></li>
+            <li><a href="Page6_3.html#eigenes-bild">4: [BONUS] Eigenes Bild aus Drive laden + scoren</a></li>
 
             <!-- Kapitel 7 -->
             <li class="toc-page">
@@ -80,33 +93,14 @@ class SiteSidebar extends HTMLElement {
             <li><a href="Page7.html#support-vectors-finden">2: Support Vectors finden</a></li>
             <li><a href="Page7.html#svr-plot">3: SVR plotten mit Epsilon-Annotation</a></li>
             <li><a href="Page7.html#svr-nonlinear">4: Nicht-lineare SVR – Poly- und RBF-Kernel vergleichen</a></li>
+            <li><a href="Page8.html#vor-nachteile-allgemein"><span style="color:#0d6efd;"><strong>Vor- und Nachteile von SVMs</strong></span></a></li>
 
             <!-- Kapitel 8 -->
             <li class="toc-page">
-              <a href="Page8.html" class="${active === 'page8' ? 'active' : ''}">Vor- und Nachteile</a>
-            </li>
-            <li><a href="Page8.html#vor-nachteile-allgemein"><span style="color:#0d6efd;"><strong>Vor- und Nachteile von SVMs</strong></span></a></li>
-            <li><a href="Page8.html#pros"><span style="color:#198754;"><strong>Pros</strong></span></a></li>
-            <li><a href="Page8.html#cons"><span style="color:#dc3545;"><strong>Cons</strong></span></a></li>
-
-            <!-- Kapitel 9 -->
-            <li class="toc-page">
-              <a href="Page9.html" class="${active === 'page9' ? 'active' : ''}">Formelsammlung & Code</a>
-            </li>
-            <li><a href="Page9.html#formelsammlung"><span style="color:#6f42c1;"><strong>Formelsammlung</strong></span></a></li>
-            <li><a href="Page9.html#hyperebene-bias">Hyperebene & Bias</a></li>
-            <li><a href="Page9.html#trennungsbedingung">Trennungsbedingung</a></li>
-            <li><a href="Page9.html#margin-optimierung">Margin & Optimierung</a></li>
-            <li><a href="Page9.html#slack-hinge">Slack Variable & Hinge Loss</a></li>
-            <li><a href="Page9.html#svr-formel">SVR (Support Vector Regression)</a></li>
-            <li><a href="Page9.html#multi-class-ovo">Multi-Class (One-vs-One)</a></li>
-            <li><a href="Page9.html#hyperparameter">Hyperparameter-Übersicht</a></li>
-            <li><a href="Page9.html#code-snippets">Code-Snippets Schnellzugriff</a></li>
-            <li><a href="Page9.html#svc-trainieren">SVC instanziieren und trainieren</a></li>
-            <li><a href="Page9.html#svr-trainieren">SVR instanziieren und trainieren</a></li>
-            <li><a href="Page9.html#support-vectors-abrufen">Multi-Class: Support Vectors abrufen</a></li>
-            <li><a href="Page9.html#gridsearch-tuning">GridSearchCV für Hyperparameter-Tuning</a></li>
-            <li><a href="Page9.html#bild-klassifizieren">Eigenes Bild klassifizieren</a></li>
+              <a href="Page8.html" class="${active === 'page8' ? 'active' : ''}">Formelsammlung & Code</a>
+            <li><a href="Page8.html#formelsammlung"><span style="color:#6f42c1;"><strong>Formelsammlung</strong></span></a></li>
+            <li><a href="Page8.html#hyperparameter">Hyperparameter-Übersicht</a></li>
+            <li><a href="Page8.html#code-snippets">Code-Snippets Schnellzugriff</a></li>
 
           </ul>
         </nav>
