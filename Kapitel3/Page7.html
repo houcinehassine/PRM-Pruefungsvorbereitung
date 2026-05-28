@@ -21,14 +21,14 @@
         <h2>Lineare SVR</h2>
         <p>
           Die <span style="color:#198754;"><strong>Support Vector Regression</strong></span> arbeitet mit einer \(\varepsilon\)-Tube:
-          Vorhersagen innerhalb dieses Toleranzbandes werden nicht bestraft [web:85][web:90][web:95].
+          Vorhersagen innerhalb dieses Toleranzbandes werden nicht bestraft.
         </p>
         <p>
-          In de>sklearn</code> kann man dafür de>LinearSVR</code> verwenden.
-          Die Parameter \(\varepsilon\) und \(C\) steuern die Breite der Tube und die Stärke der Regularisierung [web:90][web:97].
+          In <code>sklearn</code> kann man dafür <code>LinearSVR</code> verwenden.
+          Die Parameter \(\varepsilon\) und \(C\) steuern die Breite der Tube und die Stärke der Regularisierung.
         </p>
 
-<pre>de>import numpy as np
+<pre><code>import numpy as np
 import matplotlib.pyplot as plt
 
 
@@ -53,10 +53,10 @@ svmreg2.fit(X, y.ravel())</code></pre>
         <h2>Support Vectors finden</h2>
         <p>
           Bei der Regression sind die <span style="color:#d63384;"><strong>Support Vectors</strong></span> die Punkte außerhalb der \(\varepsilon\)-Tube.
-          Sie tragen aktiv zum Modell bei [web:85][web:92][web:95].
+          Sie tragen aktiv zum Modell bei.
         </p>
 
-<pre>de>def find_support_vectors(svmreg, X, y):
+<pre><code>def find_support_vectors(svmreg, X, y):
     ypred = svmreg.predict(X)
     off_margin = np.abs(y - ypred) &gt; svmreg.epsilon
     return np.argwhere(off_margin)
@@ -73,7 +73,7 @@ svmreg2.support_ = find_support_vectors(svmreg2, X, y)</code></pre>
           Ein Pfeil im Graphen markiert die Distanz \(\varepsilon\) explizit [web:85][web:96].
         </p>
 
-<pre>de>def plotsvm_regression(svmreg, X, y, axes=None):
+<pre><code>def plotsvm_regression(svmreg, X, y, axes=None):
     x1s = np.linspace(axes[0], axes[1], 100).reshape(100, 1)
     ypred = svmreg.predict(x1s)
     plt.plot(x1s, ypred, 'k-', linewidth=2, label=r'$\hat{y}$')
@@ -89,7 +89,7 @@ svmreg2.support_ = find_support_vectors(svmreg2, X, y)</code></pre>
           Für kleine \(\varepsilon\) werden mehr Punkte als Support Vectors markiert, für größere \(\varepsilon\) entsprechend weniger.
         </p>
 
-<pre>de>fig, axes = plt.subplots(ncols=2, figsize=(9, 4), sharey=True)
+<pre><code>fig, axes = plt.subplots(ncols=2, figsize=(9, 4), sharey=True)
 plt.sca(axes[0])
 plotsvm_regression(svmreg1, X, y, axes=[0, 2, 3, 11])
 plt.title(r'$\varepsilon = {:.1f}$'.format(svmreg1.epsilon), fontsize=18)
@@ -119,7 +119,7 @@ plt.show()</code></pre>
           Der Grad und der Regularisierungsparameter \(C\) beeinflussen die Form der Regression [web:89][web:96].
         </p>
 
-<pre>de>from sklearn.svm import SVR
+<pre><code>from sklearn.svm import SVR
 
 
 # Daten erzeugen
@@ -158,7 +158,7 @@ plt.show()</code></pre>
           Auch hier steuern \(C\) und \(\varepsilon\) die Flexibilität der Regression [web:85][web:96][web:98].
         </p>
 
-<pre>de># RBF Kernel
+<pre><code># RBF Kernel
 svmreg1 = SVR(kernel='rbf', C=100, epsilon=0.1)
 svmreg2 = SVR(kernel='rbf', C=0.01, epsilon=0.1)
 
