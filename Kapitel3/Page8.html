@@ -1,1 +1,280 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page8 – Formelsammlung & Code</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
 
+  <site-header active="page8" title="PRM – SVM Formelsammlung & Code"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page8"></site-sidebar>
+
+    <main class="content">
+
+      <section id="formelsammlung">
+        <h2>Formelsammlung</h2>
+        <p>
+          Diese Seite fasst die wichtigsten <span style="color:#6f42c1;"><strong>SVM-Formeln</strong></span>,
+          <span style="color:#0d6efd;"><strong>Hyperparameter</strong></span> und
+          <span style="color:#198754;"><strong>Code-Snippets</strong></span> kompakt zusammen [file:23][file:19].
+        </p>
+      </section>
+
+      <section id="hyperebene-bias">
+        <h2>Hyperebene & Bias</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Symbol / Formel</th>
+              <th>Bedeutung</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>\(\langle \mathbf{w}, \mathbf{x}_i \rangle + b = 0\)</td>
+              <td>Datenpunkt auf der <span style="color:#d63384;"><strong>Hyperebene</strong></span> [file:23]</td>
+            </tr>
+            <tr>
+              <td>\(\mathbf{w}\)</td>
+              <td><span style="color:#198754;"><strong>Normalenvektor</strong></span> der Hyperebene [file:23]</td>
+            </tr>
+            <tr>
+              <td>\(b\)</td>
+              <td><span style="color:#fd7e14;"><strong>Bias</strong></span> (Abstand vom Ursprung) [file:23]</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="trennungsbedingung">
+        <h2>Trennungsbedingung</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Formel</th>
+              <th>Beschreibung</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>\(y_i = \operatorname{sgn}(\langle \mathbf{w}, \mathbf{x}_i \rangle + b)\)</td>
+              <td><span style="color:#198754;"><strong>Modell-Vorhersage</strong></span> [file:23]</td>
+            </tr>
+            <tr>
+              <td>\(y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \geq 0\)</td>
+              <td><span style="color:#0d6efd;"><strong>Korrekte Trennung</strong></span> [file:23]</td>
+            </tr>
+            <tr>
+              <td>\(y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \geq 1\)</td>
+              <td><span style="color:#d63384;"><strong>Margin-Bedingung</strong></span> (skaliert) [file:23]</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="margin-optimierung">
+        <h2>Margin & Optimierung</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Formel</th>
+              <th>Beschreibung</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>\(r = \frac{1}{\|\mathbf{w}\|}\)</td>
+              <td><span style="color:#d63384;"><strong>Margin-Radius</strong></span> [file:23]</td>
+            </tr>
+            <tr>
+              <td>\(\min \frac{1}{2}\|\mathbf{w}\|^2\)</td>
+              <td><span style="color:#dc3545;"><strong>Minimierungsproblem</strong></span> [file:23]</td>
+            </tr>
+            <tr>
+              <td>\(\langle \mathbf{w}, \mathbf{x}_a \rangle + b = 1\)</td>
+              <td>Skalierung auf <span style="color:#198754;"><strong>Support Vector</strong></span> [file:23]</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="slack-hinge">
+        <h2>Slack Variable & Hinge Loss</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Formel</th>
+              <th>Beschreibung</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>\(\min \frac{1}{2}\|\mathbf{w}\|^2 + C \sum_i \xi_i\)</td>
+              <td><span style="color:#6f42c1;"><strong>Slack-Variable-Optimierung</strong></span> [file:23]</td>
+            </tr>
+            <tr>
+              <td>\(y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \geq 1 - \xi_i\)</td>
+              <td>Slack-Bedingung mit \(\xi_i \geq 0\) [file:23]</td>
+            </tr>
+            <tr>
+              <td>\(L(t)=\max\{0,1-t\},\; t=y(\langle \mathbf{w}, \mathbf{x} \rangle + b)\)</td>
+              <td><span style="color:#dc3545;"><strong>Hinge Loss</strong></span> [file:23]</td>
+            </tr>
+            <tr>
+              <td>\(\min \frac{1}{2}\|\mathbf{w}\|^2 + C \sum_i \max\{0,1-y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b)\}\)</td>
+              <td>Finale <span style="color:#0d6efd;"><strong>SVC-Kostenfunktion</strong></span> [file:23][file:12]</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="svr-formel">
+        <h2>SVR (Support Vector Regression)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Formel</th>
+              <th>Beschreibung</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>\(\min \frac{1}{2}\|\mathbf{w}\|^2 + C \sum_i \max\{0,\|\;y_i-(\langle \mathbf{w}, \mathbf{x}_i \rangle + b)\;\|-\varepsilon\}\)</td>
+              <td><span style="color:#198754;"><strong>SVR-Kostenfunktion</strong></span> [file:23]</td>
+            </tr>
+            <tr>
+              <td><code>SVR(kernel='rbf', C=..., epsilon=...)</code></td>
+              <td><span style="color:#fd7e14;"><strong>sklearn-Instanziierung</strong></span> [file:23][file:19]</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="multi-class-ovo">
+        <h2>Multi-Class (One-vs-One)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Formel</th>
+              <th>Beschreibung</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>\(\frac{N(N-1)}{2}\)</td>
+              <td>Anzahl der <span style="color:#6f42c1;"><strong>SVMs</strong></span> bei \(N\) Klassen [file:23]</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="hyperparameter">
+        <h2>Hyperparameter-Übersicht</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Wofür?</th>
+              <th>Groß = ?</th>
+              <th>Klein = ?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>C</code></td>
+              <td>Regularisierung, Trade-off zwischen <span style="color:#d63384;"><strong>Margin</strong></span> und Fehler [file:23]</td>
+              <td><span style="color:#dc3545;"><strong>Hard Margin</strong></span>, wenig Fehler erlaubt [file:23]</td>
+              <td><span style="color:#0d6efd;"><strong>Soft Margin</strong></span>, mehr Fehler erlaubt [file:23]</td>
+            </tr>
+            <tr>
+              <td><code>kernel</code></td>
+              <td>Wahl des <span style="color:#6f42c1;"><strong>Kernels</strong></span> [file:23]</td>
+              <td><code>'linear'</code>, <code>'rbf'</code>, <code>'poly'</code> [file:23][file:19]</td>
+              <td>–</td>
+            </tr>
+            <tr>
+              <td><code>gamma</code></td>
+              <td>(RBF) Wie stark ein Punkt auf andere wirkt [file:23]</td>
+              <td>Enger Radius, eher <span style="color:#dc3545;"><strong>lokal</strong></span></td>
+              <td>Weiter Radius, eher <span style="color:#198754;"><strong>global</strong></span></td>
+            </tr>
+            <tr>
+              <td><code>epsilon</code> (\(\varepsilon\))</td>
+              <td>(SVR) Breite des Margin-Rohrs [file:23][file:19]</td>
+              <td>Breites Rohr, weniger Support Vectors [file:19]</td>
+              <td>Enges Rohr, mehr Support Vectors [file:19]</td>
+            </tr>
+            <tr>
+              <td><code>degree</code></td>
+              <td>(Polynomial) Grad des Polynoms [file:19]</td>
+              <td>Komplexere Entscheidungsgrenze [file:19]</td>
+              <td>Einfachere Grenze [file:19]</td>
+            </tr>
+            <tr>
+              <td><code>lr</code> (\(\eta\))</td>
+              <td>Lernrate bei <span style="color:#0d6efd;"><strong>Gradientenabstieg</strong></span> [file:23][file:12]</td>
+              <td>Schnelle, aber instabile Updates [file:12]</td>
+              <td>Langsame, stabile Updates [file:12]</td>
+            </tr>
+            <tr>
+              <td><code>epochs</code></td>
+              <td>Anzahl der Trainingsiterationen [file:12]</td>
+              <td>Längeres Training [file:12]</td>
+              <td>Schnelleres Training [file:12]</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="code-snippets">
+        <h2>Code-Snippets Schnellzugriff</h2>
+      </section>
+
+      <section id="svc-trainieren">
+        <h2>SVC instanziieren und trainieren</h2>
+        <pre><code>from sklearn.svm import SVC
+model = SVC(kernel='rbf', C=1.0)  # oder 'linear', 'poly'
+model.fit(X_train, y_train)
+predicted = model.predict(X_test)</code></pre>
+      </section>
+
+      <section id="svr-trainieren">
+        <h2>SVR instanziieren und trainieren</h2>
+        <pre><code>from sklearn.svm import SVR, LinearSVR
+model = SVR(kernel='rbf', C=100, epsilon=0.1, gamma='scale')
+model.fit(X_train, y_train)
+predicted = model.predict(X_test)</code></pre>
+      </section>
+
+      <section id="support-vectors-abrufen">
+        <h2>Multi-Class: Support Vectors abrufen</h2>
+        <pre><code>model.support_vectors_</code></pre>
+      </section>
+
+      <section id="gridsearch-tuning">
+        <h2>GridSearchCV für Hyperparameter-Tuning</h2>
+        <pre><code>from sklearn.model_selection import GridSearchCV
+param_grid = {'C': [0.1, 1, 10], 'gamma': [0.001, 0.01, 0.1]}
+clf = GridSearchCV(SVC(kernel='rbf'), param_grid, n_jobs=-1)
+clf.fit(X_train, y_train)</code></pre>
+      </section>
+
+      <section id="bild-klassifizieren">
+        <h2>Eigenes Bild klassifizieren (Digits)</h2>
+        <pre><code>from PIL import Image
+img = Image.open(img_path).convert('L').resize((8, 8))
+img_array = np.asarray(img) / 255. * -1 + 1
+model.predict(img_array.reshape(1, -1))</code></pre>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>
