@@ -1,1 +1,151 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – Hard vs. Soft Margin</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  /style.css">
+</head>
+<body>
 
+  <site-header active="page3" title="PRM – Hard vs. Soft Margin"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page3"></site-sidebar>
+
+    <main class="content">
+
+      <section id="hard-soft-margin">
+        <h2>Hard Margin vs. Soft Margin</h2>
+        <p>
+          Bei SVMs kann man den Margin entweder <span style="color:#d63384;"><strong>hart</strong></span> (hard) oder <span style="color:#0d6efd;"><strong>weich</strong></span> (soft) definieren.
+        </p>
+        <p>
+          Die Leitfrage lautet: Dürfen Datenpunkte <strong>innerhalb des Margins</strong> liegen – und wenn ja, in welchem Ausmaß?
+        </p>
+        <p>
+          Der zugehörige Hyperparameter ist in de>sklearn</code> das Argument <span style="color:#198754;"><strong>C</strong></span>. Der optimale Wert hängt vom Datensatz ab und wird typischerweise per <strong>Cross-Validation</strong> bestimmt [web:32][web:38].
+        </p>
+      </section>
+
+      <section id="c-interpretation">
+        <h2>Interpretation des Parameters C</h2>
+        <u
+        <ul>
+          ><span style="color:#198754;"><strong>Große Werte von C</strong></span> entsprechen einem strengen, fast hard-margin-artigen Modell.</l/li>
+          ><span style="color:#0d6efd;"><strong>Kleine Werte von C</strong></span> erlauben mehr Verletzungen des Margins und machen das Modell weicher.</l/li>
+          ><span style="color:#fd7e14;"><strong>C</strong></span> ist also ein Regularisierungsparameter, der den Trade-off zwischen Margin-Größe und Fehlertoleranz steuert [web:32][web:38].</li>
+        </ul>
+      </section>
+
+      <section id="slack-variable">
+        <h2>Slack Variable</h2>
+        <p>
+          In der Mathematik wird die Toleranz über die <span style="color:#6f42c1;"><strong>Slack-Variable</strong></span> \(\xi_i\) formuliert.
+        </p>
+
+        <div class="math-display">
+          \[
+          \min_{\mathbf{w}, b, \xi} \frac{1}{2}\|\mathbf{w}\|^2 + C \sum_i \xi_i
+          \]
+        </div>
+
+        <p>mit den Bedingungen:</p>
+
+        <div class="math-display">
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \geq 1 - \xi_i
+          \]
+          \[
+          \xi_i \geq 0
+          \]
+        </div>
+
+        <p>
+          Damit werden Margin-Verletzungen zugelassen, aber mit einer Strafe belegt [web:24][web:26][web:30].
+        </p>
+      </section>
+
+      <section id="regularisierung">
+        <h2>Regularisierung und Trade-off</h2>
+        <p>
+          Der Parameter <span style="color:#198754;"><strong>C</strong></span> stellt einen <strong>Trade-off</strong> zwischen „großem Margin“ und „Verletzung des Margins“ her.
+        </p>
+        <p>
+          Genau deshalb nennt man diesen Term auch <span style="color:#d63384;"><strong>Regularisierung</strong></span>: Margin-Maximierung ist eine Form von Regularisierung [web:30][web:35].
+        </p>
+      </section>
+
+      <section id="loss-function">
+        <h2>Warum nicht Accuracy?</h2>
+        <p>
+          Eine naheliegende Loss Function wäre die <strong>Accuracy</strong>, also die Übereinstimmung von Vorhersagen und Labels.
+        </p>
+        <p>
+          Diese ist hier jedoch ungeeignet, weil es sich um ein <span style="color:#dc3545;"><strong>kombinatorisches Optimierungsproblem</strong></span> handelt.
+          Deshalb braucht man eine <strong>kontinuierliche</strong> Loss Function.
+        </p>
+      </section>
+
+      <section id="hinge-loss">
+        <h2>Hinge Loss</h2>
+        <p>
+          Eine passende Verlustfunktion ist die <span style="color:#198754;"><strong>Hinge Loss</strong></span>.
+        </p>
+
+        <div class="math-display">
+          \[
+          L(t)=\max\{0,1-t\}
+          \]
+        </div>
+
+        <div class="math-display">
+          \[
+          t=y f(\mathbf{x})=y(\langle \mathbf{w}, \mathbf{x} \rangle + b)
+          \]
+        </div>
+
+        <p>
+          Sie bestraft Punkte, die innerhalb des Margins liegen oder falsch klassifiziert sind [web:26][web:28][web:35].
+        </p>
+      </section>
+
+      <section id="optimierungsproblem">
+        <h2>Endgültiges Optimierungsproblem</h2>
+        <p>Damit ergibt sich das letztlich optimierbare Problem zu:</p>
+
+        <div class="math-display">
+          \[
+          \min_{\mathbf{w}, b} \frac{1}{2}\|\mathbf{w}\|^2 + C \sum_i \max\{0, 1 - y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b)\}
+          \]
+        </div>
+
+        <p>
+          Das ist die Soft-Margin-Formulierung der SVM [web:24][web:30][web:35].
+        </p>
+      </section>
+
+      <section id="beispiel">
+        <h2>Beispiel: Hard und Soft Margin</h2>
+        <p>
+          Im Beispiel sieht man denselben Datensatz mit zwei verschiedenen Werten für <span style="color:#198754;"><strong>C</strong></span>:
+          einmal <span style="color:#d63384;"><strong>C = 10.0</strong></span> und einmal <span style="color:#0d6efd;"><strong>C = 0.1</strong></span>.
+        </p>
+        <p>
+          Der große C-Wert führt zu einer strengeren Trennung, der kleine C-Wert zu mehr Toleranz gegenüber Margin-Verletzungen [web:32].
+        </p>
+
+        <div class="math-display">
+          \[
+          X, y = \texttt{make\_blobs}(n\_samples=100, centers=2, random\_state=0, cluster\_std=0.8)
+          \]
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>
