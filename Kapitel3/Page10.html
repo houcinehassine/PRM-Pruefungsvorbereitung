@@ -16,25 +16,26 @@
     <site-sidebar active="page10"></site-sidebar>
 
     <main class="content">
-
-      <section id="code-snippets">
-        <h2>Code-Snippets Schnellzugriff</h2>
-      </section>
+        <h1>Code-Snippets Schnellzugriff</h1>
 
       <section id="svc-trainieren">
         <h2>SVC instanziieren und trainieren</h2>
-        <pre><code>from sklearn.svm import SVC
-model = SVC(kernel='rbf', C=1.0)  # oder 'linear', 'poly'
-model.fit(X_train, y_train)
-predicted = model.predict(X_test)</code></pre>
+<pre><code>
+  from sklearn.svm import SVC
+  model = SVC(kernel='rbf', C=1.0)  # oder 'linear', 'poly'
+  model.fit(X_train, y_train)
+  predicted = model.predict(X_test)
+</code></pre>
       </section>
 
       <section id="svr-trainieren">
         <h2>SVR instanziieren und trainieren</h2>
-        <pre><code>from sklearn.svm import SVR, LinearSVR
-model = SVR(kernel='rbf', C=100, epsilon=0.1, gamma='scale')
-model.fit(X_train, y_train)
-predicted = model.predict(X_test)</code></pre>
+<pre><code>
+  from sklearn.svm import SVR, LinearSVR
+  model = SVR(kernel='rbf', C=100, epsilon=0.1, gamma='scale')
+  model.fit(X_train, y_train)
+  predicted = model.predict(X_test)
+</code></pre>
       </section>
 
       <section id="support-vectors-abrufen">

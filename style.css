@@ -272,6 +272,13 @@ site-sidebar {
 
 .toc-page:first-child { margin-top: 0; }
 
+.toc-sub {
+  margin-left: 20px;
+}
+
+.toc-sub a {
+  display: inline-block;
+}
 /* ═══════════════════════════════════════════════════════
    TABELLEN
    ═══════════════════════════════════════════════════════ */
