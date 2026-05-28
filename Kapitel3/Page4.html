@@ -16,7 +16,38 @@
     <site-sidebar active="page4"></site-sidebar>
 
     <main class="content">
-        <h1>4. Implementierung from Scratch</h1>
+        <h1>Implementierung from Scratch</h1>
+
+      <section id="einordnung">
+        <h2>Einordnung</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Teil</th>
+              <th>Bedeutung</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span style="color:#dc3545;"><strong>Loss Function</strong></span></td>
+              <td>Bewertet, wie gut die aktuelle Hyperebene ist [web:35][web:41].</td>
+            </tr>
+            <tr>
+              <td><span style="color:#198754;"><strong>Gradienten</strong></span></td>
+              <td>Geben die Richtung an, in der die Parameter verbessert werden [web:33][web:41].</td>
+            </tr>
+            <tr>
+              <td><span style="color:#0d6efd;"><strong>Gradientenabstieg</strong></span></td>
+              <td>Aktualisiert \(\mathbf{w}\) und \(b\) iterativ bis zu einer guten Lösung [web:41].</td>
+            </tr>
+            <tr>
+              <td><span style="color:#d63384;"><strong>Visualisierung</strong></span></td>
+              <td>Zeigt die resultierende lineare Trennfläche direkt im Merkmalsraum.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      
       <section id="loss-function">
         <h2>4.1 Loss Function</h2>
         <p>
@@ -187,35 +218,7 @@ plt.scatter(X[:, 0], X[:, 1], c=y)</code></pre>
         </p>
       </section>
 
-      <section id="einordnung">
-        <h2>Einordnung</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Teil</th>
-              <th>Bedeutung</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span style="color:#dc3545;"><strong>Loss Function</strong></span></td>
-              <td>Bewertet, wie gut die aktuelle Hyperebene ist [web:35][web:41].</td>
-            </tr>
-            <tr>
-              <td><span style="color:#198754;"><strong>Gradienten</strong></span></td>
-              <td>Geben die Richtung an, in der die Parameter verbessert werden [web:33][web:41].</td>
-            </tr>
-            <tr>
-              <td><span style="color:#0d6efd;"><strong>Gradientenabstieg</strong></span></td>
-              <td>Aktualisiert \(\mathbf{w}\) und \(b\) iterativ bis zu einer guten Lösung [web:41].</td>
-            </tr>
-            <tr>
-              <td><span style="color:#d63384;"><strong>Visualisierung</strong></span></td>
-              <td>Zeigt die resultierende lineare Trennfläche direkt im Merkmalsraum.</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
+
 
     </main>
   </div>
