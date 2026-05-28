@@ -216,7 +216,7 @@ site-sidebar {
 
 .sidebar {
   position: sticky;
-  top: 110px;  /* ← war 84px, jetzt höher wegen Kapitel-Navbar */
+  top: 70px;  /* ← war 84px, jetzt höher wegen Kapitel-Navbar */
   max-height: calc(100vh - 130px);
   overflow-y: auto;
   padding: 1rem;
