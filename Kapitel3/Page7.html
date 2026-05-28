@@ -203,83 +203,83 @@ plt.show()</code></pre>
         </table>
       </section>
 
-  <section id="vor-nachteile-allgemein">
-  <h2>Vor- und Nachteile von <span style="color:#6f42c1;"><strong>SVMs</strong></span></h2>
-  <p>
-    Support Vector Machines besitzen einige klare <span style="color:#198754;"><strong>Stärken</strong></span>,
-    aber auch wichtige <span style="color:#dc3545;"><strong>Grenzen</strong></span>, die man bei der Modellwahl beachten sollte.
-  </p>
-</section>
-
-<section id="pros">
-  <h3><span style="color:#198754;"><strong>Pros</strong></span></h3>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Vorteil</th>
-        <th>Erklärung</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span style="color:#0d6efd;"><strong>Höherdimensionale Datensätze</strong></span></td>
-        <td>SVMs sind sehr effektiv bei hochdimensionalen Daten [file:23].</td>
-      </tr>
-      <tr>
-        <td><span style="color:#d63384;"><strong>Dimensionen &gt; Datenpunkte</strong></span></td>
-        <td>Sie helfen besonders in Fällen, in denen die Anzahl der Dimensionen größer ist als die Anzahl der Datenpunkte [file:23].</td>
-      </tr>
-      <tr>
-        <td><span style="color:#198754;"><strong>Komputativ effizient</strong></span></td>
-        <td>Besonders bei kleinen bis mittleren Datensätzen gelten SVMs als effizient [file:23].</td>
-      </tr>
-      <tr>
-        <td><span style="color:#fd7e14;"><strong>Geometrische Interpretation</strong></span></td>
-        <td>SVMs lassen sich pädagogisch gut über <strong>Hyperebene</strong>, <strong>Margin</strong> und <strong>Support Vectors</strong> erklären [file:23].</td>
-      </tr>
-    </tbody>
-  </table>
-</section>
-
-<section id="cons">
-  <h3><span style="color:#dc3545;"><strong>Cons</strong></span></h3>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Nachteil</th>
-        <th>Erklärung</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span style="color:#dc3545;"><strong>Sehr große Datensätze</strong></span></td>
-        <td>Bei sehr vielen Datenpunkten bekommen SVMs Probleme, insbesondere weil die <strong>Kernel-Matrix</strong> zu groß werden kann [file:23].</td>
-      </tr>
-      <tr>
-        <td><span style="color:#fd7e14;"><strong>Stark überlappende Klassen</strong></span></td>
-        <td>Viel <strong>Rauschen</strong> und starke Überlappung führen zu einer schlechteren Trennung der Klassen [file:23].</td>
-      </tr>
-      <tr>
-        <td><span style="color:#6f42c1;"><strong>Probabilistische Interpretation</strong></span></td>
-        <td>Eine direkte Wahrscheinlichkeitsausgabe ist bei SVMs nicht vorgesehen [file:23].</td>
-      </tr>
-    </tbody>
-  </table>
-</section>
-
-<section id="kurzfassung">
-  <h3>Kurze Zusammenfassung</h3>
-  <blockquote>
-    <span style="color:#6f42c1;"><strong>SVMs</strong></span>:
-    gut bei <span style="color:#198754;"><strong>kleiner Datenmenge</strong></span> und
-    <span style="color:#0d6efd;"><strong>hoher Dimension</strong></span>,
-    schwächer bei <span style="color:#dc3545;"><strong>großen Datensätzen</strong></span>
-    und viel <span style="color:#fd7e14;"><strong>Rauschen</strong></span>.
-    Keine probabilistische Ausgabe, aber gute geometrische Interpretierbarkeit [file:23].
-  </blockquote>
-</section>
+      <section id="vor-nachteile-allgemein">
+      <h2>Vor- und Nachteile von <span style="color:#6f42c1;"><strong>SVMs</strong></span></h2>
+      <p>
+        Support Vector Machines besitzen einige klare <span style="color:#198754;"><strong>Stärken</strong></span>,
+        aber auch wichtige <span style="color:#dc3545;"><strong>Grenzen</strong></span>, die man bei der Modellwahl beachten sollte.
+      </p>
+    </section>
+    
+    <section id="pros">
+      <h3><span style="color:#198754;"><strong>Pros</strong></span></h3>
+    
+      <table>
+        <thead>
+          <tr>
+            <th>Vorteil</th>
+            <th>Erklärung</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="color:#0d6efd;"><strong>Höherdimensionale Datensätze</strong></span></td>
+            <td>SVMs sind sehr effektiv bei hochdimensionalen Daten [file:23].</td>
+          </tr>
+          <tr>
+            <td><span style="color:#d63384;"><strong>Dimensionen &gt; Datenpunkte</strong></span></td>
+            <td>Sie helfen besonders in Fällen, in denen die Anzahl der Dimensionen größer ist als die Anzahl der Datenpunkte [file:23].</td>
+          </tr>
+          <tr>
+            <td><span style="color:#198754;"><strong>Komputativ effizient</strong></span></td>
+            <td>Besonders bei kleinen bis mittleren Datensätzen gelten SVMs als effizient [file:23].</td>
+          </tr>
+          <tr>
+            <td><span style="color:#fd7e14;"><strong>Geometrische Interpretation</strong></span></td>
+            <td>SVMs lassen sich pädagogisch gut über <strong>Hyperebene</strong>, <strong>Margin</strong> und <strong>Support Vectors</strong> erklären [file:23].</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    
+    <section id="cons">
+      <h3><span style="color:#dc3545;"><strong>Cons</strong></span></h3>
+    
+      <table>
+        <thead>
+          <tr>
+            <th>Nachteil</th>
+            <th>Erklärung</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="color:#dc3545;"><strong>Sehr große Datensätze</strong></span></td>
+            <td>Bei sehr vielen Datenpunkten bekommen SVMs Probleme, insbesondere weil die <strong>Kernel-Matrix</strong> zu groß werden kann [file:23].</td>
+          </tr>
+          <tr>
+            <td><span style="color:#fd7e14;"><strong>Stark überlappende Klassen</strong></span></td>
+            <td>Viel <strong>Rauschen</strong> und starke Überlappung führen zu einer schlechteren Trennung der Klassen [file:23].</td>
+          </tr>
+          <tr>
+            <td><span style="color:#6f42c1;"><strong>Probabilistische Interpretation</strong></span></td>
+            <td>Eine direkte Wahrscheinlichkeitsausgabe ist bei SVMs nicht vorgesehen [file:23].</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    
+    <section id="kurzfassung">
+      <h3>Kurze Zusammenfassung</h3>
+      <blockquote>
+        <span style="color:#6f42c1;"><strong>SVMs</strong></span>:
+        gut bei <span style="color:#198754;"><strong>kleiner Datenmenge</strong></span> und
+        <span style="color:#0d6efd;"><strong>hoher Dimension</strong></span>,
+        schwächer bei <span style="color:#dc3545;"><strong>großen Datensätzen</strong></span>
+        und viel <span style="color:#fd7e14;"><strong>Rauschen</strong></span>.
+        Keine probabilistische Ausgabe, aber gute geometrische Interpretierbarkeit [file:23].
+      </blockquote>
+    </section>
       
     </main>
   </div>
