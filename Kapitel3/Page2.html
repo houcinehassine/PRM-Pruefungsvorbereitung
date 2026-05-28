@@ -1,1 +1,207 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – SVM Mathematische Herleitung</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
 
+  <site-header active="page2" title="PRM – SVM Mathematische Herleitung"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page2"></site-sidebar>
+
+    <main class="content">
+
+      <!-- ═══════════════════════════════ -->
+      <section id="datensatz">
+        <h2>Mathematische Herleitung</h2>
+        <p>
+          Uns liegt ein historischer bzw. <span style="color:#0d6efd;"><strong>Trainingsdatensatz</strong></span> vor:
+        </p>
+
+        <div class="math-display">
+          \[
+          \{(\mathbf{x}_i, y_i)\mid i=1,\ldots,N,\; y_i \in \{-1,1\}\}
+          \]
+        </div>
+
+        <p>
+          Anhand dieses Datensatzes wird unsere <span style="color:#d63384;"><strong>Hyperebene</strong></span> gelernt.
+        </p>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="hyperebene">
+        <h2>Beschreibung der Hyperebene</h2>
+        <ul>
+          <li>Die Hyperebene wird beschrieben durch den <span style="color:#198754;"><strong>Normalenvektor</strong></span> \(\mathbf{w}\).</li>
+          <li>Zusätzlich benötigen wir den <span style="color:#fd7e14;"><strong>Bias</strong></span> \(b\), also den Abstand vom Ursprung.</li>
+          <li>Mit \(\mathbf{w}\) und \(b\) ist die Hyperebene eindeutig im Raum definiert.</li>
+        </ul>
+
+        <p>Für Datenpunkte auf der Hyperebene gilt:</p>
+
+        <div class="math-display">
+          \[
+          \langle \mathbf{w}, \mathbf{x}_i \rangle + b = 0
+          \]
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="vorzeichen">
+        <h2>Vorzeichen der Punkte</h2>
+        <ul>
+          <li>Für Punkte, die nicht auf der Hyperebene liegen, ist der Ausdruck \(\langle \mathbf{w}, \mathbf{x}_i \rangle + b\) nicht gleich 0.</li>
+          <li>Er ist <strong>positiv</strong>, wenn der Punkt in Richtung von \(\mathbf{w}\) liegt.</li>
+          <li>Er ist <strong>negativ</strong>, wenn der Punkt entgegengesetzt zu \(\mathbf{w}\) liegt.</li>
+          <li>Wenn eine Hyperebene beide Klassen trennt, haben die Punkte einer Klasse ein gemeinsames Vorzeichen.</li>
+        </ul>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="modellgleichung">
+        <h2>Klassifikationsregel</h2>
+        <p>
+          Für unsere Klassen ergibt sich damit das Modell:
+        </p>
+
+        <div class="math-display">
+          \[
+          y_i = \operatorname{sgn}(\langle \mathbf{w}, \mathbf{x}_i \rangle + b)
+          \]
+        </div>
+
+        <p>
+          Daraus folgt als Trennbedingung:
+        </p>
+
+        <div class="math-display">
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \geq 0
+          \]
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="margin">
+        <h2>Margin und Abstand</h2>
+        <ul>
+          <li>Aus den unendlich vielen möglichen Hyperebenen wählt die SVM diejenige mit dem <span style="color:#d63384;"><strong>größten Margin</strong></span>.</li>
+          <li>Der Margin wird über den Abstand der nächstliegenden Punkte beider Klassen zur Hyperebene definiert.</li>
+          <li>Diesen Abstand bezeichnen wir mit \(r\).</li>
+        </ul>
+
+        <p>Damit lautet die neue Bedingung:</p>
+
+        <div class="math-display">
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \geq r
+          \]
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="optimierung1">
+        <h2>Erstes Optimierungsproblem</h2>
+        <p>Nun können wir das Optimierungsproblem formulieren:</p>
+
+        <div class="math-display">
+          \[
+          \max_{\mathbf{w}, b} \; r
+          \]
+        </div>
+
+        <p>unter den Bedingungen:</p>
+
+        <div class="math-display">
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \geq r
+          \]
+          \[
+          \|\mathbf{w}\| = 1
+          \]
+          \[
+          r > 0
+          \]
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="skalierung">
+        <h2>Normalenvektor nicht normalisiert</h2>
+        <ul>
+          <li>Nun sei der <strong>Normalenvektor</strong> \(\mathbf{w}\) nicht mehr normiert.</li>
+          <li>Damit das Optimierungsproblem berechenbar wird, führen wir eine <span style="color:#0d6efd;"><strong>Skalierung</strong></span> ein.</li>
+          <li>Dabei setzen wir für den nächstgelegenen Punkt \(\mathbf{x}_a\) zur Hyperebene:</li>
+        </ul>
+
+        <div class="math-display">
+          \[
+          \langle \mathbf{w}, \mathbf{x}_a \rangle + b = 1
+          \]
+        </div>
+
+        <p>
+          Hierbei ist \(\mathbf{x}_a\) ein <span style="color:#198754;"><strong>Support Vector</strong></span>.
+        </p>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="umformung">
+        <h2>Umformung des Margins</h2>
+        <p>Mit dem zuvor definierten Abstand kann gezeigt werden, dass:</p>
+
+        <div class="math-display">
+          \[
+          r = \frac{1}{\|\mathbf{w}\|}
+          \]
+        </div>
+
+        <p>Damit wird die Bedingung zu:</p>
+
+        <div class="math-display">
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \geq 1
+          \]
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ -->
+      <section id="optimierung2">
+        <h2>Endgültiges Optimierungsproblem</h2>
+        <p>Damit reduziert sich das Problem auf:</p>
+
+        <div class="math-display">
+          \[
+          \max_{\mathbf{w}, b} \frac{1}{\|\mathbf{w}\|}
+          \]
+        </div>
+
+        <p>bzw. äquivalent auf:</p>
+
+        <div class="math-display">
+          \[
+          \min_{\mathbf{w}, b} \frac{1}{2}\|\mathbf{w}\|^2
+          \]
+        </div>
+
+        <p>unter der Bedingung:</p>
+
+        <div class="math-display">
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \geq 1
+          \]
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>
