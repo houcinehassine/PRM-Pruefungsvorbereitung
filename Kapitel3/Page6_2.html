@@ -16,6 +16,7 @@
     <site-sidebar active="page6_2"></site-sidebar>
 
     <main class="content">
+        <h1>7.2 Praxisanwendung - fault-classification</h1>
 
       <!-- 6.2 Fault Classification -->
       <section id="fault-classification">
@@ -33,7 +34,8 @@
           Danach werden die einzelnen Signale in ein gemeinsames Zeitreihen-Array zusammengeführt.
         </p>
 
-<pre><code>from scipy.io import loadmat
+    <pre><code>
+from scipy.io import loadmat
 import os
 from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV
@@ -66,7 +68,9 @@ for i, filepath in enumerate(files):
           Die Zeitreihen werden in 100 Teilstücke zerlegt, damit später pro Fenster Features berechnet werden können.
         </p>
 
-<pre><code>split_array = np.array_split(timeseries_array, 100)</code></pre>
+<pre><code>
+  split_array = np.array_split(timeseries_array, 100)
+</code></pre>
       </section>
 
       <section id="features">

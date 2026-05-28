@@ -10,12 +10,43 @@
 </head>
 <body>
 
-  <site-header active="page5" title="PRM – Nicht-lineare Probleme & Kernel-Trick"></site-header>
+  <site-header active="page5" title="SVM – Nicht-lineare Probleme & Kernel-Trick"></site-header>
 
   <div class="layout">
     <site-sidebar active="page5"></site-sidebar>
 
     <main class="content">
+        <h1>5. Nicht-lineare Probleme & Kernel-Trick</h1>
+
+      <section id="vergleich">
+        <h2>Einordnung</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Thema</th>
+              <th>Kernaussage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span style="color:#0d6efd;"><strong>Nicht-linear</strong></span></td>
+              <td>Eine Gerade trennt die Klassen nicht ausreichend.</td>
+            </tr>
+            <tr>
+              <td><span style="color:#198754;"><strong>RBF</strong></span></td>
+              <td>Erweitert den Merkmalsraum um eine zusätzliche Dimension.</td>
+            </tr>
+            <tr>
+              <td><span style="color:#d63384;"><strong>Kernel-Trick</strong></span></td>
+              <td>Die Projektion wird implizit berechnet, ohne den Raum explizit aufzubauen.</td>
+            </tr>
+            <tr>
+              <td><span style="color:#6f42c1;"><strong>One-vs-One</strong></span></td>
+              <td>Für jede Klassenpaarung wird ein binärer SVM-Klassifikator trainiert [web:38].</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
 
       <section id="nicht-linear">
         <h2>Nicht-lineare Probleme</h2>
@@ -155,35 +186,6 @@ plt.scatter(clf.support_vectors_[:, 0], clf.support_vectors_[:, 1],
         </p>
       </section>
 
-      <section id="vergleich">
-        <h2>Einordnung</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Thema</th>
-              <th>Kernaussage</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span style="color:#0d6efd;"><strong>Nicht-linear</strong></span></td>
-              <td>Eine Gerade trennt die Klassen nicht ausreichend.</td>
-            </tr>
-            <tr>
-              <td><span style="color:#198754;"><strong>RBF</strong></span></td>
-              <td>Erweitert den Merkmalsraum um eine zusätzliche Dimension.</td>
-            </tr>
-            <tr>
-              <td><span style="color:#d63384;"><strong>Kernel-Trick</strong></span></td>
-              <td>Die Projektion wird implizit berechnet, ohne den Raum explizit aufzubauen.</td>
-            </tr>
-            <tr>
-              <td><span style="color:#6f42c1;"><strong>One-vs-One</strong></span></td>
-              <td>Für jede Klassenpaarung wird ein binärer SVM-Klassifikator trainiert [web:38].</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
 
     </main>
   </div>
