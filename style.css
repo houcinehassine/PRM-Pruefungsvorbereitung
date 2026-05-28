@@ -42,7 +42,7 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   font-family: "Inter", Arial, sans-serif;
-  font-size: 1rem;
+  font-size: 1.25rem;
   line-height: 1.65;
   background: var(--color-bg);
   color: var(--color-text);
@@ -63,7 +63,7 @@ pre {
   padding: 1rem;
   border-radius: 0.75rem;
   overflow: auto;
-  font-size: 0.875rem;
+  font-size: 1.2rem;
   line-height: 1.5;
 }
 
@@ -74,18 +74,18 @@ h1 {
 
 h2 {
   font-family: "Source Serif 4", Georgia, serif;
-  font-size: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
-  line-height: 1.1;
+  font-size: clamp(1.7rem, 1.3rem + 2vw, 3.2rem);
+  line-height: 1.2;
   margin: 0 0 1rem;
 }
 
 h3 { font-size: 1.25rem; margin: 1.25rem 0 0.75rem; }
 
-p { margin: 0 0 1rem; max-width: 78ch; }
+p { margin: 0 0 1rem; max-width: 200ch; font-size: 1.2rem;}
 
-ul, ol { padding-left: 1.2rem; margin: 0 0 1rem; }
+ul, ol { padding-left: 1.2rem; margin: 0 0 1rem; font-size: 1.2rem;}
 
-li { margin-bottom: 0.45rem; }
+li { margin-bottom: 0.45rem; font-size: 1rem;}
 
 /* ═══════════════════════════════════════════════════════
    TOPBAR
@@ -283,12 +283,12 @@ site-sidebar {
 
 .toc-sub a {
   display: inline-block;
-    padding-left: 24px;
+    padding-left: 15px;
     position: relative;
 }
 /* ═══════════════════════════════════════════════════════
    TABELLEN
-   ═══════════════════════════════════════════════════════ */
+   ══════════════════════════════════════════════════════ */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -334,7 +334,7 @@ tr:last-child td { border-bottom: none; }
 }
 
 .content section h2 {
-  font-size: 1.3rem;
+  font-size: 1.6rem;
   font-weight: 700;
   margin-top: 0;
   margin-bottom: 1rem;

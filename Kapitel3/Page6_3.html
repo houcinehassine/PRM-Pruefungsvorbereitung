@@ -16,14 +16,15 @@
     <site-sidebar active="page6_3"></site-sidebar>
 
     <main class="content">
-        <h1>7.3 Praxisanwendung - Handschrifterkennung – Digits Dataset</h1>
+        <h1>Handschrifterkennung – Digits Dataset</h1>
 
-      <!-- 6.3 Digits -->
+      <!-- ═══════════════════════════════ -->
+      <!-- 7.3 Digits -->
       <section id="digits">
-        <h2>6.3 Handschrifterkennung – Digits Dataset</h2>
+        <h2>7.3 Handschrifterkennung – Digits Dataset</h2>
         <p>
           Das Digits-Dataset enthält 8×8-Bilder handgeschriebener Ziffern.
-          Es ist ein klassisches Multi-Class-Beispiel für SVMs [web:78][web:81].
+          Es ist ein klassisches Multi-Class-Beispiel für SVMs.
         </p>
       </section>
 
@@ -34,7 +35,8 @@
           Die Form ist typischerweise <code>(1797, 64)</code> für die Features und <code>(1797,)</code> für die Labels [web:78][web:81].
         </p>
 
-<pre><code>from sklearn.datasets import load_digits
+    <pre><code>
+from sklearn.datasets import load_digits
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
@@ -45,7 +47,8 @@ print(y.shape)  # (1797,)
 
 plt.imshow(X[15, :].reshape(8, 8), cmap=plt.cm.gray_r)
 plt.figure()
-plt.imshow(X[200, :].reshape(8, 8), cmap=plt.cm.gray_r)</code></pre>
+plt.imshow(X[200, :].reshape(8, 8), cmap=plt.cm.gray_r)
+    </code></pre>
       </section>
 
       <section id="digits-train">
@@ -55,7 +58,8 @@ plt.imshow(X[200, :].reshape(8, 8), cmap=plt.cm.gray_r)</code></pre>
           Danach kann eine einzelne Vorhersage direkt visualisiert werden [web:78][web:38].
         </p>
 
-<pre><code>X_train, X_test, y_train, y_test = train_test_split(X, y)
+    <pre><code>
+X_train, X_test, y_train, y_test = train_test_split(X, y)
 print(X_train.shape)  # (1347, 64)
 print(X_test.shape)   # (450, 64)
 
@@ -66,7 +70,8 @@ predicted = model.predict(X_test)
 
 ndigit = 440
 plt.imshow(X_test[ndigit].reshape(8, 8), cmap=plt.cm.gray_r)
-plt.title(f'Predicted: {predicted[ndigit]}')</code></pre>
+plt.title(f'Predicted: {predicted[ndigit]}')
+    </code></pre>
       </section>
 
       <section id="drive-mount">
@@ -75,9 +80,11 @@ plt.title(f'Predicted: {predicted[ndigit]}')</code></pre>
           Für eigene Bilddateien aus Google Drive wird das Laufwerk eingebunden.
         </p>
 
-<pre><code>from google.colab import drive
+    <pre><code>
+from google.colab import drive
 drive.mount('/content/drive')
-# Output: "Drive already mounted at /content/drive; to attempt to forcibly remount, call drive.mount('/content/drive', force_remount=True)"</code></pre>
+# Output: "Drive already mounted at /content/drive; to attempt to forcibly remount, call drive.mount('/content/drive', force_remount=True)"
+    </code></pre>
       </section>
 
       <section id="eigenes-bild">
@@ -86,7 +93,8 @@ drive.mount('/content/drive')
           Ein eigenes Bild wird geladen, auf 8×8 skaliert, als Graustufenbild normalisiert und anschließend vom Modell klassifiziert [web:78].
         </p>
 
-<pre><code>import numpy as np
+    <pre><code>
+import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 
@@ -98,7 +106,8 @@ plt.imshow(img_array)
 plt.colorbar()
 plt.show()
 
-model.predict(img_array.reshape(1, -1))  # array([4])</code></pre>
+model.predict(img_array.reshape(1, -1))  # array([4])
+    </code></pre>
       </section>
 
     </main>
