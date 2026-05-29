@@ -63,7 +63,7 @@ pre {
   padding: 1rem;
   border-radius: 0.75rem;
   overflow: auto;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   line-height: 1.5;
 }
 
@@ -81,15 +81,15 @@ h2 {
 
 h3 { font-size: 1.25rem; margin: 1.25rem 0 0.75rem; }
 
-p { margin: 0 0 1rem; max-width: 200ch; font-size: 1.2rem;}
+p { margin: 0 0 1rem; max-width: 200ch; font-size: 1.1rem;}
 
-ul, ol { padding-left: 1.2rem; margin: 0 0 1rem; font-size: 1.2rem;}
+ul, ol { padding-left: 1.2rem; margin: 0 0 1rem; font-size: 1.1rem;}
 
-li { margin-bottom: 0.45rem; font-size: 1rem;}
+li { margin-bottom: 0.45rem; font-size: 1.1rem;}
 
 /* ═══════════════════════════════════════════════════════
    TOPBAR
-   ═══════════════════════════════════════════════════════ */
+   ════════════════════════════════════════════════════ */
 .topbar {
   position: sticky;
   top: 0;
@@ -257,7 +257,7 @@ site-sidebar {
   padding: 0.35rem 0.55rem;
   border-radius: 0.5rem;
   color: var(--color-text-muted);
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   text-decoration: none;
   line-height: 1.4;
 }
@@ -272,7 +272,7 @@ site-sidebar {
 .toc-page a {
   font-weight: 700;
   color: var(--color-text);
-  font-size: 0.875rem;
+  font-size: 1rem;
 }
 
 .toc-page:first-child { margin-top: 0; }
@@ -314,7 +314,7 @@ th, td {
 
 th {
   background: var(--color-surface-offset);
-  font-size: 0.875rem;
+  font-size: 1.1rem;
 }
 
 tr:last-child td { border-bottom: none; }
@@ -347,12 +347,12 @@ tr:last-child td { border-bottom: none; }
   border-radius: 8px;
   padding: 1rem 1.2rem;
   overflow-x: auto;
-  font-size: 0.88rem;
+  font-size: 1.1rem;
   margin-top: 1rem;
 }
 
 .content ul {
-  padding-left: 1.2rem;
+  padding-left: 1.1rem;
   line-height: 1.9;
 }
 
