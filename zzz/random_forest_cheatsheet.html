@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Random Forest Cheatsheet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* === Grundlayout === */
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+      color: #222;
+      background-color: #f5f5f5;
+    }
+
+    /* Fixe Navbar oben */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background-color: #111827;
+      color: #f9fafb;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      z-index: 1000;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    header .title {
+      font-weight: 600;
+      margin-right: 24px;
+      white-space: nowrap;
+    }
+
+    nav {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+    }
+
+    nav a {
+      color: #e5e7eb;
+      text-decoration: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    nav a:hover {
+      background-color: #374151;
+    }
+
+    /* Platz unter Navbar einplanen */
+    main {
+      padding: 72px 16px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* Abschnitt-Layout */
+    section {
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    section h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 4px;
+      margin-bottom: 8px;
+    }
+
+    h3 {
+      font-size: 1rem;
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+
+    p {
+      margin: 4px 0;
+    }
+
+    ul {
+      margin: 4px 0 4px 18px;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 2px;
+    }
+
+    code {
+      font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.85rem;
+      background-color: #f3f4f6;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    pre {
+      background-color: #0b1020;
+      color: #e5e7eb;
+      padding: 10px 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin: 6px 0;
+    }
+
+    th, td {
+      border: 1px solid #e5e7eb;
+      padding: 4px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background-color: #f3f4f6;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background-color: #e5e7eb;
+      font-size: 0.75rem;
+      margin-right: 4px;
+    }
+
+    /* Anker-Offset für fixe Navbar */
+    .anchor {
+      position: relative;
+      top: -70px;
+      visibility: hidden;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        height: auto;
+        padding: 8px 12px;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+      }
+      main {
+        padding-top: 96px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="title">Random Forest – Cheatsheet</div>
+  <nav>
+    <a href="#trees">Trees</a>
+    <a href="#rf">Random&nbsp;Forest</a>
+    <a href="#sklearn">sklearn</a>
+    <a href="#uncertainty">Unsicherheit</a>
+    <a href="#importance">Importance</a>
+    <a href="#boosting">Boosting</a>
+    <a href="#prm">PRM-Use-Cases</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- 1. Trees -->
+  <div id="trees" class="anchor"></div>
+  <section>
+    <h2>Entscheidungsbäume</h2>
+    <span class="tag">Grundlage von Random Forest</span>
+
+    <h3>Grundidee</h3>
+    <ul>
+      <li>Daten durch geschickte Fragen im Feature-Raum trennen (If-Else-Regeln).</li>
+      <li>Knoten = Frage, Kante = Antwort, Blatt = Vorhersage (Klasse oder Wert).</li>
+    </ul>
+
+    <h3>Gini Impurity (Klassifikation)</h3>
+    <p>Für einen Knoten mit Klassenanteilen <code>p_k</code>:</p>
+    <pre>G = 1 - Σ (p_k²)</pre>
+    <ul>
+      <li>G = 0 → reine Klasse.</li>
+      <li>Je gemischter die Klassen, desto größer G.</li>
+    </ul>
+
+    <h3>Split-Qualität</h3>
+    <ul>
+      <li>Berechne Gini vor Split: <code>G_parent</code>.</li>
+      <li>Berechne gewichteten Gini der Kinder: <code>G_children</code>.</li>
+      <li>Wähle Split mit maximaler Verringerung: <code>ΔG = G_parent - G_children</code>.</li>
+    </ul>
+
+    <h3>Overfitting</h3>
+    <ul>
+      <li>Tiefe Bäume passen Rauschen im Training zu stark an.</li>
+      <li>Gegenmaßnahmen: <code>max_depth</code>, <code>min_samples_split</code>, <code>min_samples_leaf</code>.</li>
+    </ul>
+  </section>
+
+  <!-- 2. Random Forest -->
+  <div id="rf" class="anchor"></div>
+  <section>
+    <h2>Random Forest (Bagging + Feature Bagging)</h2>
+    <span class="tag">Ensemble</span><span class="tag">Varianzreduktion</span>
+
+    <h3>Idee</h3>
+    <ul>
+      <li>Viele instabile Trees werden gemittelt → robustere Vorhersage.</li>
+      <li>Bagging: Bäume auf Bootstrap-Samples trainieren (Stichproben mit Zurücklegen).</li>
+      <li>Feature Bagging: pro Split nur zufällige Teilmenge der Features betrachten.</li>
+    </ul>
+
+    <h3>Trainingsschema</h3>
+    <ol>
+      <li>Wähle Anzahl Bäume <code>B</code> (<code>n_estimators</code>).</li>
+      <li>Für jeden Baum:
+        <ul>
+          <li>Ziehe Bootstrap-Sample der Trainingsdaten.</li>
+          <li>Trainiere Decision Tree mit Feature Bagging und Gini/MSE.</li>
+        </ul>
+      </li>
+      <li>Vorhersage:
+        <ul>
+          <li>Klassifikation: Mehrheitsvotum der Bäume.</li>
+          <li>Regression: Mittelwert der Baum-Vorhersagen.</li>
+        </ul>
+      </li>
+    </ol>
+
+    <h3>Out-of-Bag (OOB) Error</h3>
+    <ul>
+      <li>OOB-Daten: Samples, die für einen Baum nicht gezogen wurden.</li>
+      <li>Jeder Punkt ist OOB für ~1/3 der Bäume → kostenlose Validierung.</li>
+    </ul>
+  </section>
+
+  <!-- 3. sklearn -->
+  <div id="sklearn" class="anchor"></div>
+  <section>
+    <h2>Random Forest in sklearn</h2>
+
+    <h3>Wichtige Klassen</h3>
+    <ul>
+      <li><code>RandomForestClassifier</code> (Klassifikation).</li>
+      <li><code>RandomForestRegressor</code> (Regression, z.B. RUL).</li>
+    </ul>
+
+    <h3>Zentrale Parameter</h3>
+    <table>
+      <tr>
+        <th>Parameter</th><th>Bedeutung</th><th>Typische Werte</th>
+      </tr>
+      <tr>
+        <td><code>n_estimators</code></td>
+        <td>Anzahl Bäume</td>
+        <td>100, 200, 500</td>
+      </tr>
+      <tr>
+        <td><code>criterion</code></td>
+        <td>Split-Kriterium</td>
+        <td><code>"gini"</code>, <code>"entropy"</code> / <code>"squared_error"</code></td>
+      </tr>
+      <tr>
+        <td><code>max_depth</code></td>
+        <td>Maximale Tiefe</td>
+        <td><code>None</code>, 5, 10, 20</td>
+      </tr>
+      <tr>
+        <td><code>max_features</code></td>
+        <td>Features pro Split</td>
+        <td><code>"sqrt"</code>, <code>"log2"</code>, Zahl</td>
+      </tr>
+      <tr>
+        <td><code>bootstrap</code></td>
+        <td>Bootstrap-Samples nutzen</td>
+        <td><code>True</code></td>
+      </tr>
+      <tr>
+        <td><code>oob_score</code></td>
+        <td>OOB-Validierung</td>
+        <td><code>True</code> / <code>False</code></td>
+      </tr>
+    </table>
+
+    <h3>Code-Template (Klassifikation)</h3>
+    <pre>from sklearn.ensemble import RandomForestClassifier
+
+rf = RandomForestClassifier(
+    n_estimators=200,
+    criterion="gini",
+    max_depth=None,
+    max_features="sqrt",
+    bootstrap=True,
+    oob_score=True,
+    random_state=42
+)
+
+rf.fit(X_train, y_train)
+y_pred = rf.predict(X_test)
+y_prob = rf.predict_proba(X_test)</pre>
+  </section>
+
+  <!-- 4. Unsicherheit -->
+  <div id="uncertainty" class="anchor"></div>
+  <section>
+    <h2>Unsicherheit & <code>predict_proba</code></h2>
+
+    <h3>Wahrscheinlichkeiten statt nur Labels</h3>
+    <ul>
+      <li><code>predict_proba(X)</code> gibt für jede Klasse eine Wahrscheinlichkeit.</li>
+      <li>Unsicherheit: niedrige maximale Wahrscheinlichkeit → Modell ist unsicher.</li>
+    </ul>
+
+    <h3>Interpretation</h3>
+    <ul>
+      <li><code>max(p) &gt; 0.9</code> → sehr sicher.</li>
+      <li><code>max(p) ~ 0.5–0.6</code> → Grenzfall, Fachexperte hinzuziehen.</li>
+      <li>In PRM: unsichere Punkte markieren und manuell prüfen.</li>
+    </ul>
+  </section>
+
+  <!-- 5. Importance -->
+  <div id="importance" class="anchor"></div>
+  <section>
+    <h2>Feature &amp; Permutation Importance</h2>
+
+    <h3>Interne Feature Importance (Tree/Forest)</h3>
+    <ul>
+      <li>Basiert auf Verringerung der Impurity über alle Splits mit diesem Feature.</li>
+      <li>Werte normalisiert, Summe = 1.</li>
+      <li>Vorsicht bei korrelierten Features → verzerrte Importance.</li>
+    </ul>
+
+    <h3>Permutation Importance</h3>
+    <ol>
+      <li>Baseline-Score auf Test-/Validierungsdaten berechnen.</li>
+      <li>Für jedes Feature:
+        <ul>
+          <li>Werte im Testset zufällig permutieren.</li>
+          <li>Score erneut berechnen.</li>
+          <li>Importance = Baseline − permutierter Score.</li>
+        </ul>
+      </li>
+      <li>Großer Abfall → wichtiges Feature.</li>
+    </ol>
+
+    <h3>Anwendung: Sensoren auswählen</h3>
+    <ul>
+      <li>Wichtige Sensorarten/-positionen behalten und ausrollen.</li>
+      <li>Irrelevante Sensoren ggf. entfernen (Kosten, Komplexität).</li>
+    </ul>
+  </section>
+
+  <!-- 6. Boosting -->
+  <div id="boosting" class="anchor"></div>
+  <section>
+    <h2>Boosting &amp; AdaBoost</h2>
+
+    <h3>Bagging vs. Boosting</h3>
+    <table>
+      <tr><th>Eigenschaft</th><th>Bagging (Random Forest)</th><th>Boosting (AdaBoost)</th></tr>
+      <tr><td>Training</td><td>Parallel, unabhängige Bäume</td><td>Sequentiell, jeder lernt aus Fehlern des vorherigen</td></tr>
+      <tr><td>Fokus</td><td>Varianzreduktion</td><td>Biasreduktion</td></tr>
+      <tr><td>Gewichte</td><td>Gleich verteilt</td><td>Schwierige Punkte werden höher gewichtet</td></tr>
+    </table>
+
+    <h3>AdaBoost-Schema (für 2-Klassen-Fall)</h3>
+    <ol>
+      <li>Initialisiere Gewichte <code>w_i = 1/N</code>.</li>
+      <li>Für <code>t = 1..T</code>:
+        <ul>
+          <li>Trainiere schwachen Lerner mit Gewichten <code>w_i</code>.</li>
+          <li>Berechne gewichteten Fehler <code>ε_t</code>.</li>
+          <li>Berechne <code>α_t = 0.5 * ln((1-ε_t)/ε_t)</code>.</li>
+          <li>Update: <code>w_i ← w_i * exp(-α_t * y_i * h_t(x_i))</code>, dann normalisieren.</li>
+        </ul>
+      </li>
+      <li>Finale Vorhersage: <code>sign( Σ α_t * h_t(x) )</code>.</li>
+    </ol>
+  </section>
+
+  <!-- 7. PRM Use Cases -->
+  <div id="prm" class="anchor"></div>
+  <section>
+    <h2>PRM-Use-Cases (Kurz)</h2>
+
+    <h3>Servo Engine Fault Classification</h3>
+    <ul>
+      <li>Ziel: Klassifikation von Fault-Typen aus Sensordaten.</li>
+      <li>Random Forest + <code>predict_proba</code> für Unsicherheitsanalyse.</li>
+      <li>Unsichere Punkte zur Nachbewertung durch Fachexperten.</li>
+    </ul>
+
+    <h3>RUL Prediction (RandomForestRegressor)</h3>
+    <ul>
+      <li>RUL = Remaining Useful Life (kontinuierliche Regression).</li>
+      <li>RandomForestRegressor mit MSE-Splitkriterium nutzen.</li>
+      <li>Baselines: lineare Regression, Moving Average, konstante Vorhersage.</li>
+    </ul>
+
+    <h3>Baseline Models</h3>
+    <ul>
+      <li>Vergleich gegen einfache Modelle zwingend (Rechtfertigung ML).</li>
+      <li>Wenn RF kaum besser als Baseline → Modellkomplexität hinterfragen.</li>
+    </ul>
+  </section>
+
+</main>
+</body>
+</html>

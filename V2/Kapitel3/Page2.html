@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – SVM Mathematische Herleitung</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+  <site-header active="page2" title="PRM – SVM Mathematische Herleitung"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page2"></site-sidebar>
+
+    <main class="content" id="main-content">
+
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <span class="eyebrow">Kapitel 3 · Seite 2</span>
+            <h1>Mathematische <span class="key" style="--key-color:var(--color-primary)">Herleitung</span></h1>
+            <p>
+              Hier wird Schritt für Schritt hergeleitet, wie die SVM aus einem Trainingsdatensatz eine Hyperebene lernt, wie Vorzeichen und Margin zusammenhängen und wie daraus das Optimierungsproblem entsteht.
+            </p>
+            <div class="pill-row">
+              <span class="pill">Trainingsdatensatz</span>
+              <span class="pill">Hyperebene</span>
+              <span class="pill">Vorzeichen</span>
+              <span class="pill">Margin</span>
+              <span class="pill">Optimierung</span>
+            </div>
+          </div>
+          <aside class="hero-note">
+            <h2 style="font-size:var(--text-lg)">Lernfokus dieser Seite</h2>
+            <p>
+              Du verstehst die Formeln hinter der SVM und erkennst, warum der Margin maximiert wird und wie daraus die finale Zielfunktion entsteht.
+            </p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>2.1 Trainingsdatensatz</h2>
+          <p>
+            Ausgangspunkt ist ein gelabelter Trainingsdatensatz mit Feature-Vektoren und Klassenlabels.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Formale Darstellung</span></h3>
+            <p>Der Datensatz besteht aus Paaren \((\mathbf{x}_i, y_i)\) mit \(y_i \in \{-1, 1\}\).</p>
+            <div class="math-display">
+              \[
+              \{(\mathbf{x}_i, y_i)\mid i=1,\ldots,N,\; y_i \in \{-1,1\}\}
+              \]
+            </div>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Bedeutung</span></h3>
+            <p>
+              Die SVM nutzt diese Daten, um eine Trennfläche zu lernen, die beide Klassen möglichst gut separiert.
+            </p>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+              <button class="copy-btn" aria-label="Code kopieren">Kopieren</button>
+            </div>
+            <pre><code>from sklearn.datasets import make_blobs
+
+X, y = make_blobs(n_samples=100, centers=2,
+                  random_state=2, cluster_std=1.2)
+
+print("Shape von X:", X.shape)
+print("Klassen:", set(y))</code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <pre>Shape von X: (100, 2)
+Klassen: {0, 1}</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>2.2 Hyperebene</h2>
+          <p>
+            Die Trennfläche wird durch einen Normalenvektor und einen Bias beschrieben.
+          </p>
+        </div>
+
+        <div class="overview">
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-primary)">w</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-primary)">Normalenvektor</span></h3>
+              <p>Der Vektor \(\mathbf{w}\) steht senkrecht auf der Hyperebene und bestimmt ihre Orientierung.</p>
+            </div>
+          </article>
+
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-warning)">b</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-warning)">Bias</span></h3>
+              <p>Der Bias \(b\) verschiebt die Hyperebene vom Ursprung weg.</p>
+            </div>
+          </article>
+
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-success)">=0</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-success)">Hyperebenengleichung</span></h3>
+              <p>Punkte auf der Hyperebene erfüllen:</p>
+              <div class="math-display">
+                \[
+                \langle \mathbf{w}, \mathbf{x}_i \rangle + b = 0
+                \]
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>2.3 Vorzeichen der Punkte</h2>
+          <p>
+            Das Vorzeichen des Ausdrucks entscheidet, auf welcher Seite der Hyperebene ein Punkt liegt.
+          </p>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-step">
+            <div class="step-no">+</div>
+            <div>
+              <strong>Positive Seite</strong>
+              <p>Ist \(\langle \mathbf{w}, \mathbf{x}_i \rangle + b > 0\), liegt der Punkt in Richtung von \(\mathbf{w}\).</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-no">−</div>
+            <div>
+              <strong>Negative Seite</strong>
+              <p>Ist der Ausdruck kleiner als 0, liegt der Punkt entgegengesetzt zu \(\mathbf{w}\).</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-no">✓</div>
+            <div>
+              <strong>Klassifikationsregel</strong>
+              <p>Für die Vorhersage verwendet die SVM die Signum-Funktion.</p>
+              <div class="math-display">
+                \[
+                \hat{y}_i = \operatorname{sgn}\!\left(\langle \mathbf{w}, \mathbf{x}_i \rangle + b\right)
+                \]
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>from sklearn.svm import SVC
+
+model = SVC(kernel='linear', C=1.0).fit(X, y)
+scores = model.decision_function(X[:5])
+
+print("Erste 5 Scores:", scores)
+print("Vorhersagen:", model.predict(X[:5]))</code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <pre>Erste 5 Scores: [ ... ]
+Vorhersagen: [ ... ]</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>2.4 Margin und Abstand</h2>
+          <p>
+            Der Margin ist der Abstand der nächstliegenden Punkte zur Hyperebene. Die SVM maximiert genau diesen Abstand.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Margin-Bedingung</span></h3>
+            <div class="math-display">
+              \[
+              y_i\left(\langle \mathbf{w}, \mathbf{x}_i \rangle + b\right) \geq r
+              \]
+            </div>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Optimierung</span></h3>
+            <div class="math-display">
+              \[
+              \max_{\mathbf{w}, b} \; r
+              \]
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>2.5 Skalierung und Support Vectors</h2>
+          <p>
+            Damit das Problem lösbar wird, wird \(\mathbf{w}\) nicht normiert betrachtet. Der nächstgelegene Punkt wird als Support Vector genutzt.
+          </p>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-step">
+            <div class="step-no">1</div>
+            <div>
+              <strong>Skalierung setzen</strong>
+              <p>Für den nächstgelegenen Punkt \(\mathbf{x}_a\) gilt:</p>
+              <div class="math-display">
+                \[
+                \langle \mathbf{w}, \mathbf{x}_a \rangle + b = 1
+                \]
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-no">2</div>
+            <div>
+              <strong>Margin vereinfachen</strong>
+              <p>Der Abstand ergibt sich zu:</p>
+              <div class="math-display">
+                \[
+                r = \frac{1}{\|\mathbf{w}\|}
+                \]
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>2.6 Endgültiges Optimierungsproblem</h2>
+          <p>
+            Die Margin-Maximierung wird schließlich zu einem quadratischen Optimierungsproblem umgeformt.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Ziel</span></h3>
+            <div class="math-display">
+              \[
+              \max_{\mathbf{w}, b} \frac{1}{\|\mathbf{w}\|}
+              \]
+            </div>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Äquivalente Form</span></h3>
+            <div class="math-display">
+              \[
+              \min_{\mathbf{w}, b} \frac{1}{2}\|\mathbf{w}\|^2
+              \]
+            </div>
+          </article>
+        </div>
+
+        <div class="note note-primary" style="margin-top:var(--space-6)">
+          <strong>Merksatz:</strong> Die SVM sucht nicht die beste beliebige Linie, sondern die mit dem größten Margin. Daraus entsteht das harte Optimierungsproblem.
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>

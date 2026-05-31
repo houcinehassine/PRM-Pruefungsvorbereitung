@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – SVM Einführung</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="../sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <site-header active="page3" title="PRM – SVM Einführung"></site-header>
+
+<div class="layout">
+  <aside class="sidebar-shell">
+    <site-sidebar active="page1"></site-sidebar>
+  </aside>
+  <main class="content" id="main-content">
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <span class="eyebrow">Kapitel 3 · Seite 1</span>
+            <h1>Einführung in die <span class="key" style="--key-color:var(--color-primary)">Klassifikation</span></h1>
+            <p>
+              Diese Seite gibt dir den Einstieg in das Kapitel Klassifikation. Du lernst,
+              was eine Klassifikation ist, wie man Daten trennt und warum SVMs dafür
+              besonders interessant sind.
+            </p>
+            <div class="pill-row">
+              <span class="pill">Klassifikation</span>
+              <span class="pill">Labels</span>
+              <span class="pill">Trennung</span>
+              <span class="pill">SVM</span>
+            </div>
+          </div>
+
+          <aside class="hero-note">
+            <h2 style="font-size:var(--text-lg)">Lernziel</h2>
+            <p>
+              Du verstehst hier die Grundidee der Klassifikation und erkennst,
+              wie ein Modell aus Eingabedaten Klassen vorhersagt.
+            </p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="einleitung">
+        <div class="section-head">
+          <h2>1. Was ist Klassifikation?</h2>
+          <p>
+            Klassifikation bedeutet, dass ein Modell eine Eingabe einer vordefinierten
+            Klasse zuordnet.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3>Eingabe</h3>
+            <p>
+              Ein Datensatz besteht aus Merkmalen, zum Beispiel Größe, Gewicht oder Pixelwerten.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3>Ausgabe</h3>
+            <p>
+              Das Modell gibt ein Label zurück, zum Beispiel <span class="key" style="--key-color:var(--color-success)">0</span>
+              oder <span class="key" style="--key-color:var(--color-warning)">1</span>.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="beispiel">
+        <div class="section-head">
+          <h2>2. Einfaches Beispiel</h2>
+          <p>
+            Hier siehst du ein kleines Beispiel, wie Klassifikationsdaten aussehen können.
+          </p>
+        </div>
+
+        <div class="code-cell-split">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">Python</span>
+              <button class="copy-btn" aria-label="Code kopieren">Kopieren</button>
+            </div>
+            <pre><code>from sklearn.datasets import make_blobs
+
+X, y = make_blobs(
+    n_samples=100,
+    centers=2,
+    random_state=2,
+    cluster_std=1.2
+)
+
+print("Shape von X:", X.shape)
+print("Klassen:", set(y))</code></pre>
+          </div>
+
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">Output</span>
+              <button class="run-btn" type="button">Run</button>
+            </div>
+            <div class="output-side-body">
+              <pre>Shape von X: (100, 2)
+Klassen: {0, 1}</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="svm">
+        <div class="section-head">
+          <h2>3. Warum SVM?</h2>
+          <p>
+            Support Vector Machines sind interessant, weil sie eine Trennlinie mit großem
+            Abstand zwischen den Klassen suchen.
+          </p>
+        </div>
+
+        <article class="topic">
+          <div class="topic-badge" style="background:var(--color-primary)">SVM</div>
+          <div>
+            <h3>Idee</h3>
+            <p>
+              Die SVM sucht eine Hyperplane, die die Klassen möglichst gut trennt.
+            </p>
+          </div>
+        </article>
+
+        <article class="topic">
+          <div class="topic-badge" style="background:var(--color-success)">+</div>
+          <div>
+            <h3>Support Vectors</h3>
+            <p>
+              Die wichtigsten Punkte sind die Datenpunkte nahe an der Trennlinie.
+            </p>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
