@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM Kapitel 3 – Hard- und Soft-Margin</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background: #f7f9fc;
+      color: #222;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+      color: #123a63;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 1.05rem;
+      color: #555;
+      margin-bottom: 0;
+    }
+
+    .keyword {
+      color: #d62828;
+      font-weight: bold;
+    }
+
+    .note {
+      background: #eef6ff;
+      border-left: 5px solid #2b6cb0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+
+    .warning {
+      background: #fff0f0;
+      border-left: 5px solid #c53030;
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+
+    .formula {
+      background: #f3f6fa;
+      border: 1px solid #d9e2ec;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-family: "Courier New", monospace;
+      overflow-x: auto;
+      margin: 14px 0;
+      white-space: pre-wrap;
+    }
+
+    ul {
+      margin-top: 10px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #fff;
+    }
+
+    th, td {
+      border: 1px solid #d9e2ec;
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #edf2f7;
+      color: #1a365d;
+    }
+
+    .highlight {
+      background: #fff4cc;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .small {
+      font-size: 0.95rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>PRM Kapitel 3 – <span class="keyword">Hard- und Soft-Margin</span></h1>
+      <p class="subtitle">Seite 4: C, Slack Variable, Hinge Loss und Regularisierung</p>
+    </div>
+
+    <div class="card">
+      <h2>1. Hard- und Soft-Margin</h2>
+      <p>
+        Bei SVMs kann man den Margin entweder <span class="keyword">hart</span> oder <span class="keyword">weich</span> definieren.
+        Das bedeutet: Man kann zulassen, dass Datenpunkte innerhalb des Margins liegen.
+      </p>
+      <p>
+        Die Leitfrage lautet: <span class="highlight">Wie viele Punkte dürfen den Margin verletzen und in welchem Ausmaß?</span>
+      </p>
+      <p>
+        Dafür verwendet man den Hyperparameter <span class="keyword">C</span>.
+        Große Werte entsprechen eher einem <span class="keyword">Hard-Margin</span>, kleine Werte eher einem <span class="keyword">Soft-Margin</span>.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>2. Bedeutung von C</h2>
+      <p>
+        Der Wert von <span class="keyword">C</span> muss passend zum Datensatz gewählt werden,
+        zum Beispiel mithilfe von <span class="keyword">Cross-Validation</span>.
+      </p>
+      <p>
+        In sklearn taucht dieser Parameter direkt im SVC-Modell auf:
+      </p>
+      <div class="formula">
+SVC(kernel=<kernel_type>, C=<regularization_parameter_value>)
+      </div>
+      <div class="note">
+        <strong>Merksatz:</strong> <span class="keyword">C</span> steuert den Trade-off zwischen großer Margin und Fehlertoleranz.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>3. Slack Variable</h2>
+      <p>
+        Um Margin-Verletzungen zu erlauben, wird eine <span class="keyword">Slack Variable</span> eingeführt.
+        Sie bestraft Punkte, die innerhalb des Margins liegen oder auf der falschen Seite der Grenze sind.
+      </p>
+      <p>
+        Dadurch werden Verletzungen des Margins zugelassen, aber nicht kostenlos.
+        Genau das macht die Soft-Margin-SVM möglich.
+      </p>
+      <div class="warning">
+        <strong>Wichtig:</strong> Ohne Slack Variable wäre die SVM viel strenger und würde nur perfekt trennbare Daten akzeptieren.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>4. Regularisierung</h2>
+      <p>
+        Der Parameter <span class="keyword">C</span> sorgt für einen Trade-off zwischen
+        <span class="keyword">Größe des Margins</span> und <span class="keyword">Verletzung des Margins</span>.
+      </p>
+      <p>
+        Deshalb nennt man ihn auch <span class="keyword">Regularisierungsparameter</span>.
+        Margin-Maximierung ist damit selbst eine Form von Regularisierung.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>5. Warum Accuracy nicht reicht</h2>
+      <p>
+        Eine naheliegende Loss Function wäre die <span class="keyword">Accuracy</span>.
+        Diese ist aber ungeeignet, weil sie ein kombinatorisches Optimierungsproblem erzeugt.
+      </p>
+      <p>
+        Stattdessen braucht man eine kontinuierliche Loss Function.
+        Hier wird die <span class="keyword">Hinge Loss</span> verwendet.
+      </p>
+      <div class="formula">
+L(x) = max{0, 1 - y(⟨w, x⟩ + b)}
+      </div>
+      <p>
+        Die Hinge Loss bestraft vor allem Punkte, die den Margin verletzen oder falsch klassifiziert sind.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>6. Optimierungsziel</h2>
+      <p>
+        Aus Margin-Maximierung und Hinge Loss ergibt sich das endgültig optimierbare Problem.
+      </p>
+      <div class="formula">
+min  1/2 ||w||^2 + C * mean(max(0, 1 - y(⟨w, x⟩ + b)))
+      </div>
+      <p>
+        Das Ziel ist also:
+        <span class="highlight">eine große Margin erhalten, aber Margin-Verletzungen kontrolliert zulassen</span>.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>7. Interpretation von C</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>C-Wert</th>
+              <th>Interpretation</th>
+              <th>Folge für das Modell</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="keyword">Groß</span></td>
+              <td>Hard-Margin-artiges Verhalten</td>
+              <td>Weniger Toleranz für Verletzungen</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">Klein</span></td>
+              <td>Soft-Margin-artiges Verhalten</td>
+              <td>Mehr Toleranz für Verletzungen</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>8. Was du hier verstehen musst</h2>
+      <ul>
+        <li><span class="keyword">Hard-Margin</span> bedeutet strenge Trennung.</li>
+        <li><span class="keyword">Soft-Margin</span> erlaubt Verletzungen des Margins.</li>
+        <li><span class="keyword">C</span> steuert den Ausgleich zwischen Margin und Fehlertoleranz.</li>
+        <li>Die <span class="keyword">Slack Variable</span> bestraft Verletzungen.</li>
+        <li>Die passende Loss Function ist die <span class="keyword">Hinge Loss</span>.</li>
+        <li>Die SVM ist damit ein <span class="keyword">regularisiertes Optimierungsproblem</span>.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>9. Lernziel dieser Seite</h2>
+      <p>
+        Diese Seite beantwortet die Frage:
+        <span class="highlight">Wie geht die SVM mit nicht perfekten Daten um?</span>
+      </p>
+      <p class="small">
+        Genau dafür sind Soft-Margin, Slack Variable, C und Hinge Loss da.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – Kapitel 4: Implementierung from Scratch</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  /style.css">
+</head>
+
+<body>
+  <site-header active="page3" title="Kapitel 4: Implementierung from Scratch"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page4"></site-sidebar>
+
+    <main class="content" id="main-content">
+
+      <!-- ══════════════════════════════════════════
+           HERO
+      ══════════════════════════════════════════ -->
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <span class="eyebrow">Kapitel 4</span>
+            <h1>Implementierung
+              <span class="key" style="--key-color:var(--color-primary)">from Scratch</span>
+            </h1>
+            <p>
+              In diesem Kapitel wird die SVM nicht nur mathematisch erklärt,
+              sondern Schritt für Schritt in Python umgesetzt: Loss Function,
+              Gradienten, Gradient Descent und Visualisierung.
+            </p>
+            <div class="pill-row">
+              <span class="pill">Loss Function</span>
+              <span class="pill">Gradienten</span>
+              <span class="pill">Gradientenabstieg</span>
+              <span class="pill">Visualisierung</span>
+              <span class="pill">from Scratch</span>
+            </div>
+          </div>
+
+          <aside class="hero-note">
+            <h2 style="font-size:var(--text-lg)">Lernfokus dieser Seite</h2>
+            <p>Nach dieser Seite weißt du:</p>
+            <ul style="margin-top:var(--space-3); color:var(--color-text-muted)d">
+              >Wie die SVM-Loss-Funktion in Python abgebildet wird</l/li>
+              >Wie man die Gradienten nach \(\mathbf{w}\) und \(b\) berechnet</li>
+              >Wie Gradientenabstieg für SVMs funktioniert</l/li>
+              >Wie die Entscheidungsgerade visualisiert wird</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           4.1 LOSS FUNCTION
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>4.1 Loss Function</h2>
+          <p>
+            Wir haben gesehen, dass man durch ein paar mathematische Umformungen
+            zu einem übersichtlichen Optimierungsproblem bzw. einer relativ
+            überschaubaren Kostenfunktion gelangt.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Optimierungsproblem</span></h3>
+            <p>
+              \[
+              \min_{\mathbf{w}, b} \frac{1}{2} \|\mathbf{w}\|^2 + C \sum_i \max\{0, 1 - y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b)\}
+              \]
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Ziel</span></h3>
+            <p>
+              Wir wollen uns nun damit beschäftigen, die Loss Function als
+              Funktion in Python abzubilden.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Hinge Loss</span></h3>
+            <p>
+              In der Implementierung wird die Margin-Strafe als Hinge Loss
+              formuliert und mit de>C</code> gewichtet.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">Datenbasis</span></h3>
+            <p>
+              Der Code nutzt einen synthetischen Datensatz mit zwei Klassen,
+              Standardisierung und Label-Umkodierung von de>0/1</code> nach
+              de>-1/1</code>.
+            </p>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import make_blobs
+from sklearn.preprocessing import StandardScaler
+
+X, y = make_blobs(n_samples=1000, centers=2, cluster_std=0.1)
+X = StandardScaler().fit_transform(X)
+y = 2*y - 1
+
+w = np.random.rand(X.shape[1])
+b = np.random.rand()
+
+def svm_loss_function(X, y, w, b, C):
+    penalties = 1 - y * np.dot(X, w) - b
+    penalties[penalties < 0] = 0
+    hinge_loss = C * np.mean(penalties)
+    loss = 1/2 * np.dot(w, w) + hinge_loss
+    return loss
+
+svm_loss_function(X, y, w, b, 1)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-primary" style="margin:0">
+                <strong>Loss Function</strong><br>
+                \(\frac{1}{2}\|\mathbf{w}\|^2\) plus Hinge-Loss-Strafe.
+              </div>
+              <div class="note note-warning" style="margin:0">
+                <strong>Wichtiger Punkt</strong><br>
+                Die Strafe wird über den Mittelwert skaliert, damit sie unabhängig von der Datenmenge bleibt.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           4.2 GRADIENTEN
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>4.2 Gradienten</h2>
+          <p>
+            Alleine mit der Kostenfunktion kommen wir nicht weit – wir müssen
+            die Gradienten dieser nach \(\mathbf{w}\) und \(b\) bilden.
+          </p>
+        </div>
+
+        <div class="overview">
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-primary)">dw</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-primary)">Gewichtsgradient</span></h3>
+              <p>
+                Die Funktion berechnet den Gradienten nach \(\mathbf{w}\) auf
+                Basis aller aktiven Margin-Verletzungen.
+              </p>
+            </div>
+          </article>
+
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-success)">db</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-success)">Bias-Gradient</span></h3>
+              <p>
+                Der Gradient nach \(b\) ergibt sich aus der Summe der Labels
+                jener Punkte, für die der Hinge Loss aktiv ist.
+              </p>
+            </div>
+          </article>
+
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-warning)">m</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-warning)">Skalierung</span></h3>
+              <p>
+                Die Gradienten werden mit de>1/m</code> skaliert, also mit
+                der Anzahl der Datenpunkte.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+    def svm_gradients(X, y, w, b, C):
+    m = X.shape[0]
+    margins = 1 - y * (X.dot(w) + b)
+    active = margins > 0
+    dw = w - C/m * X[active].T.dot(y[active])
+    db = -C/m * np.sum(y[active])
+    return dw, db
+
+svm_gradients(X, y, w, b, 1)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-success" style="margin:0">
+                <strong>Ergebnis</strong><br>
+                Die Funktion liefert \(\mathrm{d}w\) und \(\mathrm{d}b\) für den nächsten Optimierungsschritt.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           4.3 GRADIENTENABSTIEG
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>4.3 Gradientenabstieg – Algorithmus</h2>
+          <p>
+            Mit der Loss Function und den Gradienten können wir den
+            Gradientenabstieg direkt implementieren.
+          </p>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-step">
+            <div class="step-no">1</div>
+            <div>
+              <strong>Initialisierung</strong>
+              <p>
+                Randomisiere den Gewichtsvektor \(\mathbf{w}^{(1)}\).
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-no">2</div>
+            <div>
+              <strong>Schätzung des Gradienten</strong>
+              <p>
+                Wähle ein Target und berechne:
+                \[
+                \Delta \mathbf{w}^{(i)} = -\eta \nabla \Lambda \big|_{\mathbf{w}^{(i)}}
+                \]
+                \(\eta\): Lernrate.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-no">3</div>
+            <div>
+              <strong>Update bis Konvergenz</strong>
+              <p>
+                \[
+                \mathbf{w}^{(i+1)} = \mathbf{w}^{(i)} + \Delta \mathbf{w}^{(i)}
+                \]
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+def svm_train(X, y, w, b, C, lr, epochs):
+    list_of_costs = []
+    for epoch in range(epochs):
+        dw, db = svm_gradients(X, y, w, b, C)
+        w -= lr * dw
+        b -= lr * db
+        list_of_costs.append(svm_loss_function(X, y, w, b, C))
+    return w, b, list_of_costs
+
+w, b, list_of_costs = svm_train(X, y, w, b, 1, 0.01, 1000)
+
+plt.plot(list_of_costs)
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <img src="img/kapitel4_loss_curve.png" alt="Loss-Kurve beim Training einer SVM from Scratch" />
+            </div>
+          </div>
+        </div>
+
+        <div class="note note-primary" style="margin-top:var(--space-6)">
+          <strong>Beobachtung:</strong> Die Loss-Kurve fällt im Training deutlich
+          ab, was auf eine erfolgreiche Optimierung hindeutet.
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           4.4 VISUALISIERUNG
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>4.4 Visualisierung</h2>
+          <p>
+            Schreiben Sie eine Funktion de>visualize_svm_training</code>,
+            die die trainierten Parameter \(w\), \(b\) nach dem Gradientenabstieg
+            aufnimmt und daraus die entsprechende Hyperebene in den Feature-Raum
+            zeichnet.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Visualisierung</span></h3>
+            <p>
+              Die trainierten Parameter werden genutzt, um die Entscheidungsgerade
+              im Feature-Raum zu zeichnen.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Hinweis</span></h3>
+            <p>
+              Damit die Visualisierung klappen kann, muss \(w\) normalisiert
+              werden.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Bonus</span></h3>
+            <p>
+              de>animate_svm_training</code> speichert Zwischenschritte für
+              \(w\) und \(b\) in Listen und zeigt das Training dynamisch.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">Ziel</span></h3>
+            <p>
+              Die Funktion stellt die Hyperebene direkt im Datenraum dar und
+              macht das Ergebnis des Trainings sichtbar.
+            </p>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+def plot_decision_line(w, b, x_range):
+    fig, ax = plt.subplots(figsize=(6,5))
+    xmin, xmax = x_range
+    xs = np.linspace(xmin, xmax, 400)
+    norm = np.linalg.norm(w)
+    w = w / norm
+    b = b / norm
+    ys = -w[0] * xs - b / w[1]
+    ax.plot(xs, ys, linewidth=2, label='decision line')
+    ax.set_xlabel('x1')
+    ax.set_ylabel('x2')
+    ax.legend()
+    ax.grid(True)
+    return ys
+
+ys = plot_decision_line(w, b, x_range=(X[:, 0].min(), X[:, 0].max()))
+plt.scatter(X[:, 0], X[:, 1], c=y)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <img src="img/kapitel4_decision_line.png" alt="Visualisierung der trainierten SVM-Entscheidungsgeraden" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <small>
+        PRM Prüfungsvorbereitung · Kapitel 4 – Implementierung from Scratch
+      </small>
+    </div>
+  </footer>
+</body>
+</html>

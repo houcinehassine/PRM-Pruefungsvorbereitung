@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM Kapitel 3 – SVM Gesamtsammlung</title>
+  <style>
+    :root{
+      --bg:#f6f8fb;
+      --card:#ffffff;
+      --ink:#1d2433;
+      --muted:#5a6578;
+      --blue:#123a63;
+      --accent:#d62828;
+      --soft:#eef6ff;
+      --line:#d9e2ec;
+      --shadow:0 8px 24px rgba(0,0,0,.08);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      line-height:1.65;
+    }
+    .container{max-width:1200px;margin:0 auto;padding:28px 18px 60px}
+    .hero,.card{
+      background:var(--card);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+    }
+    .hero{padding:28px;margin-bottom:22px}
+    .card{padding:26px;margin-bottom:22px}
+    h1,h2,h3{margin-top:0;color:var(--blue)}
+    h1{font-size:2rem;margin-bottom:8px}
+    h2{font-size:1.45rem;margin-bottom:10px}
+    .subtitle{color:var(--muted);margin:0}
+    .keyword{color:var(--accent);font-weight:bold}
+    .note{
+      background:var(--soft);
+      border-left:5px solid #2b6cb0;
+      padding:14px 16px;
+      border-radius:10px;
+      margin:14px 0;
+    }
+    .formula{
+      background:#f3f6fa;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:14px 16px;
+      font-family:"Courier New", monospace;
+      white-space:pre-wrap;
+      overflow-x:auto;
+      margin:14px 0;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:12px;
+      background:#fff;
+    }
+    th,td{
+      border:1px solid var(--line);
+      padding:12px 10px;
+      text-align:left;
+      vertical-align:top;
+    }
+    th{background:#edf2f7;color:#1a365d}
+    ul{margin:10px 0 0 20px}
+    li{margin-bottom:8px}
+    .page-badge{
+      display:inline-block;
+      background:#edf2f7;
+      color:#1a365d;
+      border:1px solid var(--line);
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:.92rem;
+      margin-bottom:10px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:14px;
+    }
+    .toc a{
+      display:block;
+      text-decoration:none;
+      color:var(--blue);
+      padding:8px 0;
+      border-bottom:1px solid #eef2f7;
+    }
+    .small{font-size:.95rem;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <h1>PRM Kapitel 3 – <span class="keyword">SVM</span> Gesamtsammlung</h1>
+      <p class="subtitle">8 HTML-Seiten in einer einzigen Datei-Struktur</p>
+      <p class="small">Inhaltlich basiert die Sammlung auf dem bereitgestellten Kapitel zu Support Vector Machines, einschließlich Margin, Hard/Soft-Margin, Kernel-Trick, Multi-Class-SVM und SVR [file:1].</p>
+    </div>
+
+    <div class="card toc">
+      <h2>Inhaltsverzeichnis</h2>
+      <div class="grid">
+        <div>
+          <a href="#seite1">Seite 1 – Grundidee der SVM</a>
+          <a href="#seite2">Seite 2 – Mathematische Formulierung</a>
+          <a href="#seite3">Seite 3 – Hard- und Soft-Margin</a>
+          <a href="#seite4">Seite 4 – Loss Function und Gradienten</a>
+        </div>
+        <div>
+          <a href="#seite5">Seite 5 – Training und Visualisierung</a>
+          <a href="#seite6">Seite 6 – Nichtlineare SVM und Kernel-Trick</a>
+          <a href="#seite7">Seite 7 – Multi-Class-SVM und Anwendungen</a>
+          <a href="#seite8">Seite 8 – SVR und Vergleich</a>
+        </div>
+      </div>
+    </div>
+
+    <section id="seite1" class="card">
+      <div class="page-badge">Seite 1</div>
+      <h2>Grundidee der SVM</h2>
+      <p>Support Vector Machines sind laut Skript besonders für kleine bis mittelgroße Datensätze geeignet und können für Klassifikation und Regression verwendet werden [file:1].</p>
+      <p>Im Klassifikationskontext sind SVMs <span class="keyword">diskriminative Klassifikatoren</span>, die eine Trennfläche zwischen zwei Klassen suchen [file:1].</p>
+      <div class="note"><strong>Kernidee:</strong> Eine möglichst gute Trennlinie soll die Klassen nicht nur trennen, sondern mit maximalem Abstand zwischen den Klassen liegen [file:1].</div>
+    </section>
+
+    <section id="seite2" class="card">
+      <div class="page-badge">Seite 2</div>
+      <h2>Mathematische Formulierung</h2>
+      <p>Die Hyperebene wird im Skript über einen Normalenvektor und einen Bias beschrieben [file:1].</p>
+      <div class="formula">f(x) = sgn(&lt;w, x&gt; + b)</div>
+      <p>Datenpunkte auf der Hyperebene erfüllen die Gleichung, alle anderen liegen auf einer positiven oder negativen Seite [file:1].</p>
+      <p>Die optimale Hyperebene ist diejenige mit dem größten Margin zwischen den Klassen [file:1].</p>
+    </section>
+
+    <section id="seite3" class="card">
+      <div class="page-badge">Seite 3</div>
+      <h2>Hard- und Soft-Margin</h2>
+      <p>Im Skript wird zwischen <span class="keyword">Hard-Margin</span> und <span class="keyword">Soft-Margin</span> unterschieden [file:1].</p>
+      <p>Der Parameter <span class="keyword">C</span> steuert den Trade-off zwischen Margin-Größe und Verletzungen des Margins [file:1].</p>
+      <table>
+        <thead>
+          <tr><th>Aspekt</th><th>Bedeutung</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Großes C</td><td>stärkerer Fokus auf geringe Fehlklassifikation, eher Hard-Margin [file:1]</td></tr>
+          <tr><td>Kleines C</td><td>mehr Toleranz für Verletzungen, eher Soft-Margin [file:1]</td></tr>
+          <tr><td>Slack Variable</td><td>ermöglicht Margin-Verletzungen und wird bestraft [file:1]</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="seite4" class="card">
+      <div class="page-badge">Seite 4</div>
+      <h2>Loss Function und Gradienten</h2>
+      <p>Das Skript formuliert die SVM-Optimierung mit <span class="keyword">Hinge Loss</span> als kontinuierliche Loss Function [file:1].</p>
+      <div class="formula">L(w,b) = 1/2 · ||w||² + C · mean(max(0, 1 - y(&lt;w,x&gt; + b)))</div>
+      <p>Für die Optimierung werden die Gradienten von <code>w</code> und <code>b</code> berechnet; bei Margin-Verletzung werden die betroffenen Punkte bestraft [file:1].</p>
+      <p>Im Skript wird anschließend Gradientenabstieg genutzt, um das Modell aus dem Nichts zu trainieren [file:1].</p>
+    </section>
+
+    <section id="seite5" class="card">
+      <div class="page-badge">Seite 5</div>
+      <h2>Training und Visualisierung</h2>
+      <p>Das Modell wird mit <span class="keyword">fit()</span> trainiert, und die Support Vectors bestimmen den Fit besonders stark [file:1].</p>
+      <p>Die Visualisierung zeigt die Entscheidungsgrenze, die Margins und die Support Vectors als hervorgehobene Punkte [file:1].</p>
+      <div class="note">Wichtig ist laut Skript, dass der Verlauf des Loss über die Epochen beobachtet werden kann, um den Lernfortschritt zu prüfen [file:1].</div>
+    </section>
+
+    <section id="seite6" class="card">
+      <div class="page-badge">Seite 6</div>
+      <h2>Nichtlineare SVM und Kernel-Trick</h2>
+      <p>Wenn Daten nicht linear separierbar sind, hilft der <span class="keyword">Kernel-Trick</span>, indem die Daten implizit in höhere Dimensionen abgebildet werden [file:1].</p>
+      <p>Im Skript wird dafür besonders der <span class="keyword">RBF-Kernel</span> gezeigt, der im ursprünglichen Raum eine nichtlineare Trennfläche erzeugt [file:1].</p>
+      <table>
+        <thead>
+          <tr><th>Konzept</th><th>Beschreibung</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>RBF</td><td>Zusätzliche Dimension über den Abstand, im Skript als radial basis function eingeführt [file:1]</td></tr>
+          <tr><td>Kernel</td><td>Implizite Projektion in einen höherdimensionalen Raum [file:1]</td></tr>
+          <tr><td>Ergebnis</td><td>Im Ausgangsraum entsteht eine nichtlineare Entscheidungsgrenze [file:1]</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="seite7" class="card">
+      <div class="page-badge">Seite 7</div>
+      <h2>Multi-Class-SVM und Anwendungen</h2>
+      <p>Bei mehr als zwei Klassen verwendet das Skript <span class="keyword">one-versus-one</span>: Für jede Klassenpaarung wird ein Klassifikator trainiert [file:1].</p>
+      <p>Als Anwendungen werden Handschrifterkennung, Face Recognition und Fault Classification genannt [file:1].</p>
+      <table>
+        <thead>
+          <tr><th>Anwendung</th><th>Idee</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Digits</td><td>Erkennung handschriftlicher Ziffern aus dem Digits-Dataset [file:1]</td></tr>
+          <tr><td>Face Recognition</td><td>Klassifikation von Gesichtern, meist mit PCA und RBF-SVM [file:1]</td></tr>
+          <tr><td>Fault Classification</td><td>Vibrationsdaten von Kugellagern, Merkmalsextraktion und SVM-Klassifikation [file:1]</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="seite8" class="card">
+      <div class="page-badge">Seite 8</div>
+      <h2>SVR und Vergleich</h2>
+      <p><span class="keyword">Support Vector Regression</span> ist die Regressionsvariante der SVM und verwendet ein epsilon-Toleranzband [file:1].</p>
+      <p>Im Skript werden sowohl lineare als auch nichtlineare Varianten mit <span class="keyword">LinearSVR</span>, <span class="keyword">poly</span>-Kernel und <span class="keyword">rbf</span>-Kernel gezeigt [file:1].</p>
+      <table>
+        <thead>
+          <tr><th>Aspekt</th><th>SVM-Klassifikation</th><th>SVR</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Ziel</td><td>Klassen trennen [file:1]</td><td>Numerische Werte schätzen [file:1]</td></tr>
+          <tr><td>Margin</td><td>Klassenmargin [file:1]</td><td>epsilon-Band [file:1]</td></tr>
+          <tr><td>Support Vectors</td><td>Punkte am Klassenrand [file:1]</td><td>Punkte außerhalb des epsilon-Bereichs [file:1]</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Hinweis zur Verwendung</h2>
+      <p>Wenn du diese Datei als Lernseite nutzen willst, kann ich dir im nächsten Schritt daraus auch direkt eine <span class="keyword">saubere Navigationsversion</span> mit anklickbarem Menü, Seitenwechseln und besserer Typografie machen.</p>
+    </section>
+  </div>
+</body>
+</html>

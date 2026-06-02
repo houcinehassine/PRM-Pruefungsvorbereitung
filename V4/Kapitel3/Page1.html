@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – SVM Einführung & Grundkonzept</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+  <site-header active="page3" title="SVM – Einführung & Grundkonzept"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page1"></site-sidebar>
+
+    <main class="content" id="main-content">
+
+      <!-- ══════════════════════════════════════════
+           HERO
+      ══════════════════════════════════════════ -->
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <span class="eyebrow">Kapitel 3 · Seite 1</span>
+            <h1>Einführung &amp;
+              <span class="key" style="--key-color:var(--color-primary)">Grundkonzept</span>
+            </h1>
+            <p>
+              Support Vector Machines gehören zu den bekanntesten und robustesten
+              Modellen im Machine Learning. Diese Seite gibt einen Überblick,
+              wofür SVMs geeignet sind, welche Vor- und Nachteile sie haben
+              und wie sie für <span class="key" style="--key-color:var(--color-success)">Klassifikation</span>
+              und <span class="key" style="--key-color:var(--color-warning)">Regression</span>
+              eingesetzt werden können.
+            </p>
+            <div class="pill-row">
+              <span class="pill">Definition</span>
+              <span class="pill">Einsatzgebiete (SVC / SVR)</span>
+              <span class="pill">Vor- &amp; Nachteile</span>
+              <span class="pill">Geometrische Sicht</span>
+            </div>
+          </div>
+          <aside class="hero-note">
+            <h2 style="font-size:var(--text-lg)">Lernfokus dieser Seite</h2>
+            <p>Nach dieser Seite weißt du:</p>
+            <ul style="margin-top:var(--space-3); color:var(--color-text-muted)">
+              <li>Was SVMs sind und in welchem Setting sie sinnvoll sind</li>
+              <li>Warum SVMs besonders für kleine bis mittelgroße Datensätze geeignet sind</li>
+              <li>Welche Vor- und Nachteile SVMs in der Praxis haben</li>
+              <li>Wofür <code>SVC</code> und <code>SVR</code> verwendet werden</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           1.1 DEFINITION
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>1.1 Was sind Support Vector Machines?</h2>
+          <p>
+            SVMs sind <em>diskriminative Klassifikatoren</em> – sie modellieren
+            nicht die Wahrscheinlichkeitsverteilung der Daten, sondern suchen
+            direkt nach einer möglichst guten Trennfläche zwischen Klassen.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Definition</span></h3>
+            <p>
+              <strong>Support Vector Machines (SVM)</strong> sind überwachte Lernverfahren,
+              die eine <strong>Entscheidungsgrenze mit maximalem Abstand</strong> zu den
+              nächstliegenden Datenpunkten (den Support Vectors) suchen.
+              Sie gehören zu den bekanntesten Modellen im Machine Learning und werden
+              hauptsächlich für Klassifikations- und Regressionsaufgaben eingesetzt.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Einsatzgebiete</span></h3>
+            <p>
+              SVMs sind besonders geeignet für
+              <strong>klein- bis mittelgroße Datensätze</strong> mit moderater Größe,
+              bei denen die Anzahl der Features hoch sein kann.
+              Sie können sowohl für <strong>Klassifikation</strong> mit
+              <code>SVC</code> als auch für <strong>Regression</strong> mit
+              <code>SVR</code> verwendet werden.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Diskriminativer Ansatz</span></h3>
+            <p>
+              Im Gegensatz zu generativen Modellen schätzen SVMs keine
+              Wahrscheinlichkeitsdichten, sondern lernen direkt eine
+              Trennfläche, die Klassen möglichst gut separiert.
+              Eine probabilistische Interpretation der Ausgaben ist im
+              Grundmodell nicht vorgesehen.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">Geometrische Sicht</span></h3>
+            <p>
+              Pädagogisch attraktiv ist die klare <strong>geometrische Interpretation</strong>:
+              Die SVM sucht eine Hyperebene mit maximaler Margin.
+              Nur die Punkte am Rand dieser Margin – die <strong>Support Vectors</strong> –
+              bestimmen die Lage der Entscheidungsgrenze.
+            </p>
+          </article>
+        </div>
+
+        <div class="note note-primary" style="margin-top:var(--space-6)">
+          <strong>Merke:</strong> SVMs sind flexibel, arbeiten gut mit
+          hochdimensionalen Daten und eigenen sich vor allem dann,
+          wenn die Anzahl der Dimensionen größer ist als die Anzahl der Datenpunkte.
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           1.2 VOR- UND NACHTEILE
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>1.2 Vor- und Nachteile von SVMs</h2>
+          <p>
+            Wie jedes Modell haben SVMs klare Stärken, aber auch Grenzen –
+            insbesondere bei sehr vielen Datenpunkten oder stark überlappenden Klassen.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Pros</span></h3>
+            <ul>
+              <li>SVMs sind sehr effektiv bei <strong>höherdimensionalen</strong> Datensätzen.</li>
+              <li>Gut geeignet, wenn die Anzahl der <strong>Features größer</strong> ist als die Anzahl der <strong>Datenpunkte</strong>.</li>
+              <li>Oft <strong>komputativ effizient</strong> bei kleinen bis mittelgroßen Datensätzen.</li>
+              <li>Erlauben eine intuitive <strong>geometrische Interpretation</strong> (Margin, Hyperebene, Support Vectors).</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-danger)">Cons</span></h3>
+            <ul>
+              <li>Bei <strong>sehr großen Datensätzen</strong> oft problematisch, da die <strong>Kernel-Matrix</strong> sehr groß wird und viel Speicher bzw. Rechenzeit benötigt.</li>
+              <li>Empfindlich bei <strong>stark überlappenden Klassen</strong> oder <strong>viel Rauschen</strong> in den Daten – die Margin lässt sich dann schwer sauber ziehen.</li>
+              <li>Eine direkte <strong>probabilistische Interpretation</strong> der Ausgaben ist nicht möglich (Scores sind Abstände, keine Wahrscheinlichkeiten).</li>
+              <li>Die Wahl von <strong>Kernel</strong> und Hyperparametern (z.&nbsp;B. <code>C</code>, <code>gamma</code>) erfordert Erfahrung oder systematisches Tuning.</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="note note-warning" style="margin-top:var(--space-6)">
+          <strong>Praxis-Hinweis:</strong> Für sehr große Datensätze werden oft
+          einfachere lineare Modelle oder speziell skalierende SVM-Varianten
+          (z.&nbsp;B. lineare SVMs mit Stochastic Gradient Descent) bevorzugt.
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           1.3 SVM FÜR KLASSE UND REGRESSION
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>1.3 SVM in der Praxis: SVC &amp; SVR</h2>
+          <p>
+            SVMs können sowohl für Klassifikations- als auch für
+            Regressionsprobleme eingesetzt werden – in sklearn über
+            <code>SVC</code> und <code>SVR</code>.
+          </p>
+        </div>
+
+        <div class="overview">
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-success)">SVC</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-success)">Klassifikation (SVC)</span></h3>
+              <p>
+                <code>sklearn.svm.SVC</code> implementiert die SVM für
+                <strong>Klassifikationsaufgaben</strong>.
+                Sie lernt eine Entscheidungsgrenze im Feature-Raum, die
+                unterschiedliche Klassen trennt und die Margin maximiert.
+              </p>
+            </div>
+          </article>
+
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-warning)">SVR</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-warning)">Regression (SVR)</span></h3>
+              <p>
+                <code>sklearn.svm.SVR</code> ist die analoge Variante für
+                <strong>Regression</strong>.
+                Statt eine Trennlinie zu suchen, wird eine Funktion gelernt,
+                die möglichst viele Punkte innerhalb eines Toleranzbandes
+                (ε-Insensitive Zone) hält und gleichzeitig die Komplexität
+                der Funktion gering hält.
+              </p>
+            </div>
+          </article>
+
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-primary)">⚙</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-primary)">Typische Parameter</span></h3>
+              <p>
+                Zentrale Parameter sind <code>kernel</code> (z.&nbsp;B. <code>'linear'</code>,
+                <code>'rbf'</code>), <code>C</code> (Trade-off zwischen Margin
+                und Fehlklassifikationen) und ggf. <code>gamma</code> für
+                nichtlineare Kernel. Die Parameterwahl steuert direkt,
+                wie flexibel und robust das Modell ist.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python (Beispiel – SVC)
+              </span>
+            </div>
+            <pre><code>
+from sklearn.svm import SVC, SVR
+
+# Klassifikation
+svc = SVC(kernel="linear", C=1.0)
+svc.fit(X_train, y_train)
+
+# Regression
+svr = SVR(kernel="rbf", C=1.0, epsilon=0.1)
+svr.fit(X_train_reg, y_train_reg)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Erklärung
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-primary" style="margin:0">
+                <strong>SVC:</strong> lernt eine Entscheidungsgrenze
+                zwischen Klassen.
+              </div>
+              <div class="note note-success" style="margin:0">
+                <strong>SVR:</strong> lernt eine Regressionsfunktion mit
+                ε-Toleranzband um die Vorhersagekurve.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="note note-primary" style="margin-top:var(--space-6)">
+          <strong>Merksatz:</strong> SVMs können flexibel für
+          Klassifikation (<code>SVC</code>) und Regression (<code>SVR</code>)
+          eingesetzt werden – das Prinzip der Margin-Optimierung bleibt
+          in beiden Fällen erhalten.
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <small>
+        PRM Prüfungsvorbereitung · Kapitel 3 – Klassifikation ·
+        Seite 1: Einführung &amp; Grundkonzept
+      </small>
+    </div>
+  </footer>
+
+</body>
+</html>

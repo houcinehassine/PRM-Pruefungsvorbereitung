@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM Kapitel 3 – Nichtlineare SVM und Kernel-Trick</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background: #f7f9fc;
+      color: #222;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+      color: #123a63;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 1.05rem;
+      color: #555;
+      margin-bottom: 0;
+    }
+
+    .keyword {
+      color: #d62828;
+      font-weight: bold;
+    }
+
+    .note {
+      background: #eef6ff;
+      border-left: 5px solid #2b6cb0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+
+    .formula {
+      background: #f3f6fa;
+      border: 1px solid #d9e2ec;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-family: "Courier New", monospace;
+      overflow-x: auto;
+      margin: 14px 0;
+      white-space: pre-wrap;
+    }
+
+    ul {
+      margin-top: 10px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #fff;
+    }
+
+    th, td {
+      border: 1px solid #d9e2ec;
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #edf2f7;
+      color: #1a365d;
+    }
+
+    .highlight {
+      background: #fff4cc;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .small {
+      font-size: 0.95rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>PRM Kapitel 3 – <span class="keyword">Nichtlineare SVM</span> und Kernel-Trick</h1>
+      <p class="subtitle">Seite 6: Wenn lineare Trennung nicht mehr reicht</p>
+    </div>
+
+    <div class="card">
+      <h2>1. Das Problem</h2>
+      <p>
+        Bei manchen Datensätzen kann keine gerade Trennlinie die Klassen sauber separieren.
+        Dann ist das Problem <span class="keyword">nicht linear separierbar</span>.
+      </p>
+      <p>
+        Genau hier stößt eine rein lineare SVM an ihre Grenzen.
+        Die Lösung ist, die Daten in einen höherdimensionalen Raum zu projizieren.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>2. Projektion in höhere Dimensionen</h2>
+      <p>
+        Die Idee ist, zusätzliche Merkmale zu erzeugen, damit die Klassen in einem neuen Raum
+        wieder linear trennbar werden.
+      </p>
+      <p>
+        Im Skript wird dafür das Prinzip der <span class="keyword">Radial Basis Functions</span> verwendet.
+        Aus einem 2D-Problem kann so ein 3D-Problem werden.
+      </p>
+      <div class="formula">
+r = exp(-(X ** 2).sum(axis=1))
+      </div>
+      <p>
+        Dadurch wird aus dem ursprünglichen Raum ein Raum mit mehr Informationsgehalt,
+        in dem eine lineare Trennung möglich wird.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>3. Kernel-Trick</h2>
+      <p>
+        Der <span class="keyword">Kernel-Trick</span> geht noch einen Schritt weiter:
+        Die Projektion in den höheren Raum wird implizit durchgeführt, ohne die neuen Dimensionen explizit auszurechnen.
+      </p>
+      <p>
+        In sklearn wird das oft mit <span class="keyword">kernel='rbf'</span> umgesetzt.
+        Damit entsteht im ursprünglichen Raum eine nichtlineare Entscheidungsgrenze.
+      </p>
+      <div class="note">
+        <strong>Kernidee:</strong> Im höherdimensionalen Raum linear, im Ausgangsraum nichtlinear.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>4. Beispiel mit RBF-Kernel</h2>
+      <p>
+        Im Skript wird eine SVM auf einem Kreis-Datensatz gezeigt.
+        Mit einem linearen Kernel gelingt die Trennung nicht gut,
+        mit dem RBF-Kernel dagegen schon.
+      </p>
+      <div class="formula">
+clf = SVC(kernel='rbf', C=1E6)
+clf.fit(X, y)
+      </div>
+      <p>
+        Die Support Vectors markieren wieder die wichtigen Randpunkte.
+        Die Trennfläche ist jetzt jedoch nicht mehr linear.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>5. Multi-Class SVMs</h2>
+      <p>
+        Wenn mehr als zwei Klassen vorliegen, wird der binäre Ansatz erweitert.
+        Eine Möglichkeit ist <span class="keyword">one-versus-one</span>: Für jede Klassenpaarung wird ein Klassifikator trainiert.
+      </p>
+      <p>
+        Die Entscheidungsgrenzen ergeben sich dann aus der Kombination aller Klassifikatoren.
+      </p>
+      <div class="formula">
+Anzahl der SVMs = (n - 1) / 2
+      </div>
+      <p>
+        Das Skript nennt außerdem den Vergleich mit <span class="keyword">one-versus-rest</span>.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>6. Eigenschaften der SVM</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Aspekt</th>
+              <th>Bedeutung</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="keyword">Vorteile</span></td>
+              <td>Effektiv bei höherdimensionalen Daten, gut bei wenigen Datenpunkten, geometrisch gut interpretierbar.</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">Nachteile</span></td>
+              <td>Probleme bei sehr großen Datensätzen, stark überlappenden Klassen und viel Rauschen.</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">Kernel-Matrix</span></td>
+              <td>Kann bei großen Datenmengen zu groß werden.</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">Interpretation</span></td>
+              <td>Eine probabilistische Interpretation ist nicht direkt möglich.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>7. Was du hier verstehen musst</h2>
+      <ul>
+        <li>Lineare SVMs reichen nicht für alle Probleme aus.</li>
+        <li>Der <span class="keyword">Kernel-Trick</span> ermöglicht nichtlineare Trennungen.</li>
+        <li><span class="keyword">RBF</span> ist ein wichtiges Beispiel für eine solche Transformation.</li>
+        <li>Für mehrere Klassen werden mehrere SVMs kombiniert.</li>
+        <li>SVMs sind stark, aber nicht immer die beste Lösung bei sehr großen oder stark verrauschten Daten.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>8. Lernziel dieser Seite</h2>
+      <p>
+        Diese Seite beantwortet die Frage:
+        <span class="highlight">Wie löst die SVM nichtlineare Trennprobleme?</span>
+      </p>
+      <p class="small">
+        Die Antwort ist: durch Projektion in höhere Dimensionen und den Kernel-Trick.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

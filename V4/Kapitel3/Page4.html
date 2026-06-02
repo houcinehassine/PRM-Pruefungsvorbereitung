@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – SVM Nichtlineare Probleme & Kernel-Trick</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css" >
+</head>
+
+<body>
+  <site-header active="page3" title="SVM – Nichtlineare Probleme & Kernel-Trick"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page4"></site-sidebar>
+
+    <main class="content" id="main-content">
+
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <span class="eyebrow">Kapitel 3 · Seite 4</span>
+            <h1>Nichtlineare
+              <span class="key" style="--key-color:var(--color-primary)">Probleme</span>
+              &amp; Kernel-Trick
+            </h1>
+            <p>
+              Auf dieser Seite geht es darum, warum lineare SVMs bei manchen
+              Datensätzen nicht ausreichen und wie der Kernel-Trick,
+              insbesondere mit <strong>RBF-Kernels</strong>, nichtlineare
+              Entscheidungsgrenzen ermöglicht.
+            </p>
+            <div class="pill-row">
+              <span class="pill">Nichtlinear separierbar</span>
+              <span class="pill">RBF</span>
+              <span class="pill">Kernel-Trick</span>
+              <span class="pill">SVC(kernel='rbf')</span>
+              <span class="pill">Mehrklassen-SVM</span>
+            </div>
+          </div>
+          <aside class="hero-note">
+            <h2 style="font-size:var(--text-lg)">Lernfokus dieser Seite</h2>
+            <p>Nach dieser Seite weißt du:</p>
+            <ul style="margin-top:var(--space-3); color:var(--color-text-muted)d">
+              <li>Wann ein Problem nicht linear separierbar ist</li>
+              <li>Wie eine Projektion in einen höherdimensionalen Raum hilft</li>
+              <li>Was der Kernel-Trick in SVMs leistet</li>
+              <li>Wie Mehrklassen-SVMs mit One-vs-One / One-vs-Rest gelöst werden</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>4.1 Nichtlineare Probleme</h2>
+          <p>
+            Bei unserem Digits-Beispiel haben wir implizit angenommen, dass die
+            Klassen linear – also mit einer Geraden bzw. Hyperebene – trennbar sind.
+            Was passiert, wenn das nicht der Fall ist?
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Lineare Trennung</span></h3>
+            <p>
+              Wenn eine gerade Hyperebene die Klassen sauber trennt, spricht man
+              von einem linear separierbaren Problem.
+            </p>
+          </article>
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Nichtlinear separierbar</span></h3>
+            <p>
+              Wenn keine lineare Hyperebene die Klassen jemals sauber trennen kann,
+              liegt ein nicht-linear separierbares Problem vor.
+            </p>
+          </article>
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">SVM-Lösung</span></h3>
+            <p>
+              SVMs können auch solche Probleme lösen, indem sie Daten implizit oder
+              explizit in einen höherdimensionalen Raum abbilden.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>4.2 Beispiel mit Kreisen</h2>
+          <p>
+            Das Kreise-Beispiel zeigt ein klassisches nichtlineares Problem:
+            In der 2D-Ebene kann eine lineare SVC die Klassen nicht trennen.
+          </p>
+        </div>
+
+        <div class="code-cell-split">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">Python</span>
+            </div>
+<pre><code>from sklearn.datasets import make_circles
+
+X, y = make_circles(100, factor=.1, noise=.1)
+
+from sklearn.svm import SVC
+
+clf = SVC(kernel='linear').fit(X, y)
+
+import matplotlib.pyplot as plt
+
+plt.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='autumn')
+#plot_svc_decision_function(clf, plot_support=False);</code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">Output</span>
+            </div>
+            <div class="output-side-body">
+              <img src="img/page4_circles_linear.png" alt="Kreise-Datensatz mit linearer SVM" />
+            </div>
+          </div>
+        </div>
+
+        <div class="note note-warning">
+          <strong>Ergebnis:</strong> Eine lineare Hyperebene wird die beiden Klassen
+          hier nicht sauber trennen können.
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>4.3 Idee: Projektion in höheren Raum</h2>
+          <p>
+            Eine Lösung besteht darin, die Daten in einen höherdimensionalen Raum
+            zu projizieren. Dort kann das Problem linear separierbar werden.
+          </p>
+        </div>
+
+        <p>
+          Eine Möglichkeit ist die Verwendung von <strong>Radial Basis Functions (RBF)</strong>.
+          RBFs sind skalare Funktionen \(\phi(r)\), die nur vom Abstand zum Ursprung abhängen.
+          Dadurch machen wir aus einem 2D-Datensatz durch eine zusätzliche Dimension einen
+          3D-Datensatz.
+        </p>
+
+        <div class="code-cell-split">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">Python</span>
+            </div>
+<pre><code>import numpy as np
+r = np.exp(-(X ** 2).sum(axis=1))
+X[:5]
+# [x_1^2 x_2^2]
+(X ** 2)[:5]
+# x_1^2 + x_2^2
+(X ** 2)[:5].sum(axis=1)</code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">Erklärung</span>
+            </div>
+            <div class="output-side-body">
+              <p>Die neue Spalte \(r\) hängt nur vom Abstand zum Ursprung ab und erweitert den Raum um eine Dimension.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">Python</span>
+            </div>
+<pre><code>def plot_3D(elev=30, azim=30, X=X, y=y):
+    ax = plt.subplot(projection='3d')
+    ax.scatter(X[:, 0], X[:, 1], r, c=y, s=50, cmap='autumn', edgecolors='gray')
+    ax.view_init(elev=elev, azim=azim)
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('r')
+
+plt.figure(figsize=(10, 7))
+plot_3D()</code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">Output</span>
+            </div>
+            <div class="output-side-body">
+              <img src="img/page4_3d_projection.png" alt="3D-Projektion der Kreisdaten" />
+            </div>
+          </div>
+        </div>
+
+        <div class="note note-primary">
+          <strong>Intuition:</strong> Was in 2D nicht trennbar ist, kann in 3D linear separierbar sein.
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">Python</span>
+            </div>
+<pre><code>np.concatenate((X, r.reshape(-1, 1)), axis=1)</code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">Output</span>
+            </div>
+            <div class="output-side-body">
+              <p>Die Spalte \(r\) wird an \(X\) angehängt und erzeugt so den erweiterten Merkmalsraum.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>4.4 Kernel-Trick</h2>
+          <p>
+            Der Kernel-Trick treibt diese Idee auf die Spitze: Die Projektion in den
+            höherdimensionalen Raum wird <strong>implizit</strong> durchgeführt,
+            ohne die neuen Koordinaten explizit auszurechnen.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Implizite Abbildung</span></h3>
+            <p>
+              Jeder Datenpunkt erhält gedanklich zusätzliche Dimensionen, ohne dass
+              diese direkt konstruiert werden müssen.
+            </p>
+          </article>
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Lineare Trennung im Hilbertraum</span></h3>
+            <p>
+              In diesem höherdimensionalen Raum wird eine lineare Hyperebene gesucht.
+              Im ursprünglichen Raum erscheint diese als nichtlineare Trennlinie.
+            </p>
+          </article>
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">sklearn</span></h3>
+            <p>
+              In de>sklearn</code> wird das oft über
+              de>kernel='rbf'</code> realisiert.
+            </p>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">Python</span>
+            </div>
+<pre><code>from sklearn.svm import SVC
+
+clf = SVC(kernel='rbf', C=1E6)
+clf.fit(X, y)
+
+import matplotlib.pyplot as plt
+
+plt.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='autumn', edgecolors='gray')
+plot_svc_decision_function(clf)
+plt.scatter(clf.support_vectors_[:, 0], clf.support_vectors_[:, 1],
+            s=300, lw=1, facecolors='none');</code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">Output</span>
+            </div>
+            <div class="output-side-body">
+              <img src="img/page4_rbf_boundary.png" alt="Nichtlineare Entscheidungsgrenze mit RBF-Kernel" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>4.5 Mehrklassen-SVMs</h2>
+          <p>
+            Liegen mehr als zwei Klassen vor, lässt sich die binäre SVM nicht direkt
+            einsetzen. Dafür nutzt man Kombinationen mehrerer binärer Klassifikatoren.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">One-vs-Rest</span></h3>
+            <p>
+              Eine Klasse wird gegen alle anderen trainiert.
+            </p>
+          </article>
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">One-vs-One</span></h3>
+            <p>
+              Für jede Klassenpaarung wird ein eigener Klassifikator trainiert.
+            </p>
+          </article>
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Anzahl der Modelle</span></h3>
+            <p>
+              Für \(N\) Klassen benötigt One-vs-One insgesamt
+              \(\frac{N(N-1)}{2}\) SVMs.
+            </p>
+          </article>
+        </div>
+
+        <div class="note note-primary" style="margin-top:var(--space-6)">
+          <strong>Zusammenfassung:</strong> Die Entscheidungsgrenzen entstehen durch
+          die Kombination aller binären Klassifikatoren. In der Praxis nutzt
+          scikit-learn passende Multiclass-Strategien automatisch.
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <small>
+        PRM Prüfungsvorbereitung · Kapitel 3 – Klassifikation ·
+        Seite 4: Nichtlineare Probleme &amp; Kernel-Trick
+      </small>
+    </div>
+  </footer>
+
+</body>
+</html>

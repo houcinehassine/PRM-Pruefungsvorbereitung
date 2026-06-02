@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM Kapitel 3 – Multi-Class-SVM und Anwendungen</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background: #f7f9fc;
+      color: #222;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+      color: #123a63;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 1.05rem;
+      color: #555;
+      margin-bottom: 0;
+    }
+
+    .keyword {
+      color: #d62828;
+      font-weight: bold;
+    }
+
+    .note {
+      background: #eef6ff;
+      border-left: 5px solid #2b6cb0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+
+    .formula {
+      background: #f3f6fa;
+      border: 1px solid #d9e2ec;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-family: "Courier New", monospace;
+      overflow-x: auto;
+      margin: 14px 0;
+      white-space: pre-wrap;
+    }
+
+    ul {
+      margin-top: 10px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #fff;
+    }
+
+    th, td {
+      border: 1px solid #d9e2ec;
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #edf2f7;
+      color: #1a365d;
+    }
+
+    .highlight {
+      background: #fff4cc;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .small {
+      font-size: 0.95rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>PRM Kapitel 3 – <span class="keyword">Multi-Class-SVM</span> und Anwendungen</h1>
+      <p class="subtitle">Seite 7: Mehrere Klassen, Praxisbeispiele und Bewertung</p>
+    </div>
+
+    <div class="card">
+      <h2>1. Multi-Class-SVM</h2>
+      <p>
+        Die klassische SVM ist zunächst ein binärer Klassifikator.
+        Wenn mehr als zwei Klassen vorhanden sind, muss der Ansatz erweitert werden.
+      </p>
+      <p>
+        Im Skript wird dafür <span class="keyword">one-versus-one</span> genannt:
+        Für jede Klassenpaarung wird ein eigener Klassifikator trainiert.
+      </p>
+      <div class="formula">
+Für n Klassen: (n - 1) / 2 SVMs
+      </div>
+      <p>
+        Die endgültige Entscheidung entsteht aus der Kombination aller Teilklassifikatoren.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>2. Digits-Beispiel</h2>
+      <p>
+        Ein wichtiges Anwendungsbeispiel ist die Erkennung handschriftlicher Ziffern.
+        Dazu wird im Skript das <span class="keyword">Digits-Dataset</span> aus sklearn verwendet.
+      </p>
+      <p>
+        Ziel ist es, die Ziffern in einem \(8 \times 8\)-Raster korrekt zu klassifizieren.
+        Das Modell soll ungesehene handschriftliche Zahlen zuverlässig vorhersagen.
+      </p>
+      <div class="note">
+        <strong>Praxisnutzen:</strong> z. B. Postleitzahlen, Seriennummern oder handschriftliche Notizen automatisch erkennen.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>3. Face Recognition</h2>
+      <p>
+        Ein weiteres Beispiel ist die Gesichtserkennung.
+        Hier werden Bilder berühmter Personen als Klassen behandelt.
+      </p>
+      <p>
+        Weil die Daten hochdimensional sind, wird zuvor <span class="keyword">PCA</span> verwendet,
+        um die Dimension zu reduzieren.
+        Danach wird eine SVM mit <span class="keyword">RBF-Kernel</span> trainiert.
+      </p>
+      <div class="formula">
+SVC(kernel='rbf')
+GridSearchCV für C und gamma
+      </div>
+      <p>
+        Das Ziel ist, Gesichter anhand ihrer Merkmale sicher zu klassifizieren.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>4. Fault Classification</h2>
+      <p>
+        Im Bereich Predictive Maintenance wird die SVM zur <span class="keyword">Fault Classification</span> genutzt.
+        Im Skript geht es um Vibrationsdaten von Kugellagern mit verschiedenen Schadensklassen.
+      </p>
+      <p>
+        Die Zeitreihen werden in Fenster aufgeteilt und mit einfachen Features wie
+        <span class="keyword">Standardabweichung</span>, <span class="keyword">Skewness</span> und <span class="keyword">Kurtosis</span> beschrieben.
+      </p>
+      <div class="note">
+        <strong>Wichtig:</strong> Aus Rohdaten werden Features extrahiert, auf deren Basis die SVM lernt.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>5. Vorteile und Nachteile</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Bereich</th>
+              <th>Inhalt</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="keyword">Vorteile</span></td>
+              <td>Effektiv bei höherdimensionalen Daten, gut bei wenigen Datenpunkten, geometrisch interpretierbar.</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">Nachteile</span></td>
+              <td>Probleme mit sehr großen Datensätzen, stark überlappenden Klassen und viel Rauschen.</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">Weitere Grenze</span></td>
+              <td>Eine probabilistische Interpretation ist nicht möglich.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>6. Was du hier verstehen musst</h2>
+      <ul>
+        <li>Multi-Class-SVMs erweitern die binäre SVM auf mehrere Klassen.</li>
+        <li><span class="keyword">One-versus-one</span> ist eine typische Strategie dafür.</li>
+        <li>Das Skript zeigt Anwendungen in <span class="keyword">Digits</span>, <span class="keyword">Face Recognition</span> und <span class="keyword">Fault Classification</span>.</li>
+        <li>Für gute Ergebnisse sind oft Feature Engineering, PCA und Hyperparameter-Tuning nötig.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>7. Lernziel dieser Seite</h2>
+      <p>
+        Diese Seite beantwortet die Frage:
+        <span class="highlight">Wie wird die SVM in echten Mehrklassen-Problemen eingesetzt?</span>
+      </p>
+      <p class="small">
+        Genau dafür nutzt man mehrere Klassifikatoren und passende Feature-Repräsentationen.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

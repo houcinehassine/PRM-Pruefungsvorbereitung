@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM Kapitel 3 – SVR und Vergleich zur SVM-Klassifikation</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background: #f7f9fc;
+      color: #222;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+      color: #123a63;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 1.05rem;
+      color: #555;
+      margin-bottom: 0;
+    }
+
+    .keyword {
+      color: #d62828;
+      font-weight: bold;
+    }
+
+    .note {
+      background: #eef6ff;
+      border-left: 5px solid #2b6cb0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+
+    .formula {
+      background: #f3f6fa;
+      border: 1px solid #d9e2ec;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-family: "Courier New", monospace;
+      overflow-x: auto;
+      margin: 14px 0;
+      white-space: pre-wrap;
+    }
+
+    ul {
+      margin-top: 10px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #fff;
+    }
+
+    th, td {
+      border: 1px solid #d9e2ec;
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #edf2f7;
+      color: #1a365d;
+    }
+
+    .highlight {
+      background: #fff4cc;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .small {
+      font-size: 0.95rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>PRM Kapitel 3 – <span class="keyword">SVR</span> und Vergleich zur SVM-Klassifikation</h1>
+      <p class="subtitle">Seite 8: Support Vector Regression als Erweiterung der SVM</p>
+    </div>
+
+    <div class="card">
+      <h2>1. Was ist SVR?</h2>
+      <p>
+        <span class="keyword">Support Vector Regression</span> ist die Regressionsvariante der SVM.
+        Statt Klassen zu trennen, wird eine Vorhersagefunktion gelernt.
+      </p>
+      <p>
+        Die Idee ist ähnlich: Es wird eine Hyperebene gesucht, um die ein Margin gelegt wird.
+        Innerhalb dieses Bereichs sollen möglichst viele Punkte liegen.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>2. Unterschied zur Klassifikation</h2>
+      <p>
+        Bei der SVM-Klassifikation stehen Klassenlabels im Mittelpunkt.
+        Bei der SVR geht es dagegen um numerische Zielwerte.
+      </p>
+      <p>
+        Die Bestrafung ist ebenfalls anders:
+        Punkte <span class="keyword">außerhalb</span> des Margins erzeugen Penalties.
+      </p>
+      <div class="note">
+        <strong>Merksatz:</strong> Klassifikation trennt Klassen, Regression schätzt Werte.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>3. Epsilon-Margin</h2>
+      <p>
+        In der SVR ist der Margin durch <span class="keyword">epsilon</span> definiert.
+        Dieser Bereich bestimmt, wie stark Abweichungen toleriert werden.
+      </p>
+      <p>
+        Je größer epsilon ist, desto breiter ist der erlaubte Bereich um die Regressionslinie.
+      </p>
+      <div class="formula">
+SVR(kernel=<kernel_type>, C=<regularization_parameter_value>, epsilon=<margin_width>)
+      </div>
+      <p>
+        Auch hier gibt es Support Vectors, nämlich die Punkte außerhalb des epsilon-Bereichs.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>4. Linearer Fall</h2>
+      <p>
+        Im linearen Fall wird eine Gerade gelernt, die die Daten möglichst gut beschreibt.
+        Im Skript wird dafür <span class="keyword">LinearSVR</span> verwendet.
+      </p>
+      <div class="formula">
+LinearSVR(epsilon=1.5, random_state=42)
+      </div>
+      <p>
+        Verschiedene epsilon-Werte führen zu unterschiedlichen Breiten des Toleranzbandes.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>5. Nichtlinearer Fall</h2>
+      <p>
+        Auch bei der SVR kann der <span class="keyword">Kernel-Trick</span> eingesetzt werden.
+        Damit lassen sich nichtlineare Beziehungen modellieren.
+      </p>
+      <p>
+        Im Skript werden dafür <span class="keyword">poly</span>- und <span class="keyword">rbf</span>-Kernel gezeigt.
+      </p>
+      <div class="formula">
+SVR(kernel="poly", degree=2, C=100, epsilon=0.1)
+SVR(kernel="rbf", C=100, epsilon=0.1)
+      </div>
+      <p>
+        Damit kann man auch gekrümmte Zusammenhänge in den Daten approximieren.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>6. Wichtige Einflussgrößen</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Wirkung</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="keyword">C</span></td>
+              <td>Steuert die Stärke der Regularisierung und den Umgang mit Fehlern.</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">epsilon</span></td>
+              <td>Breite des erlaubten Toleranzbands um die Regressionslinie.</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">kernel</span></td>
+              <td>Bestimmt, ob linear oder nichtlinear modelliert wird.</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">degree</span></td>
+              <td>Relevant beim Polynom-Kernel.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>7. Vergleich zur Klassifikation</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Aspekt</th>
+              <th>SVM-Klassifikation</th>
+              <th>SVR</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="keyword">Ziel</span></td>
+              <td>Klassen trennen</td>
+              <td>Kontinuierliche Werte schätzen</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">Loss</span></td>
+              <td>Hinge Loss</td>
+              <td>Epsilon-basierte Verlustfunktion</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">Support Vectors</span></td>
+              <td>Punkte am Rand der Klassen</td>
+              <td>Punkte außerhalb des epsilon-Bereichs</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">Ausgabe</span></td>
+              <td>Klassenlabel</td>
+              <td>Numerischer Vorhersagewert</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>8. Was du hier verstehen musst</h2>
+      <ul>
+        <li><span class="keyword">SVR</span> ist die Regressionsversion der SVM.</li>
+        <li>Statt Klassen wird ein Zielwert vorhergesagt.</li>
+        <li><span class="keyword">epsilon</span> definiert das Toleranzband.</li>
+        <li>Der <span class="keyword">Kernel-Trick</span> funktioniert auch bei Regression.</li>
+        <li>Die Grundidee bleibt: gute Anpassung bei kontrollierter Komplexität.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>9. Lernziel dieser Seite</h2>
+      <p>
+        Diese Seite beantwortet die Frage:
+        <span class="highlight">Wie erweitert man die SVM von der Klassifikation zur Regression?</span>
+      </p>
+      <p class="small">
+        Die Antwort ist die SVR mit epsilon-Margin, Support Vectors und optionalem Kernel-Trick.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

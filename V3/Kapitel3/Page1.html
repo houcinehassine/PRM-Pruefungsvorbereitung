@@ -1,146 +1,234 @@
 <!DOCTYPE html>
-<html lang="de" data-theme="light">
+<html lang="de">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PRM – SVM Einführung</title>
-  <script type="module" src="../header.js"></script>
-  <script type="module" src="../sidebar.js"></script>
-  <link rel="stylesheet" href="../style.css" />
+  <title>PRM Kapitel 3 – Einführung in SVM</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background: #f7f9fc;
+      color: #222;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+      color: #123a63;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 1.05rem;
+      color: #555;
+      margin-bottom: 0;
+    }
+
+    .keyword {
+      color: #d62828;
+      font-weight: bold;
+    }
+
+    .note {
+      background: #eef6ff;
+      border-left: 5px solid #2b6cb0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+
+    ul {
+      margin-top: 10px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #fff;
+    }
+
+    th, td {
+      border: 1px solid #d9e2ec;
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #edf2f7;
+      color: #1a365d;
+    }
+
+    .highlight {
+      background: #fff4cc;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .small {
+      font-size: 0.95rem;
+      color: #555;
+    }
+  </style>
 </head>
 <body>
-  <site-header active="page3" title="PRM – SVM Einführung"></site-header>
+  <div class="container">
+    <div class="card">
+      <h1>PRM Kapitel 3 – Einführung in <span class="keyword">SVM</span></h1>
+      <p class="subtitle">Seite 1: Worum geht es bei Support Vector Machines?</p>
+    </div>
 
-<div class="layout">
-  <aside class="sidebar-shell">
-    <site-sidebar active="page1"></site-sidebar>
-  </aside>
-  <main class="content" id="main-content">
-      <section class="hero">
-        <div class="hero-grid">
-          <div>
-            <span class="eyebrow">Kapitel 3 · Seite 1</span>
-            <h1>Einführung in die <span class="key" style="--key-color:var(--color-primary)">Klassifikation</span></h1>
-            <p>
-              Diese Seite gibt dir den Einstieg in das Kapitel Klassifikation. Du lernst,
-              was eine Klassifikation ist, wie man Daten trennt und warum SVMs dafür
-              besonders interessant sind.
-            </p>
-            <div class="pill-row">
-              <span class="pill">Klassifikation</span>
-              <span class="pill">Labels</span>
-              <span class="pill">Trennung</span>
-              <span class="pill">SVM</span>
-            </div>
-          </div>
+    <div class="card">
+      <h2>1. Was ist eine SVM?</h2>
+      <p>
+        Eine <span class="keyword">Support Vector Machine (SVM)</span> ist ein Modell aus dem Machine Learning,
+        das vor allem für die <span class="keyword">Klassifikation</span> verwendet wird.
+        In der Vorlesung wird sie als diskriminativer Klassifikator beschrieben und als sehr bekanntes Modell im Machine Learning eingeführt.
+      </p>
+      <p>
+        Die SVM ist besonders wichtig, weil sie nicht einfach irgendeine Trennlinie sucht,
+        sondern diejenige, die die Klassen möglichst gut voneinander trennt.
+      </p>
+    </div>
 
-          <aside class="hero-note">
-            <h2 style="font-size:var(--text-lg)">Lernziel</h2>
-            <p>
-              Du verstehst hier die Grundidee der Klassifikation und erkennst,
-              wie ein Modell aus Eingabedaten Klassen vorhersagt.
-            </p>
-          </aside>
-        </div>
-      </section>
+    <div class="card">
+      <h2>2. Mehrere Trennlinien sind möglich</h2>
+      <p>
+        Wenn wir zwei Klassen in einem 2D-Featureraum betrachten, können wir oft
+        <span class="highlight">mehrere verschiedene Geraden</span> zeichnen, die die Klassen trennen.
+      </p>
+      <p>
+        Das Problem dabei ist: Nicht jede Trennlinie ist gleich gut.
+        Je nachdem, welche Gerade man wählt, können neue Datenpunkte unterschiedlich klassifiziert werden.
+      </p>
+      <div class="note">
+        <strong>Wichtige Idee:</strong> Eine bloße Trennung reicht nicht aus.
+        Entscheidend ist, welche Trennlinie am robustesten für neue Daten ist.
+      </div>
+    </div>
 
-      <section class="section" id="einleitung">
-        <div class="section-head">
-          <h2>1. Was ist Klassifikation?</h2>
-          <p>
-            Klassifikation bedeutet, dass ein Modell eine Eingabe einer vordefinierten
-            Klasse zuordnet.
-          </p>
-        </div>
+    <div class="card">
+      <h2>3. Warum der Margin wichtig ist</h2>
+      <p>
+        Anstatt nur eine Gerade zur Trennung zu verwenden, legt die SVM einen
+        <span class="keyword">Margin</span> um die Trennlinie.
+        Dieser Margin ist der Abstand zur nächsten Klasse bzw. zu den nächstliegenden Punkten.
+      </p>
+      <p>
+        Die optimale Gerade ist dann diejenige mit dem <span class="keyword">größten Margin</span>.
+        Deshalb nennt man SVMs auch <span class="keyword">Maximum Margin Estimators</span>.
+      </p>
+      <p>
+        Dieser große Abstand macht das Modell robuster und hilft dabei,
+        neue Datenpunkte zuverlässiger zu klassifizieren.
+      </p>
+    </div>
 
-        <div class="card-grid">
-          <article class="card">
-            <h3>Eingabe</h3>
-            <p>
-              Ein Datensatz besteht aus Merkmalen, zum Beispiel Größe, Gewicht oder Pixelwerten.
-            </p>
-          </article>
+    <div class="card">
+      <h2>4. Support Vectors</h2>
+      <p>
+        Ein zentraler Begriff der SVM sind die <span class="keyword">Support Vectors</span>.
+        Das sind die Datenpunkte, die den Margin direkt bestimmen.
+      </p>
+      <p>
+        Der Fit des Modells hängt im Wesentlichen nur von diesen Punkten ab.
+        Genau deshalb sind sie so wichtig für das Verständnis der SVM.
+      </p>
+      <div class="note">
+        <strong>Merksatz:</strong> Die Support Vectors sind die Punkte am Rand, die die Entscheidungsgrenze „tragen“.
+      </div>
+    </div>
 
-          <article class="card">
-            <h3>Ausgabe</h3>
-            <p>
-              Das Modell gibt ein Label zurück, zum Beispiel <span class="key" style="--key-color:var(--color-success)">0</span>
-              oder <span class="key" style="--key-color:var(--color-warning)">1</span>.
-            </p>
-          </article>
-        </div>
-      </section>
+    <div class="card">
+      <h2>5. Kernidee in einem Satz</h2>
+      <p>
+        Die SVM sucht nicht nur irgendeine Trennlinie, sondern die Trennlinie mit dem
+        <span class="keyword">größten Margin</span>, wobei die
+        <span class="keyword">Support Vectors</span> die entscheidenden Randpunkte sind.
+      </p>
+    </div>
 
-      <section class="section" id="beispiel">
-        <div class="section-head">
-          <h2>2. Einfaches Beispiel</h2>
-          <p>
-            Hier siehst du ein kleines Beispiel, wie Klassifikationsdaten aussehen können.
-          </p>
-        </div>
+    <div class="card">
+      <h2>6. Lernziel dieser Seite</h2>
+      <p>
+        Diese Seite beantwortet die Frage: <span class="highlight">Worum geht es bei der SVM?</span>
+      </p>
+      <ul>
+        <li>Was eine SVM grundsätzlich macht.</li>
+        <li>Dass mehrere Trennlinien möglich sind.</li>
+        <li>Dass die SVM die Trennlinie mit dem größten Margin wählt.</li>
+        <li>Was Support Vectors sind.</li>
+      </ul>
+    </div>
 
-        <div class="code-cell-split">
-          <div class="code-side">
-            <div class="code-side-header">
-              <span class="cell-lang">Python</span>
-              <button class="copy-btn" aria-label="Code kopieren">Kopieren</button>
-            </div>
-            <pre><code>from sklearn.datasets import make_blobs
-
-X, y = make_blobs(
-    n_samples=100,
-    centers=2,
-    random_state=2,
-    cluster_std=1.2
-)
-
-print("Shape von X:", X.shape)
-print("Klassen:", set(y))</code></pre>
-          </div>
-
-          <div class="output-side">
-            <div class="output-side-header">
-              <span class="cell-lang">Output</span>
-              <button class="run-btn" type="button">Run</button>
-            </div>
-            <div class="output-side-body">
-              <pre>Shape von X: (100, 2)
-Klassen: {0, 1}</pre>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" id="svm">
-        <div class="section-head">
-          <h2>3. Warum SVM?</h2>
-          <p>
-            Support Vector Machines sind interessant, weil sie eine Trennlinie mit großem
-            Abstand zwischen den Klassen suchen.
-          </p>
-        </div>
-
-        <article class="topic">
-          <div class="topic-badge" style="background:var(--color-primary)">SVM</div>
-          <div>
-            <h3>Idee</h3>
-            <p>
-              Die SVM sucht eine Hyperplane, die die Klassen möglichst gut trennt.
-            </p>
-          </div>
-        </article>
-
-        <article class="topic">
-          <div class="topic-badge" style="background:var(--color-success)">+</div>
-          <div>
-            <h3>Support Vectors</h3>
-            <p>
-              Die wichtigsten Punkte sind die Datenpunkte nahe an der Trennlinie.
-            </p>
-          </div>
-        </article>
-      </section>
-    </main>
+    <div class="card">
+      <h2>7. Mini-Übersicht</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Begriff</th>
+              <th>Bedeutung</th>
+              <th>Wozu wichtig?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="keyword">SVM</span></td>
+              <td>Modell zur Klassifikation</td>
+              <td>Findet eine optimale Trennhyperebene</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">Margin</span></td>
+              <td>Abstand zwischen Trennlinie und nächster Klasse</td>
+              <td>Macht das Modell robust</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">Support Vectors</span></td>
+              <td>Randpunkte, die den Margin bestimmen</td>
+              <td>Bestimmen das Modell wesentlich</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">Maximum Margin</span></td>
+              <td>Größtmöglicher Abstand zur nächsten Klasse</td>
+              <td>Beste Wahl für die Trennlinie</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small">
+        Diese Struktur passt direkt zu der Einleitung und den ersten Inhalten aus Kapitel 3.
+      </p>
+    </div>
   </div>
 </body>
 </html>

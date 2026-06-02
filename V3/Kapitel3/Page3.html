@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM Kapitel 3 – Margin-Maximierung und Optimierungsproblem</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background: #f7f9fc;
+      color: #222;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+      color: #123a63;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 1.05rem;
+      color: #555;
+      margin-bottom: 0;
+    }
+
+    .keyword {
+      color: #d62828;
+      font-weight: bold;
+    }
+
+    .note {
+      background: #eef6ff;
+      border-left: 5px solid #2b6cb0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+
+    .formula {
+      background: #f3f6fa;
+      border: 1px solid #d9e2ec;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-family: "Courier New", monospace;
+      overflow-x: auto;
+      margin: 14px 0;
+      white-space: pre-wrap;
+    }
+
+    ul {
+      margin-top: 10px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #fff;
+    }
+
+    th, td {
+      border: 1px solid #d9e2ec;
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #edf2f7;
+      color: #1a365d;
+    }
+
+    .highlight {
+      background: #fff4cc;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .small {
+      font-size: 0.95rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>PRM Kapitel 3 – <span class="keyword">Margin-Maximierung</span> und Optimierungsproblem</h1>
+      <p class="subtitle">Seite 3: Die SVM sucht die Trennlinie mit dem größten Margin</p>
+    </div>
+
+    <div class="card">
+      <h2>1. Grundidee der Margin-Maximierung</h2>
+      <p>
+        Bei der SVM wird nicht nur eine beliebige Trennlinie gesucht,
+        sondern diejenige mit dem <span class="keyword">größten Margin</span>.
+      </p>
+      <p>
+        Der Margin ist der Abstand zwischen der Hyperebene und den nächstliegenden Punkten beider Klassen.
+        Genau dieser Abstand macht die SVM zu einem <span class="keyword">Maximum Margin Estimator</span>.
+      </p>
+      <div class="note">
+        <strong>Kernidee:</strong> Aus allen trennenden Hyperebenen wird die mit dem größten Sicherheitsabstand gewählt.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>2. Mathematische Bedingung</h2>
+      <p>
+        Für eine perfekte Trennung müssen die Datenpunkte auf der richtigen Seite der Hyperebene liegen.
+        Das wird durch eine Bedingung der Form
+        <span class="keyword">y<sub>i</sub>(⟨w, x<sub>i</sub>⟩ + b) ≥ 1</span> beschrieben.
+      </p>
+      <p>
+        Die Support Vectors sind die Punkte, die genau diese Randbedingung erfüllen.
+        Sie liegen also direkt am Rand des Margins.
+      </p>
+      <div class="formula">
+max  1 / ||w||
+s.t. y_i (⟨w, x_i⟩ + b) ≥ 1
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>3. Warum diese Form wichtig ist</h2>
+      <p>
+        Die Formulierung zeigt, dass die SVM den Abstand zur Trennfläche maximieren will.
+        Dafür wird die Norm des Gewichtsvektors \(w\) klein gehalten, weil der Margin von \(1 / ||w||\) abhängt.
+      </p>
+      <p>
+        Gleichzeitig müssen die Klassen richtig getrennt bleiben.
+        Genau daraus entsteht das Optimierungsproblem der SVM.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>4. Support Vector und Skalierung</h2>
+      <p>
+        Der Normalenvektor wird in der Herleitung nicht normalisiert.
+        Durch eine geeignete Skalierung wird die Bedingung so umgeschrieben,
+        dass der nächstliegende Punkt zur Hyperebene genau als <span class="keyword">Support Vector</span> erscheint.
+      </p>
+      <p>
+        Diese Umformung reduziert das Problem auf eine Form,
+        die sich gut mathematisch und algorithmisch bearbeiten lässt.
+      </p>
+      <div class="note">
+        <strong>Merksatz:</strong> Die Support Vectors bestimmen die optimale Trennhyperebene.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>5. Optimierungsproblem</h2>
+      <p>
+        Die SVM sucht also die Hyperebene mit maximalem Margin unter der Bedingung,
+        dass die Klassen korrekt getrennt sind.
+      </p>
+      <p>
+        Damit wird aus einer geometrischen Idee ein klares mathematisches Optimierungsproblem.
+      </p>
+      <div class="formula">
+min  1/2 ||w||^2
+s.t. y_i (⟨w, x_i⟩ + b) ≥ 1
+      </div>
+      <p>
+        Diese Form ist die Basis für alle weiteren Varianten der SVM,
+        insbesondere für Hard-Margin und Soft-Margin.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>6. Was du hier verstehen musst</h2>
+      <ul>
+        <li>Die SVM wählt die Trennlinie mit dem <span class="keyword">größten Margin</span>.</li>
+        <li>Der Margin ist der Abstand zur nächstliegenden Klasse.</li>
+        <li>Die Punkte am Rand heißen <span class="keyword">Support Vectors</span>.</li>
+        <li>Die SVM lässt sich als <span class="keyword">Optimierungsproblem</span> formulieren.</li>
+        <li>Das Ziel ist: Abstand maximieren und Klassen korrekt trennen.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>7. Mini-Tabelle</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Begriff</th>
+              <th>Bedeutung</th>
+              <th>Rolle in der SVM</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="keyword">Margin</span></td>
+              <td>Abstand zwischen Hyperebene und nächstem Punkt</td>
+              <td>Soll maximal werden</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">Support Vector</span></td>
+              <td>Nächstliegender Punkt zur Hyperebene</td>
+              <td>Bestimmt die Grenze mit</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">Optimierungsproblem</span></td>
+              <td>Mathematische Formulierung des Lernziels</td>
+              <td>Ermöglicht das Training der SVM</td>
+            </tr>
+            <tr>
+              <td><span class="keyword">Maximum Margin</span></td>
+              <td>Größtmöglicher Sicherheitsabstand</td>
+              <td>Ziel der linearen SVM</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>8. Lernziel dieser Seite</h2>
+      <p>
+        Diese Seite beantwortet die Frage:
+        <span class="highlight">Wie wird die beste Trennlinie mathematisch bestimmt?</span>
+      </p>
+      <p class="small">
+        Damit ist die Grundlage gelegt für Hard-Margin, Soft-Margin, Slack Variables und Hinge Loss.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

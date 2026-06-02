@@ -3,256 +3,124 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PRM – SVM Mathematische Herleitung</title>
+  <title>PRM – Kapitel 2: Mathematische Herleitung</title>
   <script type="module" src="../header.js"></script>
   <script type="module" src="sidebar.js"></script>
   <link rel="stylesheet" href="../style.css">
 </head>
 
 <body>
-  <site-header active="page2" title="PRM – SVM Mathematische Herleitung"></site-header>
+  <site-header active="page3" title="Kapitel 2: Mathematische Herleitung"></site-header>
 
   <div class="layout">
     <site-sidebar active="page2"></site-sidebar>
 
     <main class="content" id="main-content">
 
+      <!-- ══════════════════════════════════════════
+           HERO
+      ══════════════════════════════════════════ -->
       <section class="hero">
         <div class="hero-grid">
           <div>
-            <span class="eyebrow">Kapitel 3 · Seite 2</span>
-            <h1>Mathematische <span class="key" style="--key-color:var(--color-primary)">Herleitung</span></h1>
+            <span class="eyebrow">Kapitel 2</span>
+            <h1>Mathematische
+              <span class="key" style="--key-color:var(--color-primary)">Herleitung</span>
+            </h1>
             <p>
-              Hier wird Schritt für Schritt hergeleitet, wie die SVM aus einem Trainingsdatensatz eine Hyperebene lernt, wie Vorzeichen und Margin zusammenhängen und wie daraus das Optimierungsproblem entsteht.
+              In diesem Kapitel wird die Hyperebene mathematisch beschrieben, der
+              <span class="key" style="--key-color:var(--color-warning)">Margin</span>
+              hergeleitet und das Optimierungsproblem der SVM auf eine
+              minimierbare Form gebracht.
             </p>
             <div class="pill-row">
               <span class="pill">Trainingsdatensatz</span>
               <span class="pill">Hyperebene</span>
-              <span class="pill">Vorzeichen</span>
+              <span class="pill">Bias</span>
               <span class="pill">Margin</span>
-              <span class="pill">Optimierung</span>
+              <span class="pill">Support Vectors</span>
+              <span class="pill">Optimierungsproblem</span>
             </div>
           </div>
+
           <aside class="hero-note">
             <h2 style="font-size:var(--text-lg)">Lernfokus dieser Seite</h2>
-            <p>
-              Du verstehst die Formeln hinter der SVM und erkennst, warum der Margin maximiert wird und wie daraus die finale Zielfunktion entsteht.
-            </p>
+            <p>Nach dieser Seite weißt du:</p>
+            <ul style="margin-top:var(--space-3); color:var(--color-text-muted)">
+              <li>Wie ein Trainingsdatensatz für die SVM definiert ist</li>
+              <li>Wie eine Hyperebene mit \(\mathbf{w}\) und \(b\) beschrieben wird</li>
+              <li>Warum der Margin maximiert werden soll</li>
+              <li>Wie das Problem auf \(\min \frac{1}{2}\|\mathbf{w}\|^2\) reduziert wird</li>
+            </ul>
           </aside>
         </div>
       </section>
 
+      <!-- ══════════════════════════════════════════
+           2.1 AUSGANGSLAGE
+      ══════════════════════════════════════════ -->
       <section class="section">
         <div class="section-head">
-          <h2>2.1 Trainingsdatensatz</h2>
+          <h2>2.1 Trainingsdatensatz und Hyperebene</h2>
           <p>
-            Ausgangspunkt ist ein gelabelter Trainingsdatensatz mit Feature-Vektoren und Klassenlabels.
+            Uns liegt ein historischer Datensatz bzw. Trainingsdatensatz vor.
+            Anhand dessen wird unsere Hyperebene gelernt.
           </p>
         </div>
 
         <div class="card-grid">
           <article class="card">
-            <h3><span class="key" style="--key-color:var(--color-primary)">Formale Darstellung</span></h3>
-            <p>Der Datensatz besteht aus Paaren \((\mathbf{x}_i, y_i)\) mit \(y_i \in \{-1, 1\}\).</p>
-            <div class="math-display">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Trainingsdatensatz</span></h3>
+            <p>
               \[
-              \{(\mathbf{x}_i, y_i)\mid i=1,\ldots,N,\; y_i \in \{-1,1\}\}
+              \{(\mathbf{x}_i, y_i) \mid i = 1, \dots, N, \; y_i \in \{-1, 1\}\}
               \]
-            </div>
+            </p>
+            <p>
+              Die Daten bestehen aus Eingabepunkten \(\mathbf{x}_i\) und den
+              zugehörigen Klassenlabels \(y_i\).
+            </p>
           </article>
 
           <article class="card">
-            <h3><span class="key" style="--key-color:var(--color-success)">Bedeutung</span></h3>
+            <h3><span class="key" style="--key-color:var(--color-success)">Hyperebene</span></h3>
             <p>
-              Die SVM nutzt diese Daten, um eine Trennfläche zu lernen, die beide Klassen möglichst gut separiert.
+              Wir beschreiben unsere Hyperebene mittels:
+            </p>
+            <ul>
+              <li>des <strong>Normalenvektors</strong> \(\mathbf{w}\) durch den Ursprung</li>
+              <li>und des <strong>Abstandes vom Ursprung</strong> \(b\), den man <em>Bias</em> nennt</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Eindeutige Beschreibung</span></h3>
+            <p>
+              Mit diesen beiden Informationen haben wir eindeutig eine Hyperebene
+              im Raum definiert.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">Kernidee</span></h3>
+            <p>
+              Die Hyperebene trennt die Daten in zwei Klassen, und die spätere
+              Entscheidung basiert auf dem Vorzeichen des Ausdrucks
+              \(\langle \mathbf{w}, \mathbf{x}_i \rangle + b\).
             </p>
           </article>
         </div>
-
-        <div class="code-cell-split" style="margin-top:var(--space-6)">
-          <div class="code-side">
-            <div class="code-side-header">
-              <span class="cell-lang">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="16 18 22 12 16 6"/>
-                  <polyline points="8 6 2 12 8 18"/>
-                </svg>
-                Python
-              </span>
-              <button class="copy-btn" aria-label="Code kopieren">Kopieren</button>
-            </div>
-            <pre><code>from sklearn.datasets import make_blobs
-
-X, y = make_blobs(n_samples=100, centers=2,
-                  random_state=2, cluster_std=1.2)
-
-print("Shape von X:", X.shape)
-print("Klassen:", set(y))</code></pre>
-          </div>
-          <div class="output-side">
-            <div class="output-side-header">
-              <span class="cell-lang">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                </svg>
-                Output
-              </span>
-            </div>
-            <div class="output-side-body">
-              <pre>Shape von X: (100, 2)
-Klassen: {0, 1}</pre>
-            </div>
-          </div>
-        </div>
       </section>
 
+      <!-- ══════════════════════════════════════════
+           2.2 VORZEICHEN
+      ══════════════════════════════════════════ -->
       <section class="section">
         <div class="section-head">
-          <h2>2.2 Hyperebene</h2>
+          <h2>2.2 Vorzeichen und Klassifikation</h2>
           <p>
-            Die Trennfläche wird durch einen Normalenvektor und einen Bias beschrieben.
-          </p>
-        </div>
-
-        <div class="overview">
-          <article class="topic">
-            <div class="topic-badge" style="background:var(--color-primary)">w</div>
-            <div>
-              <h3><span class="key" style="--key-color:var(--color-primary)">Normalenvektor</span></h3>
-              <p>Der Vektor \(\mathbf{w}\) steht senkrecht auf der Hyperebene und bestimmt ihre Orientierung.</p>
-            </div>
-          </article>
-
-          <article class="topic">
-            <div class="topic-badge" style="background:var(--color-warning)">b</div>
-            <div>
-              <h3><span class="key" style="--key-color:var(--color-warning)">Bias</span></h3>
-              <p>Der Bias \(b\) verschiebt die Hyperebene vom Ursprung weg.</p>
-            </div>
-          </article>
-
-          <article class="topic">
-            <div class="topic-badge" style="background:var(--color-success)">=0</div>
-            <div>
-              <h3><span class="key" style="--key-color:var(--color-success)">Hyperebenengleichung</span></h3>
-              <p>Punkte auf der Hyperebene erfüllen:</p>
-              <div class="math-display">
-                \[
-                \langle \mathbf{w}, \mathbf{x}_i \rangle + b = 0
-                \]
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="section-head">
-          <h2>2.3 Vorzeichen der Punkte</h2>
-          <p>
-            Das Vorzeichen des Ausdrucks entscheidet, auf welcher Seite der Hyperebene ein Punkt liegt.
-          </p>
-        </div>
-
-        <div class="timeline">
-          <div class="timeline-step">
-            <div class="step-no">+</div>
-            <div>
-              <strong>Positive Seite</strong>
-              <p>Ist \(\langle \mathbf{w}, \mathbf{x}_i \rangle + b > 0\), liegt der Punkt in Richtung von \(\mathbf{w}\).</p>
-            </div>
-          </div>
-          <div class="timeline-step">
-            <div class="step-no">−</div>
-            <div>
-              <strong>Negative Seite</strong>
-              <p>Ist der Ausdruck kleiner als 0, liegt der Punkt entgegengesetzt zu \(\mathbf{w}\).</p>
-            </div>
-          </div>
-          <div class="timeline-step">
-            <div class="step-no">✓</div>
-            <div>
-              <strong>Klassifikationsregel</strong>
-              <p>Für die Vorhersage verwendet die SVM die Signum-Funktion.</p>
-              <div class="math-display">
-                \[
-                \hat{y}_i = \operatorname{sgn}\!\left(\langle \mathbf{w}, \mathbf{x}_i \rangle + b\right)
-                \]
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="code-cell-split" style="margin-top:var(--space-6)">
-          <div class="code-side">
-            <div class="code-side-header">
-              <span class="cell-lang">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="16 18 22 12 16 6"/>
-                  <polyline points="8 6 2 12 8 18"/>
-                </svg>
-                Python
-              </span>
-            </div>
-            <pre><code>from sklearn.svm import SVC
-
-model = SVC(kernel='linear', C=1.0).fit(X, y)
-scores = model.decision_function(X[:5])
-
-print("Erste 5 Scores:", scores)
-print("Vorhersagen:", model.predict(X[:5]))</code></pre>
-          </div>
-          <div class="output-side">
-            <div class="output-side-header">
-              <span class="cell-lang">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                </svg>
-                Output
-              </span>
-            </div>
-            <div class="output-side-body">
-              <pre>Erste 5 Scores: [ ... ]
-Vorhersagen: [ ... ]</pre>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="section-head">
-          <h2>2.4 Margin und Abstand</h2>
-          <p>
-            Der Margin ist der Abstand der nächstliegenden Punkte zur Hyperebene. Die SVM maximiert genau diesen Abstand.
-          </p>
-        </div>
-
-        <div class="card-grid">
-          <article class="card">
-            <h3><span class="key" style="--key-color:var(--color-warning)">Margin-Bedingung</span></h3>
-            <div class="math-display">
-              \[
-              y_i\left(\langle \mathbf{w}, \mathbf{x}_i \rangle + b\right) \geq r
-              \]
-            </div>
-          </article>
-
-          <article class="card">
-            <h3><span class="key" style="--key-color:var(--color-primary)">Optimierung</span></h3>
-            <div class="math-display">
-              \[
-              \max_{\mathbf{w}, b} \; r
-              \]
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="section-head">
-          <h2>2.5 Skalierung und Support Vectors</h2>
-          <p>
-            Damit das Problem lösbar wird, wird \(\mathbf{w}\) nicht normiert betrachtet. Der nächstgelegene Punkt wird als Support Vector genutzt.
+            Für Punkte auf und neben der Hyperebene gilt eine einfache
+            Vorzeichenregel.
           </p>
         </div>
 
@@ -260,66 +128,193 @@ Vorhersagen: [ ... ]</pre>
           <div class="timeline-step">
             <div class="step-no">1</div>
             <div>
-              <strong>Skalierung setzen</strong>
-              <p>Für den nächstgelegenen Punkt \(\mathbf{x}_a\) gilt:</p>
-              <div class="math-display">
+              <strong>Punkte auf der Hyperebene</strong>
+              <p>
+                Für die Datenpunkte auf der Hyperebene gilt:
                 \[
-                \langle \mathbf{w}, \mathbf{x}_a \rangle + b = 1
+                \langle \mathbf{w}, \mathbf{x}_i \rangle + b = 0
                 \]
-              </div>
+              </p>
             </div>
           </div>
 
           <div class="timeline-step">
             <div class="step-no">2</div>
             <div>
-              <strong>Margin vereinfachen</strong>
-              <p>Der Abstand ergibt sich zu:</p>
-              <div class="math-display">
-                \[
-                r = \frac{1}{\|\mathbf{w}\|}
-                \]
-              </div>
+              <strong>Punkte neben der Hyperebene</strong>
+              <p>
+                Für Punkte, die nicht auf der Hyperebene liegen, ist diese
+                Gleichung nicht 0, sondern:
+              </p>
+              <ul>
+                <li><strong>positiv</strong> in Richtung \(\mathbf{w}\)</li>
+                <li><strong>negativ</strong> in entgegengesetzter Richtung zu \(\mathbf{w}\)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-no">3</div>
+            <div>
+              <strong>Trennung der Klassen</strong>
+              <p>
+                Wenn eine Hyperebene alle Punkte unserer Klassen voneinander
+                trennt, dann weisen die Punkte einer Klasse alle entweder
+                positive oder negative Vorzeichen auf.
+              </p>
             </div>
           </div>
         </div>
+
+        <div class="note note-primary" style="margin-top:var(--space-6)">
+          <strong>Modellform:</strong>
+          \[
+          y_i = \text{sgn}(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \quad \text{(Unser Modell!)}
+          \]
+        </div>
+
+        <div class="note note-warning" style="margin-top:var(--space-3)">
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \ge 0
+          \]
+        </div>
       </section>
 
+      <!-- ══════════════════════════════════════════
+           2.3 MARGIN
+      ══════════════════════════════════════════ -->
       <section class="section">
         <div class="section-head">
-          <h2>2.6 Endgültiges Optimierungsproblem</h2>
+          <h2>2.3 Margin – maximaler Margin</h2>
           <p>
-            Die Margin-Maximierung wird schließlich zu einem quadratischen Optimierungsproblem umgeformt.
+            Aus den unendlich vielen Hyperebenen wählt man nun die, die den
+            größten <strong>Margin</strong> zwischen den beiden Klassen aufweist.
           </p>
         </div>
 
-        <div class="card-grid">
-          <article class="card">
-            <h3><span class="key" style="--key-color:var(--color-warning)">Ziel</span></h3>
-            <div class="math-display">
-              \[
-              \max_{\mathbf{w}, b} \frac{1}{\|\mathbf{w}\|}
-              \]
+        <div class="overview">
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-primary)">1</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-primary)">Definition</span></h3>
+              <p>
+                Der Margin wird durch den Abstand zu den nächsten Punkten der
+                Klassen zur Hyperebene definiert – wir brauchen also einen Abstand.
+              </p>
             </div>
           </article>
 
-          <article class="card">
-            <h3><span class="key" style="--key-color:var(--color-success)">Äquivalente Form</span></h3>
-            <div class="math-display">
-              \[
-              \min_{\mathbf{w}, b} \frac{1}{2}\|\mathbf{w}\|^2
-              \]
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-warning)">r</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-warning)">Abstand r</span></h3>
+              <p>
+                Mit diesem Abstand \(r\) können wir unsere Bedingung formulieren:
+                \[
+                y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \ge r
+                \]
+              </p>
+            </div>
+          </article>
+
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-success)">M</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-success)">Optimierung</span></h3>
+              <p>
+                Wir können nun ein Optimierungsproblem formulieren:
+                \[
+                \max_{\mathbf{w}, b} r
+                \]
+              </p>
             </div>
           </article>
         </div>
 
         <div class="note note-primary" style="margin-top:var(--space-6)">
-          <strong>Merksatz:</strong> Die SVM sucht nicht die beste beliebige Linie, sondern die mit dem größten Margin. Daraus entsteht das harte Optimierungsproblem.
+          <strong>Bedingungen:</strong>
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \ge r \qquad \|\mathbf{w}\| = 1 \qquad r > 0
+          \]
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           2.4 NORMALENVEKTOR
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>2.4 Normalenvektor nicht mehr normalisiert</h2>
+          <p>
+            Der Normalenvektor sei nun <strong>nicht mehr normalisiert</strong>.
+            Um das Optimierungsproblem berechenbar zu machen, müssen wir eine
+            kleine Umformung machen.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Skalierung</span></h3>
+            <p>
+              Durch eine <strong>Skalierung</strong> der Daten auf die Bedingung:
+              \[
+              \langle \mathbf{w}, \mathbf{x}_a \rangle + b = 1
+              \]
+            </p>
+            <p>
+              mit \(\mathbf{x}_a\) als dem nächsten Punkt zur Hyperebene
+              (Support Vector).
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Margin-Formel</span></h3>
+            <p>
+              Mit dem vorher definierten Abstand kann gezeigt werden, dass:
+              \[
+              r = \frac{1}{\|\mathbf{w}\|}
+              \]
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Neue Bedingung</span></h3>
+            <p>
+              Für unsere Bedingung gilt dann:
+              \[
+              y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \ge 1
+              \]
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">Reduziertes Problem</span></h3>
+            <p>
+              Damit reduziert sich unser Problem auf:
+              \[
+              \max_{\mathbf{w}, b} \frac{1}{\|\mathbf{w}\|} \quad \text{bzw.} \quad \min_{\mathbf{w}, b} \frac{1}{2} \|\mathbf{w}\|^2
+              \]
+            </p>
+          </article>
+        </div>
+
+        <div class="note note-primary" style="margin-top:var(--space-6)">
+          <strong>Endbedingung:</strong>
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \ge 1
+          \]
         </div>
       </section>
 
     </main>
   </div>
 
+  <footer class="footer">
+    <div class="container">
+      <small>
+        PRM Prüfungsvorbereitung · Kapitel 2 – Mathematische Herleitung
+      </small>
+    </div>
+  </footer>
 </body>
 </html>

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – SVM Begriffe & Parameter</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  /style.css">
+</head>
+
+<body>
+  <site-header active="page3" title="SVM – Begriffe & Parameter"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page3"></site-sidebar>
+
+    <main class="content" id="main-content">
+
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <span class="eyebrow">Kapitel 3 · Seite 3</span>
+            <h1>Begriffe &
+              <span class="key" style="--key-color:var(--color-primary)">Parameter</span>
+            </h1>
+            <p>
+              Diese Seite behandelt Hard- und Soft-Margin, den Parameter
+              <span class="key" style="--key-color:var(--color-warning)">C</span>,
+              die Hinge Loss, die mathematische Zielfunktion sowie eine mögliche
+              Umsetzung per Gradientenabstieg in Python.
+            </p>
+            <div class="pill-row">
+              <span class="pill">Hard Margin</span>
+              <span class="pill">Soft Margin</span>
+              <span class="pill">Slack Variables</span>
+              <span class="pill">Hinge Loss</span>
+              <span class="pill">Gradientenabstieg</span>
+            </div>
+          </div>
+          <aside class="hero-note">
+            <h2 style="font-size:var(--text-lg)">Lernfokus dieser Seite</h2>
+            <p>Nach dieser Seite weißt du:</p>
+            <ul style="margin-top:var(--space-3); color:var(--color-text-muted)d">
+            <li>Was Hard- und Soft-Margin unterscheiden</li>
+            <li>Welche Rolle der Regularisierungsparameter <code>C</code> spielt</li>
+            <li>How Slack Variables und Hinge Loss zusammenhängen</li>
+            <li>How man die SVM-Zielfunktion in Python approximativ trainiert</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Hard- und Soft-Margin</h2>
+          <p>
+            Bei SVMs kann die Margin entweder <strong>hart</strong> oder
+            <strong>weich</strong> definiert werden. Der Unterschied besteht darin,
+            ob Punkte innerhalb der Margin oder sogar auf der falschen Seite der
+            Trennlinie erlaubt sind.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Hard Margin</span></h3>
+            <p>
+              Bei einer Hard-Margin-SVM werden keine Verletzungen der Margin zugelassen.
+              Das funktioniert nur gut, wenn die Daten sauber trennbar sind und wenig Rauschen besitzen.
+            </p>
+          </article>
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Soft Margin</span></h3>
+            <p>
+              Bei einer Soft-Margin-SVM dürfen Datenpunkte innerhalb des Margins
+              liegen oder ihn verletzen. Die Verletzung wird über eine Strafterm
+              kontrolliert und im Training berücksichtigt.
+            </p>
+          </article>
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Parameter C</span></h3>
+            <p>
+              Der Hyperparameter <code>C</code> steuert den Trade-off zwischen
+              großem Margin und Fehlertoleranz. Große Werte entsprechen eher
+              Hard-Margin-Verhalten, kleine Werte eher Soft-Margin-Verhalten.
+            </p>
+          </article>
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">Praxis</span></h3>
+            <p>
+              Der optimale Wert von <code>C</code> hängt vom Datensatz ab und
+              sollte z. B. mit Cross-Validation bestimmt werden.
+            </p>
+          </article>
+        </div>
+
+        <div class="note note-primary" style="margin-top:var(--space-6)">
+          <strong>Leitfrage:</strong> Wie viele bzw. wie starke Verletzungen des Margins
+          sollen zugelassen werden? Genau das regelt der Parameter <code>C</code>.
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Visualisierung von C</h2>
+          <p>
+            Mit einem großen <code>C</code> wird der Margin enger und Fehler werden
+            stärker bestraft. Mit einem kleinen <code>C</code> wird der Margin breiter,
+            und das Modell toleriert mehr Randverletzungen.
+          </p>
+        </div>
+
+        <div class="code-cell-split">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">Python</span>
+            </div>
+<pre><code>import matplotlib.pyplot as plt
+X, y = make_blobs(n_samples=100, centers=2,
+                  random_state=0, cluster_std=0.8)
+
+fig, ax = plt.subplots(1, 2, figsize=(16, 6))
+fig.subplots_adjust(left=0.0625, right=0.95, wspace=0.1)
+
+for axi, C in zip(ax, [10.0, 0.1]):
+    model = SVC(kernel='linear', C=C).fit(X, y)
+    axi.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='autumn', edgecolors='gray')
+    plot_svc_decision_function(model, axi)
+    axi.scatter(model.support_vectors_[:, 0],
+                model.support_vectors_[:, 1],
+                s=300, lw=1, facecolors='none');
+    axi.set_title('C = {0:.1f}'.format(C), size=14)</code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">Output</span>
+            </div>
+            <div class="output-side-body">
+              <img src="img/page3_c_visualisierung.png" alt="SVM Vergleich für verschiedene C-Werte" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Argument C und Slack Variables</h2>
+          <p>
+            Um Margin-Verletzungen zu erlauben, führt man Slack Variables \(\xi_i\) ein.
+            Diese bestrafen Punkte, die innerhalb des Margins liegen oder falsch klassifiziert sind.
+            Dadurch wird aus der harten Margin ein optimierbares Soft-Margin-Problem.
+          </p>
+        </div>
+
+        <p>
+          Die Formulierung lautet:
+        </p>
+
+        <p>
+          \[
+          \min_{\mathbf{w}, b, \xi} \frac{1}{2}\|\mathbf{w}\|^2 + C \sum_i \xi_i
+          \]
+        </p>
+
+        <p>
+          mit den Bedingungen
+        </p>
+
+        <p>
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \ge 1 - \xi_i
+          \quad \text{und} \quad
+          \xi_i \ge 0
+          \]
+        </p>
+
+        <p>
+          Der Parameter <code>C</code> kontrolliert also den
+          <strong>Trade-Off</strong> zwischen Margin-Größe und Verletzungen.
+          Deshalb nennt man <code>C</code> auch <strong>Regularisierungsparameter</strong>.
+        </p>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Oprimierung mittels Loss Function</h2>
+          <p>
+            Eine naive Loss Function auf Basis der Accuracy ist ungeeignet, weil
+            sie ein kombinatorisches Optimierungsproblem erzeugen würde.
+            Stattdessen verwendet man eine kontinuierliche Verlustfunktion,
+            meist die Hinge Loss.
+          </p>
+        </div>
+
+        <p>
+          \[
+          L(t) = \max\{0, 1 - t\}
+          \quad \text{mit} \quad
+          t = y f(\mathbf{x}) = y(\langle \mathbf{w}, \mathbf{x} \rangle + b)
+          \]
+        </p>
+
+        <p>
+          Daraus ergibt sich das optimierbare Problem:
+        </p>
+
+        <p>
+          \[
+          \min_{\mathbf{w}, b} \frac{1}{2}\|\mathbf{w}\|^2 + C \sum_i \max\{0, 1 - y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b)\}
+          \]
+        </p>
+
+        <p>
+          Das ist die Standardform der Soft-Margin-SVM: Margin-Maximierung und
+          Fehlersanktion werden gemeinsam optimiert.
+        </p>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Gradienten der Zielfunktion</h2>
+          <p>
+            Für die Ableitung muss man fallweise unterscheiden, ob ein Punkt den
+            Margin verletzt oder nicht. Daraus ergeben sich zwei verschiedene
+            Gradientenfälle.
+          </p>
+        </div>
+
+        <h3>Kein Margin-Verstoß</h3>
+        <p>
+          Wenn
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \ge 1
+          \]
+          gilt, dann ist die Hinge Loss für diesen Punkt null. Die nötigen Gradienten sind:
+        </p>
+        <p>
+          \[
+          \nabla_{\mathbf{w}} E(\mathbf{w},b) = \mathbf{w}
+          \]
+        </p>
+        <p>
+          \[
+          \nabla_{b} E(\mathbf{w},b) = 0
+          \]
+        </p>
+
+        <h3>Margin-Verstoß</h3>
+        <p>
+          Wenn
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) < 1
+          \]
+          gilt, dann ist die Hinge Loss aktiv. Die Gradienten lauten dann:
+        </p>
+        <p>
+          \[
+          \nabla_{\mathbf{w}} E(\mathbf{w},b) = \mathbf{w} - C \sum_i y_i \mathbf{x}_i
+          \]
+        </p>
+        <p>
+          \[
+          \nabla_{b} E(\mathbf{w},b) = -C \sum_i y_i
+          \]
+        </p>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Loss Function in Python</h2>
+          <p>
+            Die Loss Function lässt sich direkt in Python formulieren und auswerten.
+            Für Trainingszwecke wird oft ein normalisiertes oder standardisiertes
+            Datenset verwendet.
+          </p>
+        </div>
+
+        <div class="code-cell-split">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">Python</span>
+            </div>
+<pre><code>import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.datasets import make_blobs
+
+# Data and parameters
+X, y = make_blobs(n_samples=1000, centers=2, cluster_std=0.1)
+X = StandardScaler().fit_transform(X)
+w = np.random.rand(X.shape[1])
+b = np.random.rand()
+
+def svm_loss_function(X, y, w, b, C):
+    penalties = 1 - y * (np.dot(X, w) + b)
+    penalties[penalties < 0] = 0
+    hinge_loss = C * np.mean(penalties)
+    loss = 1 / 2 * np.dot(w, w) + hinge_loss
+    return loss
+
+# Definition abrufen:
+svm_loss_function(X, y, w, b, 1)</code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">Output</span>
+            </div>
+            <div class="output-side-body">
+              <p>Funktion zur Berechnung der SVM-Loss auf Basis von Gewicht, Bias und C.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Gradienten berechnen</h2>
+          <p>
+            Allein mit der Kostenfunktion kommen wir nicht weit – wir müssen die
+            Gradienten nach \(\mathbf{w}\) und \(b\) berechnen, um ein
+            Gradientenabstiegsverfahren zu implementieren.
+          </p>
+        </div>
+
+        <div class="code-cell-split">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">Python</span>
+            </div>
+<pre><code>def svm_gradients(X, y, w, b, C):
+    m = X.shape[0]
+    margins = 1 - y * (X.dot(w) + b)
+    active = margins > 0
+    dw = w - (C / m) * (X[active].T.dot(y[active]))
+    db = -(C / m) * np.sum(y[active])
+    return dw, db
+
+# Funktion abrufen
+svm_gradients(X, y, w, b, 1)</code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">Output</span>
+            </div>
+            <div class="output-side-body">
+              <p>Gradienten für \(\mathbf{w}\) und \(b\) werden zurückgegeben.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Gradientenabstieg: Algorithmus</h2>
+          <p>
+            Zur Trainingssimulation verwenden wir eine Full-Batch-Version des
+            Gradientenabstiegs. Dabei wird pro Epoche der komplette Datensatz
+            für die Gradientenschätzung genutzt.
+          </p>
+        </div>
+
+        <o<ol>
+          >Initialisierung: Randomisiere den Gewichtsvektor \(\mathbf{w}^{(1)}\).</li>
+          >Gradientenschätzung: Berechne
+            \[
+            \Delta \mathbf{w}^{(i)} = -\eta \nabla \Lambda \big|_{\mathbf{w}^{(i)}}
+            \]
+            mit Lernrate \(\eta\).
+          </li>
+          >Update bis Konvergenz:
+            \[
+            \mathbf{w}^{(i+1)} = \mathbf{w}^{(i)} + \Delta \mathbf{w}^{(i)}
+            \]
+          </li>
+        </ol>
+
+        <p>
+          Die Trainingsfunktion speichert zusätzlich die Kostenwerte jeder Epoche,
+          damit der Lernfortschritt später geplottet werden kann.
+        </p>
+
+        <div class="code-cell-split">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">Python</span>
+            </div>
+<pre><code>def svm_train(X, y, w, b, C, lr, epochs):
+    list_of_costs = []
+    for epoch in range(epochs):
+        dw, db = svm_gradients(X, y, w, b, C)
+        w -= lr * dw
+        b -= lr * db
+        list_of_costs.append(svm_loss_function(X, y, w, b, C))
+    return w, b, list_of_costs
+
+w, b, list_of_costs = svm_train(X, y, w, b, 1, 0.01, 1000)
+plt.plot(list_of_costs)
+plt.xlabel('Epochs')
+plt.ylabel('Loss')</code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">Output</span>
+            </div>
+            <div class="output-side-body">
+              <p>Die Loss sinkt typischerweise über die Epochen hinweg.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Trainingsvisualisierung</h2>
+          <p>
+            Mit einer Visualisierungsfunktion lässt sich die gefundene Hyperebene
+            im Feature-Raum darstellen. Dafür wird \(\mathbf{w}\) normalisiert,
+            damit die Gerade in 2D sinnvoll gezeichnet werden kann.
+          </p>
+        </div>
+
+        <div class="code-cell-split">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">Python</span>
+            </div>
+<pre><code>def plot_decision_line(w, b, x_range):
+    fig, ax = plt.subplots(figsize=(6,5))
+    xmin, xmax = x_range
+    xs = np.linspace(xmin, xmax, 400)
+    norm = np.linalg.norm(w)
+    w = w / norm
+    ys = -(w[0] * xs + b) / w[1]
+    ax.plot(xs, ys, linewidth=2, label='decision line')
+    ax.set_xlabel('x1')
+    ax.set_ylabel('x2')
+    ax.legend()
+    ax.grid(True)
+    return ys
+
+ys = plot_decision_line(w, b, x_range=(X[:, 0].min(), X[:, 0].max()))
+plt.scatter(X[:, 0], X[:, 1], c=y)</code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">Output</span>
+            </div>
+            <div class="output-side-body">
+              <p>Die Entscheidungsgerade wird zusammen mit dem Datensatz geplottet.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="note note-warning">
+          <strong>Bonus:</strong> Aus denselben Zwischenschritten könnte man auch
+          eine Animation des Trainings bauen, um die Veränderung der Hyperebene
+          über die Epochen sichtbar zu machen.
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <small>
+        PRM Prüfungsvorbereitung · Kapitel 3 – Klassifikation · Seite 3:
+        Begriffe &amp; Parameter
+      </small>
+    </div>
+  </footer>
+</body>
+</html>

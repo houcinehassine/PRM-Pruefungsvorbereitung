@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – Kapitel 6.2: Fault Classification – Kugellager</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+  <site-header active="page6" title="Kapitel 6.2: Fault Classification – Kugellager"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page6"></site-sidebar>
+
+    <main class="content" id="main-content">
+
+      <!-- ══════════════════════════════════════════
+           HERO
+      ══════════════════════════════════════════ -->
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <span class="eyebrow">Kapitel 6 · Seite 2</span>
+            <h1>Fault Classification –
+              <span class="key" style="--key-color:var(--color-primary)">Kugellager</span>
+            </h1>
+            <p>
+              In diesem Beispiel werden Zeitsignale aus Bearing-Daten geladen,
+              in Fenster aufgeteilt, mit statistischen Features beschrieben und
+              anschließend mit einer SVM klassifiziert.
+            </p>
+            <div class="pill-row">
+              <span class="pill">Bearing-Daten</span>
+              <span class="pill">Fensterung</span>
+              <span class="pill">Std</span>
+              <span class="pill">Skewness</span>
+              <span class="pill">Kurtosis</span>
+              <span class="pill">GridSearchCV</span>
+            </div>
+          </div>
+
+          <aside class="hero-note">
+            <h2 style="font-size:var(--text-lg)">Lernfokus dieser Seite</h2>
+            <p>Nach dieser Seite weißt du:</p>
+            <ul style="margin-top:var(--space-3); color:var(--color-text-muted)">
+              <li>Wie Bearing-Zeitsignale geladen und gestapelt werden</li>
+              <li>Wie Daten in Fenster unterteilt werden</li>
+              <li>Wie Features wie Standardabweichung, Skewness und Kurtosis berechnet werden</li>
+              <li>Wie eine SVM mit GridSearchCV trainiert und bewertet wird</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           SCHRITT 1
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>6.2.1 Daten laden und Zeitsignale stacken</h2>
+          <p>
+            Zuerst werden die Bearing-Daten geladen, geprüft und in einem
+            gemeinsamen Zeitreihen-Array gestapelt.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Importe</span></h3>
+            <p>
+              Es werden <code>loadmat</code>, <code>os</code>,
+              <code>SVC</code>, <code>GridSearchCV</code>,
+              <code>skew</code>, <code>kurtosis</code>, <code>glob</code>,
+              <code>numpy</code> und <code>matplotlib</code> importiert.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Google Drive</span></h3>
+            <p>
+              Das Laufwerk wird in Colab eingebunden:
+              <code>drive.mount('/content/drive')</code>.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Pfad</span></h3>
+            <p>
+              Die Daten liegen im Ordner
+              <code>/content/drive/MyDrive/Colab Notebooks/PRM-Vorbereitung/03-Daten_Beisp_SVM/bearing/</code>.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">Prüfung</span></h3>
+            <p>
+              Mit <code>os.listdir</code> wird geprüft, welche Dateien im Ordner vorhanden sind.
+            </p>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+from scipy.io import loadmat
+import os
+from sklearn.svm import SVC
+from sklearn.model_selection import GridSearchCV
+from scipy.stats import skew, kurtosis
+import glob
+import numpy as np
+import matplotlib.pyplot as plt
+
+from google.colab import drive
+drive.mount('/content/drive')
+
+path_to_data = '/content/drive/MyDrive/Colab Notebooks/PRM-Vorbereitung/03-Daten_Beisp_SVM/bearing/'
+
+print(os.listdir(path_to_data))
+
+data = np.load(path_to_data + 'normal.npy')
+print(data.shape)
+plt.plot(data)
+
+files = glob.glob(path_to_data + '*.npy')
+
+timeseries_array = np.zeros((100000, 4))
+for i, filepath in enumerate(files):
+    timeseries_array[:, i] = np.load(filepath).reshape(-1)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-primary" style="margin:0">
+                <strong>Dateiprüfung</strong><br>
+                Die `.npy`-Dateien werden aus dem Bearing-Ordner geladen.
+              </div>
+              <div class="note note-warning" style="margin:0">
+                <strong>Einzelne Datei</strong><br>
+                Die Datei <code>normal.npy</code> wird mit <code>np.load</code> untersucht und geplottet.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           SCHRITT 2
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>6.2.2 Signale in Fenster aufteilen</h2>
+          <p>
+            Danach wird das gestapelte Signal in 100 Fenster zerlegt.
+          </p>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-step">
+            <div class="step-no">1</div>
+            <div>
+              <strong>Split definieren</strong>
+              <p>
+                Mit <code>np.array_split(timeseries_array, 100)</code> wird die
+                Zeitreihe in 100 gleichartige Abschnitte geteilt.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-no">2</div>
+            <div>
+              <strong>Fenster erzeugen</strong>
+              <p>
+                Jedes Split-Element repräsentiert ein Zeitfenster der vier Kanäle.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-no">3</div>
+            <div>
+              <strong>Vorbereitung für Features</strong>
+              <p>
+                Diese Fenster dienen anschließend als Basis für die Merkmalsberechnung.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+split_array = np.array_split(timeseries_array, 100)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-success" style="margin:0">
+                <strong>Fensterung</strong><br>
+                Das Gesamtsignal wird in 100 Abschnitte zerlegt.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           SCHRITT 3
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>6.2.3 Features berechnen</h2>
+          <p>
+            Aus jedem Fenster werden drei statistische Merkmale berechnet:
+            Standardabweichung, Skewness und Kurtosis.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Std</span></h3>
+            <p>
+              Für jedes Split wird die Standardabweichung mit
+              <code>split.std(axis=0)</code> berechnet.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Skewness</span></h3>
+            <p>
+              Die Schiefe wird mit <code>skew(split)</code> bestimmt.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Kurtosis</span></h3>
+            <p>
+              Die Wölbung wird mit <code>kurtosis(split)</code> berechnet.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">Feature-Array</span></h3>
+            <p>
+              Die Merkmale werden in
+              <code>features_array = np.zeros((100, 4, 3))</code>
+              gespeichert.
+            </p>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+features_array = np.zeros((100, 4, 3))
+for nsplit, split in enumerate(split_array):
+    features_array[nsplit, :, 0] = split.std(axis=0)
+    features_array[nsplit, :, 1] = skew(split)
+    features_array[nsplit, :, 2] = kurtosis(split)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-primary" style="margin:0">
+                <strong>Features</strong><br>
+                Pro Fenster werden 4 Kanäle mit 3 statistischen Merkmalen beschrieben.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           SCHRITT 4
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>6.2.4 Reshaping – Erklärung und Anwendung</h2>
+          <p>
+            Bevor weitergearbeitet wird, wird erklärt, was <code>reshape</code>
+            bedeutet und wie es hier verwendet wird.
+          </p>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-step">
+            <div class="step-no">1</div>
+            <div>
+              <strong>Beispielarray</strong>
+              <p>
+                <code>a = np.arange(60).reshape(5, 4, 3)</code> zeigt ein
+                dreidimensionales Array mit 60 Elementen.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-no">2</div>
+            <div>
+              <strong>Reshape</strong>
+              <p>
+                <code>a.reshape(20, 3)</code> verändert die Form auf
+                <code>(20, 3)</code>, ohne die Elemente zu ändern.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-no">3</div>
+            <div>
+              <strong>Interpretation</strong>
+              <p>
+                Die Daten werden zeilenweise neu aufgeteilt, aber nicht verändert.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-grid" style="margin-top:var(--space-6)">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Anwendung</span></h3>
+            <p>
+              <code>features_array</code> wird mit
+              <code>reshape(400, 3)</code> in eine 2D-Matrix überführt.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Labels</span></h3>
+            <p>
+              Das Zielarray wird als
+              <code>y = np.array([0, 1, 2, 3] * 100)</code>
+              definiert.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Train/Test Split</span></h3>
+            <p>
+              Anschließend werden Trainings- und Testdaten mit
+              <code>train_test_split</code> erzeugt.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">Grundidee</span></h3>
+            <p>
+              Die Anzahl der Elemente bleibt gleich; nur die Form ändert sich.
+            </p>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+a = np.arange(60).reshape(5, 4, 3)
+print(a)
+a.reshape(20, 3)
+
+features_array = features_array.reshape(400, 3)
+y = np.array([0, 1, 2, 3] * 100)
+
+X_train, X_test, y_train, y_test = train_test_split(features_array, y)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-success" style="margin:0">
+                <strong>Reshape</strong><br>
+                Die Daten bleiben inhaltlich gleich, nur die Form ändert sich.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           SCHRITT 5
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>6.2.5 SVM mit GridSearchCV trainieren</h2>
+          <p>
+            Danach wird eine SVM mit RBF-Kernel und klassenausgleichender
+            Gewichtung trainiert.
+          </p>
+        </div>
+
+        <div class="overview">
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-primary)">SVC</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-primary)">Modell</span></h3>
+              <p>
+                Es wird <code>SVC(kernel='rbf', class_weight='balanced')</code>
+                verwendet.
+              </p>
+            </div>
+          </article>
+
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-success)">Grid</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-success)">Parametergrid</span></h3>
+              <p>
+                <code>C</code> wird von 1 bis 50 variiert, <code>gamma</code>
+                über 10 Werte im Bereich von <code>0.0001</code> bis
+                <code>0.005</code>.
+              </p>
+            </div>
+          </article>
+
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-warning)">Best</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-warning)">Bestes Modell</span></h3>
+              <p>
+                Nach dem Training wird das beste Modell mit
+                <code>grid.best_estimator_</code> übernommen.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+model = SVC(kernel='rbf', class_weight='balanced')
+param_grid = {
+    'C': np.arange(1, 51, 5),
+    'gamma': np.linspace(0.0001, 0.005, 10)
+}
+grid = GridSearchCV(model, param_grid, n_jobs=-1)
+grid.fit(X_train, y_train)
+print(grid.best_params_)
+
+model = grid.best_estimator_
+y_fit = model.predict(X_test)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-primary" style="margin:0">
+                <strong>Grid Search</strong><br>
+                Die Hyperparameter werden systematisch getestet.
+              </div>
+              <div class="note note-success" style="margin:0">
+                <strong>Ergebnis</strong><br>
+                Das beste Modell wird für die Vorhersage verwendet.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           SCHRITT 6
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>6.2.6 Accuracy berechnen</h2>
+          <p>
+            Zum Schluss wird die Genauigkeit des Modells auf dem Testdatensatz
+            berechnet.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Vorhersage</span></h3>
+            <p>
+              Mit <code>model.predict(X_test)</code> werden die Testdaten
+              klassifiziert.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Accuracy</span></h3>
+            <p>
+              <code>accuracy_score(y_test, y_fit)</code> wird zur Bewertung verwendet.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Erwartetes Ergebnis</span></h3>
+            <p>
+              Die gegebene Ausgabe liegt ungefähr bei <code>0.95</code>.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">Einordnung</span></h3>
+            <p>
+              Das zeigt eine sehr gute Klassifikationsleistung für die Bearing-Daten.
+            </p>
+          </article>
+        </div>
+
+        <div class="note note-primary" style="margin-top:var(--space-6)">
+          <strong>Fazit:</strong> Die Kombination aus statistischen Features,
+          RBF-SVM und GridSearchCV liefert eine hohe Erkennungsrate.
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <small>
+        PRM Prüfungsvorbereitung · Kapitel 6 – Fault Classification: Kugellager
+      </small>
+    </div>
+  </footer>
+</body>
+</html>

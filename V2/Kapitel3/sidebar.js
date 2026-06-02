@@ -134,51 +134,51 @@ class SiteSidebar extends HTMLElement {
 
             <!-- ── Seite 6 ── -->
             <li class="toc-page">
-              <a href="Page7.html" ${active === 'page6' ? 'class="active"' : ''}>
+              <a href="Page6.html" ${active === 'page6' ? 'class="active"' : ''}>
                 6. Support Vector Regression (SVR)
               </a>
             </li>
             <li class="toc-sub">
-              <a href="Page7.html#svr-linear">
+              <a href="Page6.html#svr-linear">
                 Lineare
                 <span style="color:#198754"><strong>SVR</strong></span>
                 mit zwei Epsilon-Werten
               </a>
             </li>
             <li class="toc-sub">
-              <a href="Page7.html#support-vectors-finden">
+              <a href="Page6.html#support-vectors-finden">
                 Support Vectors finden
               </a>
             </li>
             <li class="toc-sub">
-              <a href="Page7.html#svr-plot">
+              <a href="Page6.html#svr-plot">
                 SVR plotten mit Epsilon-Annotation
               </a>
             </li>
             <li class="toc-sub">
-              <a href="Page7.html#svr-nonlinear">
+              <a href="Page6.html#svr-nonlinear">
                 Nicht-lineare SVR – Poly- & RBF-Kernel vergleichen
               </a>
             </li>
 
             <!-- ── Seite 7 ── -->
             <li class="toc-page">
-              <a href="Page6.html" ${active === 'page7' ? 'class="active"' : ''}>
+              <a href="Page7.html" ${active === 'page7' ? 'class="active"' : ''}>
                 7. Praxisanwendungen
               </a>
             </li>
             <li class="toc-sub">
-              <a href="Page61.html" ${active === 'page61' ? 'class="active"' : ''}>
+              <a href="Page71.html" ${active === 'page71' ? 'class="active"' : ''}>
                 7.1 Gesichtserkennung
               </a>
             </li>
             <li class="toc-sub">
-              <a href="Page62.html" ${active === 'page62' ? 'class="active"' : ''}>
+              <a href="Page72.html" ${active === 'page72' ? 'class="active"' : ''}>
                 7.2 Classification
               </a>
             </li>
             <li class="toc-sub">
-              <a href="Page63.html" ${active === 'page63' ? 'class="active"' : ''}>
+              <a href="Page73.html" ${active === 'page73' ? 'class="active"' : ''}>
                 7.3 Handschrifterkennung
               </a>
             </li>

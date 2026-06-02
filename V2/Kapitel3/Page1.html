@@ -142,7 +142,8 @@
                 Python
               </span>
             </div>
-            <pre><code>import matplotlib.pyplot as plt
+            <pre><code>
+import matplotlib.pyplot as plt
 from sklearn.datasets import make_blobs
 
 # 100 Punkte, 2 Cluster
@@ -160,9 +161,9 @@ plt.title("2D-Feature-Raum")
 plt.xlabel("Feature 1")
 plt.ylabel("Feature 2")
 plt.tight_layout()
-plt.savefig('img/ausgangssituation.png',
-            dpi=150)
-plt.show()</code></pre>
+
+plt.show()
+          </code></pre>
           </div>
           <div class="output-side">
             <div class="output-side-header">
@@ -250,9 +251,20 @@ plt.show()</code></pre>
                 Python
               </span>
             </div>
-            <pre><code>import numpy as np
+            <pre><code>
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
 
-xfit = np.linspace(-3, 2)
+# 100 Punkte, 2 Cluster
+X, y = make_blobs(n_samples=100,
+                  centers=2,
+                  random_state=2,
+                  cluster_std=1.2)
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+xfit = np.linspace(-3, 2, 200)
 
 plt.figure(figsize=(5, 3.5))
 plt.scatter(X[:, 0], X[:, 1],
@@ -260,25 +272,24 @@ plt.scatter(X[:, 0], X[:, 1],
             cmap='autumn',
             edgecolors='gray')
 
-for m, b, d in [(-1.5, -6,   0.33),
-                ( 0.5, -5,   0.55),
+for m, b, d in [(-1.5, -6, 0.33),
+                (0.5, -5, 0.55),
                 (-0.1, -5.5, 0.20)]:
     yfit = m * xfit + b
-    plt.plot(xfit, yfit,
-             '-k', linewidth=1)
+    plt.plot(xfit, yfit, '-k', linewidth=1)
     plt.fill_between(
         xfit,
         yfit - d, yfit + d,
         edgecolor='none',
         color='#AAAAAA',
-        alpha=0.4)
+        alpha=0.4
+    )
 
 plt.xlim(-3, 2)
 plt.title("Trennlinien mit Margin")
 plt.tight_layout()
-plt.savefig('img/margin_vergleich.png',
-            dpi=150)
-plt.show()</code></pre>
+plt.show()
+          </code></pre>
           </div>
           <div class="output-side">
             <div class="output-side-header">
@@ -337,7 +348,8 @@ plt.show()</code></pre>
                 Python
               </span>
             </div>
-            <pre><code>def plot_svc_decision_function(
+            <pre><code>
+def plot_svc_decision_function(
         model, ax=None,
         plot_support=True):
     if ax is None:
@@ -449,13 +461,39 @@ plt.show()</code></pre>
                 Python
               </span>
             </div>
-            <pre><code>from sklearn.svm import SVC
+            <pre><code>
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
 
-# Modell trainieren
+# 100 Punkte, 2 Cluster
+X, y = make_blobs(n_samples=100,
+                  centers=2,
+                  random_state=2,
+                  cluster_std=1.2)
+
+def plot_svc_decision_function(model, ax):
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+
+    xx = np.linspace(xlim[0], xlim[1], 200)
+    yy = np.linspace(ylim[0], ylim[1], 200)
+    Y, Xg = np.meshgrid(yy, xx)
+    xy = np.vstack([Xg.ravel(), Y.ravel()]).T
+    P = model.decision_function(xy).reshape(Xg.shape)
+
+    ax.contour(Xg, Y, P, colors='k',
+               levels=[-1, 0, 1],
+               alpha=0.6,
+               linestyles=['--', '-', '--'])
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.svm import SVC
+
 model = SVC(kernel='linear', C=1.0)
 model.fit(X, y)
 
-# Plot
 fig, ax = plt.subplots(figsize=(5, 3.5))
 ax.scatter(X[:, 0], X[:, 1],
            c=y, s=50,
@@ -464,10 +502,8 @@ ax.scatter(X[:, 0], X[:, 1],
 ax.set_xlim(-3, 2)
 ax.set_ylim(-10, 5)
 
-# Entscheidungsgrenze einzeichnen
 plot_svc_decision_function(model, ax)
 
-# Support Vectors hervorheben
 ax.scatter(
     model.support_vectors_[:, 0],
     model.support_vectors_[:, 1],
@@ -479,8 +515,7 @@ ax.scatter(
 ax.set_title(f'SVC linear · C={model.C}')
 ax.legend()
 plt.tight_layout()
-plt.savefig('img/svc_linear.png', dpi=150)
-plt.show()</code></pre>
+          </code></pre>
           </div>
           <div class="output-side">
             <div class="output-side-header">

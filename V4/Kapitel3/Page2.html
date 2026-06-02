@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – SVM als Klassifikator & Maximum Margin</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  /style.css">
+</head>
+
+<body>
+  <site-header active="page3" title="SVM – Klassifikator & Maximum Margin"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page2"></site-sidebar>
+
+    <main class="content" id="main-content">
+
+      <!-- ══════════════════════════════════════════
+           HERO
+      ══════════════════════════════════════════ -->
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <span class="eyebrow">Kapitel 3 · Seite 2</span>
+            <h1>SVM als
+              <span class="key" style="--key-color:var(--color-primary)">Klassifikator</span>
+              &amp; Maximum Margin
+            </h1>
+            <p>
+              Auf dieser Seite bearbeiten wir einen Datensatz als
+              <strong>Klassifikationsproblem</strong>, zeichnen verschiedene
+              Trennlinien, führen den Begriff des
+              <span class="key" style="--key-color:var(--color-warning)">Margins</span>
+              ein und leiten das <strong>Optimierungsproblem</strong> der SVM her.
+            </p>
+            <div class="pill-row">
+              <span class="pill">2D-Feature-Raum</span>
+              <span class="pill">Mehrere Trennlinien</span>
+              <span class="pill">Margin maximieren</span>
+              <span class="pill">SVC fitten</span>
+              <span class="pill">Support Vectors</span>
+              <span class="pill">Mathematische Herleitung</span>
+            </div>
+          </div>
+          <aside class="hero-note">
+            <h2 style="font-size:var(--text-lg)">Lernfokus dieser Seite</h2>
+            <p>Nach dieser Seite kannst du:</p>
+            <ul style="margin-top:var(--space-3); color:var(--color-text-muted)d">
+              <li>einen einfachen 2D-Datensatz mit SVM klassifizieren</li>
+              <li>einordnen, warum es viele mögliche Trennlinien gibt</li>
+              <li>verstehen, was ein maximaler Margin mathematisch bedeutet</li>
+              <li>die Entscheidungsfunktion und Support Vectors in sklearn nutzen</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           2.1 DATEN PLOTEN
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>2.1 Daten als Klassifikator bearbeiten</h2>
+          <p>
+            Ausgangspunkt ist ein einfacher Datensatz mit
+            <strong>zwei Klassen in einem 2D-Feature-Raum</strong>,
+            die wir mit einem Klassifikator trennen wollen.
+          </p>
+        </div>
+
+        <div class="code-cell-split">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+<pre><code>import matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
+
+X, y = make_blobs(
+    n_samples=100,
+    centers=2,
+    random_state=2,
+    cluster_std=1.2
+)
+
+plt.scatter(
+    X[:, 0], X[:, 1],
+    c=y, s=50,
+    cmap='autumn',
+    edgecolors='gray'
+);</code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <img src="img/page2_daten_plot.png"
+                   alt="Scatter-Plot der zwei Klassen im 2D-Feature-Raum" />
+            </div>
+          </div>
+        </div>
+
+        <div class="note note-primary">
+          <strong>Interpretation:</strong> Jede Farbe entspricht einer Klasse.
+          Ziel ist es, eine Funktion zu lernen, die neuen Punkten die richtige Klasse zuweist.
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           2.2 VIELE GERADEN ZEICHNEN
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>2.2 Viele mögliche Trennlinien</h2>
+          <p>
+            Im linearen Fall gibt es in der Regel <strong>sehr viele Geraden</strong>,
+            die zwei trennbare Klassen korrekt separieren – doch sie generalisieren
+            nicht alle gleich gut auf neue Datenpunkte.
+          </p>
+        </div>
+
+        <p>
+          Wir zeichnen ein paar Beispiele für Geraden, die unsere Klassen trennen.
+          Alle trennen die Trainingsdaten korrekt, führen aber bei
+          <em>neuen Datenpunkten</em> zu unterschiedlichen Klassifikationen.
+        </p>
+
+        <div class="code-cell-split">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+<pre><code>import matplotlib.pyplot as plt
+import numpy as np
+
+xfit = np.linspace(-3, 2)
+
+plt.scatter(
+    X[:, 0], X[:, 1],
+    c=y, s=50,
+    cmap='autumn',
+    edgecolors='gray'
+)
+
+for m, b in [[-1.5, -6],
+             [0.5, -5],
+             [-0.1, -5.5]]:
+    plt.plot(xfit, m * xfit + b, '-k')
+
+plt.xlim(-3, 2);</code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <img src="img/page2_viele_geraden.png"
+                   alt="Mehrere Geraden, die die Klassen trennen" />
+            </div>
+          </div>
+        </div>
+
+        <div class="note note-warning">
+          <strong>Wichtige Frage:</strong> Alle drei Geraden separieren die Klassen auf den Trainingsdaten.
+          Aber: Wie verhalten sie sich bei <strong>neuen Datenpunkten</strong>?
+          Genau hier setzt die Idee der Margin-Maximierung an.
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           2.3 MARGIN MAXIMIEREN
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>2.3 Margin maximieren</h2>
+          <p>
+            Anstatt nur eine beliebige Trennlinie zu wählen, führt die SVM
+            einen <strong>Margin</strong> ein:
+            einen Abstandsstreifen um die Gerade, der möglichst groß sein soll.
+          </p>
+        </div>
+
+        <ul>
+          <li>Um jede Gerade wird ein <strong>Margin</strong> (Rand/Spanne) gelegt.</li>
+          <li>Dieser Margin reicht jeweils bis zu den <strong>nächstliegenden Punkten</strong> der Klassen.</li>
+          <li>Die <strong>optimale Gerade</strong> ist die mit dem <strong>größten Margin</strong>.</li>
+        </ul>
+        <p>
+          \(\Rightarrow\) SVMs sind sogenannte <strong>Maximum Margin Estimators</strong>.
+        </p>
+
+        <div class="code-cell-split">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+<pre><code>import matplotlib.pyplot as plt
+import numpy as np
+
+xfit = np.linspace(-3, 2)
+
+plt.scatter(
+    X[:, 0], X[:, 1],
+    c=y, s=50,
+    cmap='autumn',
+    edgecolors='gray'
+)
+
+for m, b, d in [[-1.5, -6, 0.33],
+                [0.5, -5, 0.55],
+                [-0.1, -5.5, 0.2]]:
+    yfit = m * xfit + b
+    plt.plot(xfit, yfit, '-k')
+    plt.fill_between(
+        xfit,
+        yfit - d, yfit + d,
+        edgecolor='none',
+        color='#AAAAAA',
+        alpha=0.4
+    )
+
+plt.xlim(-3, 2);</code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <img src="img/page2_margin.png"
+                   alt="Geraden mit unterschiedlich breitem Margin" />
+            </div>
+          </div>
+        </div>
+
+        <div class="note note-primary">
+          <strong>Idee:</strong> Von allen zulässigen Trennlinien wählt die SVM
+          genau diejenige, deren Margin zu den nächsten Punkten beider Klassen
+          maximal ist.
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           2.4 FITTING / TRAINING MIT SVC
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>2.4 Fitting / Training mit SVC</h2>
+          <p>
+            In sklearn verwenden wir für Klassifikation den
+            <strong>Support Vector Classifier (SVC)</strong>.
+          </p>
+        </div>
+
+        <ul>
+          <li>Wir instanziieren das SVM-Modell mit
+            <code>SVC(kernel=&lt;kernel_type&gt;, C=&lt;regularization_parameter_value&gt;)</code>.
+          </li>
+          <li><code>kernel</code> und <code>C</code> definieren die Art der Entscheidungsgrenze und die Regularisierung
+            (Details später).</li>
+          <li>Mit der Methode <code>.fit(X, y)</code> passen wir das Modell an unsere Trainingsdaten an.</li>
+          <li>Das Ergebnis ist eine Trennlinie mit <strong>maximalem Margin</strong>, die die Klassen bestmöglich separiert.</li>
+          <li><strong>SVC</strong> steht für <strong>Support Vector Classifier</strong>.
+              SVMs können aber auch <strong>regressiv</strong> (SVR) verwendet werden.</li>
+        </ul>
+
+        <div class="note note-success">
+          <strong>Merke:</strong> Die SVC-Variante implementiert genau die Maximum-Margin-Idee
+          für Klassifikationsaufgaben auf Basis eines geeigneten Kernels.
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           2.5 SUPPORT VECTORS
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>2.5 Support Vectors</h2>
+          <p>
+            Support Vectors sind die <strong>Schlüsselpunkte</strong> der SVM –
+            nur sie bestimmen die endgültige Lage der Entscheidungsgrenze.
+          </p>
+        </div>
+
+        <ul>
+          <li>Diese Support Vectors sind die Punkte, die den Margin berühren.</li>
+          <li>Der Fit des Modells hängt <strong>nur</strong> von diesen Punkten ab.</li>
+          <li>Alle anderen Trainingspunkte haben keinen direkten Einfluss auf die Position der Trennlinie.</li>
+          <li>Über das Attribut <code>.support_vectors_</code> können wir in sklearn auf sie zugreifen.</li>
+        </ul>
+
+        <div class="note note-primary">
+          <strong>Intuition:</strong> Entfernt man einen Nicht-Support-Vector,
+          ändert sich das Modell nicht. Entfernt man einen Support Vector,
+          verschiebt sich die Trennlinie.
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           2.6 MATHEMATISCHE FORMULIERUNG
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>2.6 Mathematische Herleitung der SVM</h2>
+          <p>
+            Nun formulieren wir die SVM als Optimierungsproblem:
+            Wir suchen die Hyperebene mit maximalem Margin zwischen zwei Klassen.
+          </p>
+        </div>
+
+        <!-- 1) Datensatz -->
+        <h3>1. Datensatz</h3>
+        <p>
+          Wir betrachten einen binären Trainingsdatensatz
+          \(\{(\mathbf{x}_i, y_i) \mid i = 1, \dots, N, y_i \in \{-1, 1\}\}\).
+          Anhand dieser Daten lernen wir unsere Hyperebene.
+        </p>
+        <p>
+          Die Hyperebene wird beschrieben durch den Normalenvektor
+          \(\mathbf{w}\) und den Bias \(b\).
+          Zusammen definieren sie eindeutig eine Hyperebene im Raum.
+        </p>
+
+        <!-- 2) Datenpunkte -->
+        <h3>2. Datenpunkte</h3>
+        <p>
+          Für Datenpunkte, die <strong>auf</strong> der Hyperebene liegen, gilt:
+          \[
+          \langle \mathbf{w}, \mathbf{x}_i \rangle + b = 0
+          \]
+          Für Punkte auf unterschiedlichen Seiten der Hyperebene wird
+          dieser Ausdruck positiv bzw. negativ.
+        </p>
+        <p>
+          Trennt eine Hyperebene die Daten, dann haben alle Punkte einer Klasse
+          das gleiche Vorzeichen:
+          \[
+          y_i = \text{sgn}(\langle \mathbf{w}, \mathbf{x}_i \rangle + b)
+          \quad\text{(Modellvorhersage)}
+          \]
+          oder äquivalent:
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \ge 0
+          \]
+        </p>
+        <p>
+          Unter allen möglichen Hyperebenen wählen wir nun diejenige,
+          die den <strong>größten Margin</strong> zwischen den beiden Klassen hat.
+        </p>
+
+        <!-- 3) Margin -->
+        <h3>3. Margin – maximaler Margin</h3>
+        <p>
+          Der Margin ist der <strong>Abstand</strong> der Hyperebene zu den
+          nächstgelegenen Datenpunkten beider Klassen.
+          Sei \(r\) dieser Abstand, dann schreiben wir:
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \ge r
+          \]
+        </p>
+        <p>
+          Wir formulieren ein Optimierungsproblem:
+          \[
+          \max_{\mathbf{w}, b} \; r
+          \]
+          unter den Nebenbedingungen:
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \ge r,
+          \quad \|\mathbf{w}\| = 1,
+          \quad r &gt; 0
+          \]
+        </p>
+
+        <!-- 4) Normalenvektor -->
+        <h3>4. Normalenvektor und Umformung</h3>
+        <p>
+          Wir betrachten nun den Fall, dass der Normalenvektor nicht normiert ist.
+          Durch geeignete Skalierung der Daten können wir die Bedingung
+          \[
+          \langle \mathbf{w}, \mathbf{x}_a \rangle + b = 1
+          \]
+          für den nächstliegenden Punkt \(\mathbf{x}_a\) (Support Vector)
+          erzwingen. Dann lässt sich zeigen:
+          \[
+          r = \frac{1}{\|\mathbf{w}\|}
+          \]
+        </p>
+        <p>
+          Für die Nebenbedingung erhalten wir dann:
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \ge 1
+          \]
+          und unser Optimierungsproblem reduziert sich auf:
+          \[
+          \max_{\mathbf{w}, b} \frac{1}{\|\mathbf{w}\|}
+          \quad \text{bzw.} \quad
+          \min_{\mathbf{w}, b} \frac{1}{2}\|\mathbf{w}\|^2
+          \]
+          unter der Bedingung:
+          \[
+          y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \ge 1
+          \]
+        </p>
+
+        <div class="note note-primary">
+          <strong>Kernidee:</strong> Durch Minimierung von \(\tfrac{1}{2}\|\mathbf{w}\|^2\)
+          unter den linearen Nebenbedingungen erhalten wir eine
+          <strong>Maximum-Margin-Hyperebene</strong>, also genau die SVM-Lösung.
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           2.7 ENTSCHEIDUNGSFUNKTION IN PYTHON
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>2.7 Theorie in Python: Entscheidungsfunktion & Support Vectors</h2>
+          <p>
+            Zum Schluss setzen wir die mathematische Idee in Code um:
+            Wir trainieren eine lineare SVC und visualisieren
+            <strong>Entscheidungsgrenze, Margins und Support Vectors</strong>.
+          </p>
+        </div>
+
+        <div class="code-cell-split">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+<pre><code>def plot_svc_decision_function(model, ax=None, plot_support=True):
+    """Plot the decision function for a 2D SVC"""
+    if ax is None:
+        ax = plt.gca()
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+
+    # create grid to evaluate model
+    x = np.linspace(xlim[0], xlim[1], 30)
+    y = np.linspace(ylim[0], ylim[1], 30)
+    Y, X = np.meshgrid(y, x)
+    xy = np.vstack([X.ravel(), Y.ravel()]).T
+    P = model.decision_function(xy).reshape(X.shape)
+
+    # plot decision boundary and margins
+    ax.contour(
+        X, Y, P,
+        colors='k',
+        levels=[-1, 0, 1],
+        alpha=0.5,
+        linestyles=['--', '-', '--']
+    )
+
+    # plot support vectors
+    if plot_support:
+        ax.scatter(
+            model.support_vectors_[:, 0],
+            model.support_vectors_[:, 1],
+            s=300, linewidth=1,
+            facecolors='none'
+        )
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+
+# Ploten:
+fig, axi = plt.subplots(1, 1)
+
+from sklearn.svm import SVC
+
+model = SVC(kernel='linear').fit(X, y)
+axi.scatter(
+    X[:, 0], X[:, 1],
+    c=y, s=50,
+    cmap='autumn',
+    edgecolors='gray'
+)
+plot_svc_decision_function(model, axi)
+axi.scatter(
+    model.support_vectors_[:, 0],
+    model.support_vectors_[:, 1],
+    s=300, lw=1,
+    facecolors='none',
+    edgecolors='blue'
+)
+# axi.set_title('C = {0:.1f}'.format(C), size=14)</code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <img src="img/page2_svc_linear.png"
+                   alt="Lineare SVC mit Entscheidungsgrenze, Margin und Support Vectors" />
+            </div>
+          </div>
+        </div>
+
+        <div class="note note-success">
+          <strong>Lesen der Grafik:</strong> Die durchgezogene Linie ist die
+          Entscheidungsgrenze (Level 0), die gestrichelten Linien markieren die
+          Margin-Ränder (Level ±1) und die markierten Punkte sind die
+          <strong>Support Vectors</strong>.
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <small>
+        PRM Prüfungsvorbereitung · Kapitel 3 – Klassifikation ·
+        Seite 2: SVM als Klassifikator &amp; Maximum Margin
+      </small>
+    </div>
+  </footer>
+
+</body>
+</html>

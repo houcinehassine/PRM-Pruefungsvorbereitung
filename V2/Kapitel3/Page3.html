@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PRM – Hard vs. Soft Margin</title>
+  <title>PRM – Kapitel 3: Hard vs. Soft Margin</title>
   <script type="module" src="../header.js"></script>
   <script type="module" src="sidebar.js"></script>
-  <link rel="stylesheet" href="../style.css">
+  /style.css">
 </head>
-<body>
 
+<body>
   <site-header active="page3" title="SVM – Hard vs. Soft Margin"></site-header>
 
   <div class="layout">
@@ -17,191 +17,227 @@
 
     <main class="content" id="main-content">
 
+      <!-- ══════════════════════════════════════════
+           HERO
+      ══════════════════════════════════════════ -->
       <section class="hero">
         <div class="hero-grid">
           <div>
-            <span class="eyebrow">Kapitel 3 · Seite 3</span>
-            <h1>Hard vs. <span class="key" style="--key-color:var(--color-primary)">Soft Margin</span></h1>
+            <span class="eyebrow">Kapitel 3 · Teil 3</span>
+            <h1>Hard vs.
+              <span class="key" style="--key-color:var(--color-primary)">Soft Margin</span>
+            </h1>
             <p>
-              Diese Seite erklärt, wie sich die SVM zwischen einem harten und einem weichen Margin verhält, welche Rolle <span class="key" style="--key-color:var(--color-success)">C</span> spielt und wie daraus die Soft-Margin-Formulierung entsteht.
+              Bei SVMs kann der Margin starr als
+              <span class="key" style="--key-color:var(--color-warning)">Hard-Margin</span>
+              oder flexibel als
+              <span class="key" style="--key-color:var(--color-success)">Soft-Margin</span>
+              formuliert werden. Der Hyperparameter de>C</code> steuert dabei
+              den Trade-off zwischen Margin-Größe und Verletzungen.
             </p>
             <div class="pill-row">
-              <span class="pill">Hard Margin</span>
-              <span class="pill">Soft Margin</span>
-              <span class="pill">Slack Variable</span>
+              <span class="pill">Hard-Margin</span>
+              <span class="pill">Soft-Margin</span>
+              <span class="pill">Slack-Variable</span>
+              <span class="pill">C-Parameter</span>
               <span class="pill">Hinge Loss</span>
               <span class="pill">Regularisierung</span>
             </div>
           </div>
+
           <aside class="hero-note">
             <h2 style="font-size:var(--text-lg)">Lernfokus dieser Seite</h2>
-            <p>
-              Du verstehst, wann Punkte im Margin erlaubt sind, warum <code>C</code> ein Regularisierungsparameter ist und wie die Soft-Margin-SVM mathematisch formuliert wird.
-            </p>
+            <p>Nach dieser Seite weißt du:</p>
+            <ul style="margin-top:var(--space-3); color:var(--color-text-muted)d">
+              >Was Hard-Margin und Soft-Margin unterscheidet</l/li>
+              >Wie die Slack-Variable \(\xi\) das Problem erweitert</l/li>
+              >Wie \(C\) in der Optimierung auftaucht</l/li>
+              >Warum Hinge Loss die passende Loss Function ist</li>
+            </ul>
           </aside>
         </div>
       </section>
 
+      <!-- ══════════════════════════════════════════
+           3.1 HARD VS. SOFT
+      ══════════════════════════════════════════ -->
       <section class="section">
         <div class="section-head">
-          <h2>3.1 Hard Margin vs. Soft Margin</h2>
+          <h2>3.1 Hard-Margin und Soft-Margin</h2>
           <p>
-            Bei SVMs kann man den Margin entweder <span style="color:#d63384;"><strong>hart</strong></span> (hard) oder <span style="color:#0d6efd;"><strong>weich</strong></span> (soft) definieren.
+            Bei SVMs hat man die Möglichkeit die Margins entweder
+            <strong>starr</strong> bzw. <strong>hard</strong> oder
+            <strong>weich</strong> bzw. <strong>soft</strong> zu definieren.
           </p>
         </div>
 
         <div class="card-grid">
           <article class="card">
-            <h3><span class="key" style="--key-color:var(--color-primary)">Grundidee</span></h3>
+            <h3><span class="key" style="--key-color:var(--color-warning)">Hard-Margin</span></h3>
             <p>
-              Die Leitfrage lautet: Dürfen Datenpunkte <strong>innerhalb des Margins</strong> liegen – und wenn ja, in welchem Ausmaß?
+              Große Werte von de>C</code> entsprechen einem
+              <strong>Hard-Margin</strong>.
+            </p>
+            <p>
+              In anderen Worten: Datenpunkte innerhalb des Margins sind
+              möglichst nicht erlaubt.
             </p>
           </article>
 
           <article class="card">
-            <h3><span class="key" style="--key-color:var(--color-success)">Hyperparameter</span></h3>
+            <h3><span class="key" style="--key-color:var(--color-success)">Soft-Margin</span></h3>
             <p>
-              Der zugehörige Hyperparameter ist in <code>sklearn</code> das Argument <span style="color:#198754;"><strong>C</strong></span>.
-              Der optimale Wert hängt vom Datensatz ab und wird typischerweise per <strong>Cross-Validation</strong> bestimmt.
+              Kleine Werte von de>C</code> entsprechen einem
+              <strong>Soft-Margin</strong>.
+            </p>
+            <p>
+              In anderen Worten: Datenpunkte dürfen <strong>innerhalb</strong>
+              des Margins auftauchen.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Leitfrage</span></h3>
+            <p>
+              Die zentrale Frage lautet: wie viele bzw. zu welchem Ausmaß dürfen
+              Datenpunkte das Margin verletzen?
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">C als Hyperparameter</span></h3>
+            <p>
+              de>C</code> ist ein Hyperparameter, der getuned werden muss.
+              Der optimale Wert hängt vom Datensatz ab und muss z.B. via
+              Cross-Validation bestimmt werden.
             </p>
           </article>
         </div>
+
+        <div class="note note-primary" style="margin-top:var(--space-6)">
+          <strong>Merksatz:</strong> Große Werte von de>C</code> bedeuten
+          <strong>Hard-Margin</strong>, kleine Werte bedeuten
+          <strong>Soft-Margin</strong>.
+        </div>
       </section>
 
+      <!-- ══════════════════════════════════════════
+           3.2 SLACK VARIABLE
+      ══════════════════════════════════════════ -->
       <section class="section">
         <div class="section-head">
-          <h2>3.2 Interpretation des Parameters C</h2>
+          <h2>3.2 Slack-Variable \(\xi\)</h2>
           <p>
-            <code>C</code> steuert den Trade-off zwischen Margin-Größe und Fehlertoleranz.
+            Zuerst schauen wir, wo in der Mathematik dieses de>C</code> zu
+            finden ist. Dazu führen wir eine sogenannte Slack-Variable ein.
           </p>
         </div>
 
         <div class="overview">
           <article class="topic">
-            <div class="topic-badge" style="background:var(--color-success)">C+</div>
+            <div class="topic-badge" style="background:var(--color-warning)">\(\xi\)</div>
             <div>
-              <h3><span class="key" style="--key-color:var(--color-success)">Große Werte von C</span></h3>
+              <h3><span class="key" style="--key-color:var(--color-warning)">Definition</span></h3>
               <p>
-                Große Werte von <code>C</code> entsprechen einem strengen, fast hard-margin-artigen Modell.
+                Wir führen eine sog. <strong>Slack-Variable</strong> \(\xi\) ein,
+                die bestraft, wenn ein Datenpunkt innerhalb des Margins bzw. auf
+                der falschen Seite liegt.
               </p>
             </div>
           </article>
 
           <article class="topic">
-            <div class="topic-badge" style="background:var(--color-primary)">C-</div>
+            <div class="topic-badge" style="background:var(--color-success)">✓</div>
             <div>
-              <h3><span class="key" style="--key-color:var(--color-primary)">Kleine Werte von C</span></h3>
+              <h3><span class="key" style="--key-color:var(--color-success)">Folge</span></h3>
               <p>
-                Kleine Werte von <code>C</code> erlauben mehr Verletzungen des Margins und machen das Modell weicher.
+                Dies ermöglicht uns im Umkehrschluss: Verletzungen des Margins
+                werden zugelassen.
               </p>
             </div>
           </article>
 
           <article class="topic">
-            <div class="topic-badge" style="background:var(--color-warning)">T</div>
+            <div class="topic-badge" style="background:var(--color-primary)">C</div>
             <div>
-              <h3><span class="key" style="--key-color:var(--color-warning)">Regularisierung</span></h3>
+              <h3><span class="key" style="--key-color:var(--color-primary)">Bedeutung von C</span></h3>
               <p>
-                <code>C</code> ist also ein Regularisierungsparameter, der den Trade-off zwischen Margin-Größe und Fehlertoleranz steuert.
+                Der Parameter de>C</code> versucht also eine
+                <strong>Balance</strong> bzw. einen Trade-Off zwischen
+                „Größe des Margins" und „Verletzung dessen" herzustellen.
               </p>
             </div>
           </article>
         </div>
+
+        <div class="note note-warning" style="margin-top:var(--space-6)">
+          <strong>Begriff:</strong> Zu diesem Parameter sagt man
+          <strong>Regularisierungsparameter</strong>.
+        </div>
       </section>
 
+      <!-- ══════════════════════════════════════════
+           3.3 OPTIMIERUNG
+      ══════════════════════════════════════════ -->
       <section class="section">
         <div class="section-head">
-          <h2>3.3 Slack Variable</h2>
+          <h2>3.3 Optimierungsproblem mit Slack</h2>
           <p>
-            In der Mathematik wird die Toleranz über die <span style="color:#6f42c1;"><strong>Slack-Variable</strong></span> \(\xi_i\) formuliert.
+            Mit der Slack-Variable wird das ursprüngliche Optimierungsproblem
+            erweitert und Verletzungen des Margins werden ausdrücklich erlaubt.
           </p>
         </div>
 
         <div class="card-grid">
           <article class="card">
             <h3><span class="key" style="--key-color:var(--color-primary)">Zielfunktion</span></h3>
-            <div class="math-display">
+            <p>
               \[
-              \min_{\mathbf{w}, b, \xi} \frac{1}{2}\|\mathbf{w}\|^2 + C \sum_i \xi_i
+              \min_{\mathbf{w}, b, \xi} \frac{1}{2} \|\mathbf{w}\|^2 + C \sum_i \xi_i
               \]
-            </div>
+            </p>
           </article>
 
           <article class="card">
             <h3><span class="key" style="--key-color:var(--color-success)">Bedingungen</span></h3>
-            <div class="math-display">
+            <p>
               \[
-              y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \geq 1 - \xi_i
+              y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b) \ge 1 - \xi_i
+              \qquad \text{und} \qquad
+              \xi_i \ge 0
               \]
-            </div>
-            <div class="math-display">
-              \[
-              \xi_i \geq 0
-              \]
-            </div>
-          </article>
-        </div>
-
-        <div class="note note-primary" style="margin-top:var(--space-6)">
-          <strong>Folge:</strong> Damit werden Margin-Verletzungen zugelassen, aber mit einer Strafe belegt.
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="section-head">
-          <h2>3.4 Regularisierung und Trade-off</h2>
-          <p>
-            Der Parameter <span style="color:#198754;"><strong>C</strong></span> stellt einen <strong>Trade-off</strong> zwischen „großem Margin“ und „Verletzung des Margins“ her.
-          </p>
-        </div>
-
-        <div class="card-grid">
-          <article class="card">
-            <h3><span class="key" style="--key-color:var(--color-warning)">Trade-off</span></h3>
-            <p>
-              Ein großer Margin ist erwünscht, aber Verletzungen des Margins sind bei nicht perfekt trennbaren Daten oft unvermeidlich.
             </p>
           </article>
 
           <article class="card">
-            <h3><span class="key" style="--key-color:var(--color-primary)">Regularisierung</span></h3>
+            <h3><span class="key" style="--key-color:var(--color-warning)">Interpretation</span></h3>
             <p>
-              Genau deshalb nennt man diesen Term auch <span style="color:#d63384;"><strong>Regularisierung</strong></span>: Margin-Maximierung ist eine Form von Regularisierung.
+              Der Parameter de>C</code> gewichtet die Strafe für
+              Margin-Verletzungen. Je größer de>C</code>, desto stärker wird
+              auf saubere Trennung gedrängt.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">Trade-off</span></h3>
+            <p>
+              Der Optimierer balanciert zwischen möglichst großem Margin und
+              möglichst wenigen Verletzungen.
             </p>
           </article>
         </div>
       </section>
 
+      <!-- ══════════════════════════════════════════
+           3.4 LOSS FUNCTION
+      ══════════════════════════════════════════ -->
       <section class="section">
         <div class="section-head">
-          <h2>3.5 Warum nicht Accuracy?</h2>
+          <h2>3.4 Loss Function und Hinge Loss</h2>
           <p>
-            Eine naheliegende Loss Function wäre die <strong>Accuracy</strong>, also die Übereinstimmung von Vorhersagen und Labels.
-          </p>
-        </div>
-
-        <div class="card-grid">
-          <article class="card">
-            <h3><span class="key" style="--key-color:var(--color-warning)">Problem</span></h3>
-            <p>
-              Diese ist hier jedoch ungeeignet, weil es sich um ein <span style="color:#dc3545;"><strong>kombinatorisches Optimierungsproblem</strong></span> handelt.
-            </p>
-          </article>
-
-          <article class="card">
-            <h3><span class="key" style="--key-color:var(--color-success)">Folge</span></h3>
-            <p>
-              Deshalb braucht man eine <strong>kontinuierliche</strong> Loss Function.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="section-head">
-          <h2>3.6 Hinge Loss</h2>
-          <p>
-            Eine passende Verlustfunktion ist die <span style="color:#198754;"><strong>Hinge Loss</strong></span>.
+            Die naheliegendste Formulierung einer Loss Function wäre die
+            <strong>Accuracy</strong> – also: wie gut decken sich Vorhersage und
+            Labels?
           </p>
         </div>
 
@@ -209,94 +245,72 @@
           <div class="timeline-step">
             <div class="step-no">1</div>
             <div>
-              <strong>Definition</strong>
-              <div class="math-display">
-                \[
-                L(t)=\max\{0,1-t\}
-                \]
-              </div>
+              <strong>Accuracy ist ungeeignet</strong>
+              <p>
+                Die Accuracy betrachtet nur das Endergebnis. Sie ist jedoch
+                ungeeignet, da es sich hierbei um ein sog.
+                <strong>kombinatorisches Optimierungsproblem</strong> handelt.
+              </p>
             </div>
           </div>
 
           <div class="timeline-step">
             <div class="step-no">2</div>
             <div>
-              <strong>Zusammenhang</strong>
-              <div class="math-display">
-                \[
-                t=y f(\mathbf{x})=y(\langle \mathbf{w}, \mathbf{x} \rangle + b)
-                \]
-              </div>
+              <strong>Kontinuierliche Loss Function</strong>
+              <p>
+                Eine <strong>kontinuierliche Loss Function</strong> ist also
+                anzustreben – mögliche Formulierung:
+                <strong>Hinge Loss</strong>.
+              </p>
             </div>
           </div>
 
           <div class="timeline-step">
             <div class="step-no">3</div>
             <div>
-              <strong>Wirkung</strong>
+              <strong>Hinge Loss</strong>
               <p>
-                Sie bestraft Punkte, die innerhalb des Margins liegen oder falsch klassifiziert sind.
+                \[
+                L(t) = \max\{0, 1 - t\} \quad \text{mit} \quad t = y f(\mathbf{x}) = y(\langle \mathbf{w}, \mathbf{x} \rangle + b)
+                \]
               </p>
             </div>
           </div>
         </div>
-      </section>
 
-      <section class="section">
-        <div class="section-head">
-          <h2>3.7 Endgültiges Optimierungsproblem</h2>
-          <p>Damit ergibt sich das letztlich optimierbare Problem zu:</p>
+        <div class="note note-primary" style="margin-top:var(--space-6)">
+          <strong>Endgültige Formulierung:</strong>
+          \[
+          \min_{\mathbf{w}, b} \frac{1}{2} \|\mathbf{w}\|^2 + C \sum_i \max\{0, 1 - y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b)\}
+          \]
         </div>
 
-        <div class="card-grid">
-          <article class="card">
-            <h3><span class="key" style="--key-color:var(--color-primary)">Zielfunktion</span></h3>
-            <div class="math-display">
-              \[
-              \min_{\mathbf{w}, b} \frac{1}{2}\|\mathbf{w}\|^2 + C \sum_i \max\{0, 1 - y_i(\langle \mathbf{w}, \mathbf{x}_i \rangle + b)\}
-              \]
-            </div>
-          </article>
-
-          <article class="card">
-            <h3><span class="key" style="--key-color:var(--color-success)">Interpretation</span></h3>
-            <p>
-              Das ist die Soft-Margin-Formulierung der SVM.
-            </p>
-          </article>
+        <div class="note note-success" style="margin-top:var(--space-3)">
+          <strong>Fazit:</strong> Hierzu sagt man auch
+          <strong>Regularisierung</strong> – Margin Maximierung ist also
+          Regularisierung.
         </div>
       </section>
 
+      <!-- ══════════════════════════════════════════
+           3.5 BEISPIEL
+      ══════════════════════════════════════════ -->
       <section class="section">
         <div class="section-head">
-          <h2>3.8 Beispiel: Hard und Soft Margin</h2>
+          <h2>3.5 Beispiel: Hard und Soft Margin</h2>
           <p>
-            Im Beispiel sieht man denselben Datensatz mit zwei verschiedenen Werten für <span style="color:#198754;"><strong>C</strong></span>:
-            einmal <span style="color:#d63384;"><strong>C = 10.0</strong></span> und einmal <span style="color:#0d6efd;"><strong>C = 0.1</strong></span>.
+            Im Beispiel werden zwei SVMs mit unterschiedlichen de>C</code>-Werten
+            auf denselben Datensatz trainiert und miteinander verglichen.
           </p>
         </div>
 
-        <div class="card-grid">
-          <article class="card">
-            <h3><span class="key" style="--key-color:var(--color-warning)">Großer C-Wert</span></h3>
-            <p>
-              Der große C-Wert führt zu einer strengeren Trennung.
-            </p>
-          </article>
-
-          <article class="card">
-            <h3><span class="key" style="--key-color:var(--color-primary)">Kleiner C-Wert</span></h3>
-            <p>
-              Der kleine C-Wert führt zu mehr Toleranz gegenüber Margin-Verletzungen.
-            </p>
-          </article>
-        </div>
-
-        <div class="code-cell-split" style="margin-top:var(--space-6)">
+        <div class="code-cell-split">
           <div class="code-side">
             <div class="code-side-header">
               <span class="cell-lang">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
                   <polyline points="16 18 22 12 16 6"/>
                   <polyline points="8 6 2 12 8 18"/>
                 </svg>
@@ -304,49 +318,67 @@
               </span>
             </div>
             <pre><code>
-from sklearn.datasets import make_blobs
-from sklearn.svm import SVC
-import matplotlib.pyplot as plt
+X, y = make_blobs(n_samples=100, centers=2, random_state=0, cluster_std=0.8)
 
-X, y = make_blobs(n_samples=100, centers=2,
-                  random_state=0, cluster_std=0.8)
+fig, ax = plt.subplots(1, 2, figsize=(16, 6))
+fig.subplots_adjust(left=0.0625, right=0.95, wspace=0.1)
 
-model_hard = SVC(kernel='linear', C=10.0).fit(X, y)
-model_soft = SVC(kernel='linear', C=0.1).fit(X, y)
-
-fig, ax = plt.subplots(figsize=(6, 4))
-ax.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='autumn', edgecolors='gray')
-ax.set_title("Hard vs. Soft Margin")
-ax.set_xlabel("Feature 1")
-ax.set_ylabel("Feature 2")
-plt.tight_layout()
-
-print("Hard Margin Modell:", model_hard)
-print("Soft Margin Modell:", model_soft)
-print("Code läuft wirklich")
-          </code></pre>
+for axi, C in zip(ax, [10.0, 0.1]):
+    model = SVC(kernel='linear', C=C)
+    model.fit(X, y)
+    axi.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='autumn', edgecolors='gray')
+    plot_svc_decision_function(model, axi)
+    axi.scatter(model.support_vectors_[:, 0], model.support_vectors_[:, 1],
+                s=300, lw=1, facecolors='none')
+    axi.set_title('C = {:.1f}'.format(C), size=14)
+            </code></pre>
           </div>
-            <div class="output-side">
-              <div class="output-side-header">
-                <span class="cell-lang">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                  </svg>
-                  Output
-                </span>
-              </div>
 
-              <div class="output-side-body">
-                <img src="img/hard_soft_margin.png" alt="Hard vs. Soft Margin Plot" />
-                <pre>Hard Margin Modell: SVC(C=10.0, kernel='linear')
-                Soft Margin Modell: SVC(C=0.1, kernel='linear')</pre>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-primary" style="margin:0">
+                <strong>C = 10.0</strong><br>
+                Entspricht einem stärkeren Hard-Margin-Verhalten.
               </div>
+              <div class="note note-warning" style="margin:0">
+                <strong>C = 0.1</strong><br>
+                Entspricht einem weicheren Soft-Margin-Verhalten.
+              </div>
+              <div class="note note-success" style="margin:0">
+                <strong>Vergleich</strong><br>
+                Der höhere de>C</code>-Wert erlaubt weniger Verletzungen,
+                der kleinere de>C</code>-Wert toleriert mehr Punkte innerhalb
+                des Margins.
+              </div>
+            </div>
           </div>
+        </div>
+
+        <div class="note note-primary" style="margin-top:var(--space-6)">
+          <strong>Wichtig:</strong> Der optimale Wert von de>C</code> hängt
+          vom Datensatz ab und muss via z.B. Cross-Validation bestimmt werden.
         </div>
       </section>
 
     </main>
   </div>
 
+  <footer class="footer">
+    <div class="container">
+      <small>
+        PRM Prüfungsvorbereitung · Kapitel 3 – Klassifikation · Teil 3:
+        Hard vs. Soft Margin
+      </small>
+    </div>
+  </footer>
 </body>
 </html>

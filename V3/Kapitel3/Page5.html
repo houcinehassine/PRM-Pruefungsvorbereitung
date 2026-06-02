@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM Kapitel 3 – Python-Umsetzung, Loss-Funktion und Gradientenabstieg</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background: #f7f9fc;
+      color: #222;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+      color: #123a63;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 1.05rem;
+      color: #555;
+      margin-bottom: 0;
+    }
+
+    .keyword {
+      color: #d62828;
+      font-weight: bold;
+    }
+
+    .note {
+      background: #eef6ff;
+      border-left: 5px solid #2b6cb0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+
+    .formula {
+      background: #f3f6fa;
+      border: 1px solid #d9e2ec;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-family: "Courier New", monospace;
+      overflow-x: auto;
+      margin: 14px 0;
+      white-space: pre-wrap;
+    }
+
+    .code {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 16px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-family: "Courier New", monospace;
+      font-size: 0.95rem;
+      margin: 14px 0;
+    }
+
+    ul {
+      margin-top: 10px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #fff;
+    }
+
+    th, td {
+      border: 1px solid #d9e2ec;
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #edf2f7;
+      color: #1a365d;
+    }
+
+    .highlight {
+      background: #fff4cc;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .small {
+      font-size: 0.95rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>PRM Kapitel 3 – <span class="keyword">Python-Umsetzung</span>, Loss-Funktion und Gradientenabstieg</h1>
+      <p class="subtitle">Seite 5: Umsetzung der SVM von der Kostenfunktion bis zum Training</p>
+    </div>
+
+    <div class="card">
+      <h2>1. Idee der Umsetzung</h2>
+      <p>
+        Nachdem die SVM mathematisch formuliert wurde, wird sie in Python als
+        <span class="keyword">Loss Function</span> und Trainingsalgorithmus umgesetzt.
+      </p>
+      <p>
+        Ziel ist es, die Kostenfunktion in Python abzubilden und anschließend die Parameter
+        <span class="keyword">w</span> und <span class="keyword">b</span> durch Gradientenabstieg zu optimieren.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>2. Loss Function</h2>
+      <p>
+        Die Kostenfunktion kombiniert den Regularisierungsterm mit der Hinge Loss.
+        Sie misst also einerseits die Größe des Gewichtsvektors und andererseits,
+        wie stark Margin-Verletzungen auftreten.
+      </p>
+      <div class="formula">
+loss = 1/2 * ||w||^2 + C * mean(max(0, 1 - y(⟨w, x⟩ + b)))
+      </div>
+      <p>
+        Damit wird die SVM in eine Form gebracht, die sich numerisch optimieren lässt.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>3. Python-Beispiel für die Loss Function</h2>
+      <p>
+        Im Skript wird die Funktion <span class="keyword">svm_loss_function</span> umgesetzt.
+        Sie berechnet zunächst die Penalties und daraus die Hinge Loss.
+      </p>
+      <div class="code">
+def svm_loss_function(X, y, w, b, C):
+    penalties = 1 - y * (np.dot(X, w) + b)
+    penalties[penalties < 0] = 0
+    hinge_loss = C * np.mean(penalties)
+    loss = 1 / 2 * np.dot(w, w) + hinge_loss
+    return loss
+      </div>
+      <p>
+        Diese Funktion ist die Grundlage für das spätere Training.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>4. Gradienten</h2>
+      <p>
+        Damit wir die Kostenfunktion minimieren können, brauchen wir die Ableitungen nach
+        <span class="keyword">w</span> und <span class="keyword">b</span>.
+      </p>
+      <p>
+        Die Gradienten werden abhängig davon bestimmt, ob ein Punkt den Margin verletzt oder nicht.
+      </p>
+      <div class="code">
+def svm_gradients(X, y, w, b, C):
+    m = X.shape[0]
+    margins = 1 - y * (X.dot(w) + b)
+    active = margins > 0
+    dw = w - (C / m) * (X[active].T.dot(y[active]))
+    db = -(C / m) * np.sum(y[active])
+    return dw, db
+      </div>
+      <p>
+        Wenn kein Margin-Verstoß vorliegt, ist der Beitrag klein bzw. null.
+        Wenn ein Verstoß vorliegt, werden die entsprechenden Punkte mit einbezogen.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>5. Gradientenabstieg</h2>
+      <p>
+        Um die Parameter zu optimieren, wird ein einfacher <span class="keyword">Full-Batch Gradient Descent</span> verwendet.
+        Dabei werden pro Epoche die Gradienten über den gesamten Datensatz berechnet.
+      </p>
+      <div class="formula">
+Δ = -∇Λ
+w(t+1) = w(t) + Δw
+b(t+1) = b(t) + Δb
+      </div>
+      <p>
+        Die Lernrate wird als <span class="keyword">lr</span> bezeichnet.
+        Sie bestimmt, wie groß die Updates pro Schritt sind.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>6. Trainingsfunktion</h2>
+      <p>
+        Die Trainingsfunktion <span class="keyword">svm_train</span> führt die Gradientenschritte über mehrere Epochen aus.
+        Zusätzlich werden die Kostenwerte gespeichert, um den Lernfortschritt sichtbar zu machen.
+      </p>
+      <div class="code">
+def svm_train(X, y, w, b, C, lr, epochs):
+    list_of_costs = []
+    for epoch in range(epochs):
+        dw, db = svm_gradients(X, y, w, b, C)
+        w -= lr * dw
+        b -= lr * db
+        list_of_costs.append(svm_loss_function(X, y, w, b, C))
+    return w, b, list_of_costs
+      </div>
+      <p>
+        Damit kann man das Modell trainieren und die Entwicklung der Loss-Werte später plotten.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>7. Lernfortschritt visualisieren</h2>
+      <p>
+        Die Liste der Kostenwerte kann geplottet werden, um zu zeigen, wie das Training über die Epochen verläuft.
+        So wird sichtbar, ob das Modell konvergiert.
+      </p>
+      <div class="formula">
+plt.plot(list_of_costs)
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+      </div>
+      <p>
+        Das ist besonders hilfreich, um zu prüfen, ob die Trainingsparameter sinnvoll gewählt wurden.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>8. Entscheidungsgerade anzeigen</h2>
+      <p>
+        Für die Visualisierung der trainierten SVM wird aus den Parametern <span class="keyword">w</span> und <span class="keyword">b</span>
+        eine Entscheidungsgerade gezeichnet.
+      </p>
+      <p>
+        Damit die Darstellung korrekt funktioniert, wird der Gewichtsvektor normalisiert.
+      </p>
+      <div class="code">
+def plot_decision_line(w, b, x_range):
+    fig, ax = plt.subplots(figsize=(6,5))
+    xmin, xmax = x_range
+    xs = np.linspace(xmin, xmax, 400)
+    norm = np.linalg.norm(w)
+    w = w / norm
+    ys = -(w[0] * xs + b) / w[1]
+    ax.plot(xs, ys, linewidth=2, label='decision line')
+    ax.set_xlabel('x1')
+    ax.set_ylabel('x2')
+    ax.legend()
+    ax.grid(True)
+    return ys
+      </div>
+      <p>
+        Damit lässt sich die gelernte Hyperebene direkt im Feature-Raum anzeigen.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>9. Was du hier verstehen musst</h2>
+      <ul>
+        <li>Die <span class="keyword">Loss Function</span> misst Regularisierung und Margin-Verletzungen.</li>
+        <li>Die <span class="keyword">Hinge Loss</span> ist der zentrale Fehlerterm.</li>
+        <li>Die Gradienten werden separat nach <span class="keyword">w</span> und <span class="keyword">b</span> berechnet.</li>
+        <li>Das Training erfolgt mit <span class="keyword">Gradient Descent</span>.</li>
+        <li><span class="keyword">lr</span> ist die Lernrate, <span class="keyword">epochs</span> die Anzahl der Trainingsdurchläufe.</li>
+        <li>Die Trainingskurve zeigt, ob das Modell besser wird.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>10. Lernziel dieser Seite</h2>
+      <p>
+        Diese Seite beantwortet die Frage:
+        <span class="highlight">Wie wird die SVM praktisch in Python trainiert?</span>
+      </p>
+      <p class="small">
+        Du solltest danach verstehen, wie Loss Function, Gradienten und Gradient Descent zusammenarbeiten.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

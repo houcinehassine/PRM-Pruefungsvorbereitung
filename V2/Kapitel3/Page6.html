@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – Kapitel 7: Support Vector Regression</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+  <site-header active="page3" title="Kapitel 7: Support Vector Regression"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page7"></site-sidebar>
+
+    <main class="content" id="main-content">
+
+      <!-- ══════════════════════════════════════════
+           HERO
+      ══════════════════════════════════════════ -->
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <span class="eyebrow">Kapitel 7</span>
+            <h1>Support Vector
+              <span class="key" style="--key-color:var(--color-primary)">Regression</span>
+            </h1>
+            <p>
+              Support Vector Regression erweitert das SVM-Prinzip auf
+              Regressionsprobleme. Im Fokus stehen dabei \(\varepsilon\)-Tubes,
+              Support Vectors, lineare und nicht-lineare SVR sowie die Vor- und
+              Nachteile von SVMs.
+            </p>
+            <div class="pill-row">
+              <span class="pill">LinearSVR</span>
+              <span class="pill">SVR</span>
+              <span class="pill">\(\varepsilon\)-Tube</span>
+              <span class="pill">Poly-Kernel</span>
+              <span class="pill">RBF-Kernel</span>
+              <span class="pill">Vor- und Nachteile</span>
+            </div>
+          </div>
+
+          <aside class="hero-note">
+            <h2 style="font-size:var(--text-lg)">Lernfokus dieser Seite</h2>
+            <p>Nach dieser Seite weißt du:</p>
+            <ul style="margin-top:var(--space-3); color:var(--color-text-muted)">
+              <li>Wie eine lineare SVR mit \(\varepsilon\) arbeitet</li>
+              <li>Wie Support Vectors in der Regression bestimmt werden</li>
+              <li>Wie Poly- und RBF-Kernel in der SVR verglichen werden</li>
+              <li>Welche Stärken und Schwächen SVMs besitzen</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           7.1 LINEARE SVR
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>7.1 Lineare SVR mit zwei \(\varepsilon\)-Werten</h2>
+          <p>
+            Zuerst wird eine lineare Support Vector Regression mit zwei
+            unterschiedlichen \(\varepsilon\)-Werten trainiert.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Daten</span></h3>
+            <p>
+              Es werden \(m = 50\) Punkte mit einer linearen Beziehung erzeugt:
+              \(y = 4 + 3X + \text{Rauschen}\).
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Modelle</span></h3>
+            <p>
+              Es werden zwei Modelle trainiert:
+              <code>LinearSVR(epsilon=1.5)</code> und
+              <code>LinearSVR(epsilon=0.5)</code>.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Idee</span></h3>
+            <p>
+              Das \(\varepsilon\) bestimmt die Breite des tolerierten Bereichs um
+              die Vorhersage.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">Vergleich</span></h3>
+            <p>
+              Ein größeres \(\varepsilon\) führt zu einem breiteren Tubus und
+              weniger Support Vectors, ein kleineres \(\varepsilon\) zu einer
+              strengeren Anpassung.
+            </p>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+import numpy as np
+import matplotlib.pyplot as plt
+
+np.random.seed(42)
+m = 50
+X = 2 * np.random.rand(m, 1)
+y = 4 + 3 * X + np.random.randn(m, 1)
+
+from sklearn.svm import LinearSVR
+
+svmreg1 = LinearSVR(epsilon=1.5, random_state=42)
+svmreg2 = LinearSVR(epsilon=0.5, random_state=42)
+
+svmreg1.fit(X, y.ravel())
+svmreg2.fit(X, y.ravel())
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-primary" style="margin:0">
+                <strong>LinearSVR</strong><br>
+                Die beiden Modelle unterscheiden sich nur im \(\varepsilon\)-Wert.
+              </div>
+              <div class="note note-warning" style="margin:0">
+                <strong>Folge</strong><br>
+                Das \(\varepsilon\) beeinflusst, wie viele Punkte als Support Vectors gelten.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           7.2 SUPPORT VECTORS
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>7.2 Support Vectors finden</h2>
+          <p>
+            Support Vectors werden in der Regression über Punkte bestimmt, die
+            außerhalb des \(\varepsilon\)-Tubes liegen.
+          </p>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-step">
+            <div class="step-no">1</div>
+            <div>
+              <strong>Vorhersage berechnen</strong>
+              <p>
+                Zuerst wird für alle Eingaben die Vorhersage mit
+                <code>svmreg.predict(X)</code> berechnet.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-no">2</div>
+            <div>
+              <strong>Abstand zum Tubus prüfen</strong>
+              <p>
+                Dann wird geprüft, ob der absolute Fehler größer als
+                \(\varepsilon\) ist.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-no">3</div>
+            <div>
+              <strong>Support Vectors markieren</strong>
+              <p>
+                Punkte außerhalb des Tubus werden mit
+                <code>np.argwhere(off_margin)</code> markiert und als
+                Support Vectors gespeichert.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+def find_support_vectors(svmreg, X, y):
+    ypred = svmreg.predict(X)
+    off_margin = np.abs(y - ypred) > svmreg.epsilon
+    return np.argwhere(off_margin)
+
+svmreg1.support_ = find_support_vectors(svmreg1, X, y)
+svmreg2.support_ = find_support_vectors(svmreg2, X, y)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-success" style="margin:0">
+                <strong>Support Vectors</strong><br>
+                Punkte außerhalb des \(\varepsilon\)-Bereichs bestimmen die Regression.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           7.3 VISUALISIERUNG
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>7.3 SVR plotten mit \(\varepsilon\)-Annotation</h2>
+          <p>
+            Die Regression wird mit Vorhersage, \(\varepsilon\)-Bändern und
+            einer Pfeil-Annotation für \(\varepsilon\) visualisiert.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Vorhersage</span></h3>
+            <p>
+              Die schwarze Linie stellt \(\hat{y}\) dar.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">\(\varepsilon\)-Bänder</span></h3>
+            <p>
+              Die gestrichelten Linien markieren \(\hat{y} + \varepsilon\) und
+              \(\hat{y} - \varepsilon\).
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Support Vectors</span></h3>
+            <p>
+              Die Punkte außerhalb der Bänder werden hervorgehoben.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">Annotation</span></h3>
+            <p>
+              Im Graphen wird \(\varepsilon\) zusätzlich mit einem Pfeil
+              eingezeichnet.
+            </p>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+def plotsvm_regression(svmreg, X, y, axes=None):
+    x1s = np.linspace(axes[0], axes[1], 100).reshape(100, 1)
+    ypred = svmreg.predict(x1s)
+    plt.plot(x1s, ypred, 'k-', linewidth=2, label=r'$\hat{y}$')
+    plt.plot(x1s, ypred + svmreg.epsilon, 'k--')
+    plt.plot(x1s, ypred - svmreg.epsilon, 'k--')
+    plt.scatter(X[svmreg.support_], y[svmreg.support_], s=180, facecolors='#FFAAAA')
+    plt.plot(X, y, 'b.')
+    plt.xlabel(r'$x_1$', fontsize=18)
+    plt.legend(loc='upper left', fontsize=18)
+    plt.axis(axes)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-primary" style="margin:0">
+                <strong>Visuelle Idee</strong><br>
+                Das Modell zeigt Vorhersage und Toleranzband gemeinsam.
+              </div>
+              <div class="note note-warning" style="margin:0">
+                <strong>\(\varepsilon\)-Pfeil</strong><br>
+                Die Annotation macht die Tube-Breite im Plot direkt sichtbar.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           7.4 LINEARE VERGLEICHE
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>7.4 Vergleich der linearen SVR</h2>
+          <p>
+            Zwei lineare SVR-Modelle mit unterschiedlichen \(\varepsilon\)-Werten
+            werden nebeneinander dargestellt.
+          </p>
+        </div>
+
+        <div class="code-cell-split">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+fig, axes = plt.subplots(ncols=2, figsize=(9, 4), sharey=True)
+plt.sca(axes[0])
+plotsvm_regression(svmreg1, X, y, axes=[0, 2, 3, 11])
+plt.title(r'$\varepsilon = {:.1f}$'.format(svmreg1.epsilon), fontsize=18)
+plt.ylabel(r'$y$', fontsize=18, rotation=0)
+
+eps_x1 = 1
+eps_ypred = svmreg1.predict([[eps_x1]])
+plt.plot([eps_x1, eps_x1], [eps_ypred, eps_ypred - svmreg1.epsilon], 'k-', linewidth=2)
+plt.annotate('', xy=(eps_x1, eps_ypred), xycoords='data',
+             xytext=(eps_x1, eps_ypred - svmreg1.epsilon), textcoords='data',
+             arrowprops=dict(arrowstyle='-', linewidth=1.5))
+plt.text(0.91, 5.6, r'$\varepsilon$', fontsize=20)
+
+plt.sca(axes[1])
+plotsvm_regression(svmreg2, X, y, axes=[0, 2, 3, 11])
+plt.title(r'$\varepsilon = {:.1f}$'.format(svmreg2.epsilon), fontsize=18)
+plt.show()
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-success" style="margin:0">
+                <strong>Vergleich</strong><br>
+                \(\varepsilon = 1.5\) ist toleranter als \(\varepsilon = 0.5\).
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           7.5 NICHT-LINEARE SVR
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>7.5 Nicht-lineare SVR – Poly- und RBF-Kernel</h2>
+          <p>
+            Als nächstes werden nicht-lineare Regressionsmodelle mit Poly- und
+            RBF-Kernel verglichen.
+          </p>
+        </div>
+
+        <div class="overview">
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-primary)">Poly</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-primary)">Polynomialer Kernel</span></h3>
+              <p>
+                Es werden zwei Modelle mit <code>kernel='poly'</code>,
+                <code>degree=2</code> und unterschiedlichen <code>C</code>-Werten trainiert.
+              </p>
+            </div>
+          </article>
+
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-success)">RBF</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-success)">RBF-Kernel</span></h3>
+              <p>
+                Danach werden zwei Modelle mit <code>kernel='rbf'</code> und
+                unterschiedlichen <code>C</code>-Werten trainiert.
+              </p>
+            </div>
+          </article>
+
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-warning)">C</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-warning)">Regulierung</span></h3>
+              <p>
+                Größeres <code>C</code> bedeutet strengere Anpassung, kleineres
+                <code>C</code> mehr Regularisierung.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+from sklearn.svm import SVR
+
+np.random.seed(42)
+m = 100
+X = 2 * np.random.rand(m, 1) - 1
+y = (0.2 + 0.1 * X + 0.5 * X**2 + np.random.rand(m, 1)).ravel()
+
+svmpolyreg1 = SVR(kernel='poly', degree=2, C=100, epsilon=0.1, gamma='scale')
+svmpolyreg2 = SVR(kernel='poly', degree=2, C=0.01, epsilon=0.1, gamma='scale')
+svmpolyreg1.fit(X, y)
+svmpolyreg2.fit(X, y)
+
+svmreg1 = SVR(kernel='rbf', C=100, epsilon=0.1)
+svmreg2 = SVR(kernel='rbf', C=0.01, epsilon=0.1)
+svmreg1.fit(X, y)
+svmreg2.fit(X, y)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-primary" style="margin:0">
+                <strong>Poly</strong><br>
+                Der polynomiale Kernel passt eine quadratische Struktur an.
+              </div>
+              <div class="note note-success" style="margin:0">
+                <strong>RBF</strong><br>
+                Der RBF-Kernel kann flexibler auf nichtlineare Muster reagieren.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           7.6 VOR- UND NACHTEILE
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>7.6 Vor- und Nachteile von SVMs</h2>
+          <p>
+            Zum Schluss werden die wichtigsten Vorteile und Nachteile von SVMs
+            zusammengefasst.
+          </p>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Vorteil</th>
+              <th>Erklärung</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Höherdimensionale Datensätze</strong></td>
+              <td>SVMs sind sehr effektiv bei hochdimensionalen Daten.</td>
+            </tr>
+            <tr>
+              <td><strong>Dim &gt; Datenpunkte</strong></td>
+              <td>Hilft wenn Anzahl der Dimensionen größer als die Anzahl der Datenpunkte ist.</td>
+            </tr>
+            <tr>
+              <td><strong>Komputativ effizient</strong></td>
+              <td>Besonders bei kleinen bis mittleren Datensätzen.</td>
+            </tr>
+            <tr>
+              <td><strong>Geometrische Interpretation</strong></td>
+              <td>Pädagogisch gut vermittelbar durch Hyperebene und Margin.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table style="margin-top:var(--space-6)">
+          <thead>
+            <tr>
+              <th>Nachteil</th>
+              <th>Erklärung</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Sehr große Datensätze</strong></td>
+              <td>Probleme bei vielen Datenpunkten, weil die Kernel-Matrix zu groß wird.</td>
+            </tr>
+            <tr>
+              <td><strong>Stark überlappende Klassen</strong></td>
+              <td>Viel Rauschen in den Daten führt zu schlechter Trennung.</td>
+            </tr>
+            <tr>
+              <td><strong>Probabilistische Interpretation</strong></td>
+              <td>Nicht möglich – SVM gibt keine Wahrscheinlichkeiten.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="note note-primary" style="margin-top:var(--space-6)">
+          <strong>Zusammenfassung:</strong> SVMs sind gut bei kleiner Datenmenge
+          und hoher Dimension, schlecht bei großen Datensätzen und viel Rauschen.
+          Sie liefern keinen Probability-Output, haben aber eine sehr gute
+          geometrische Interpretierbarkeit.
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <small>
+        PRM Prüfungsvorbereitung · Kapitel 7 – Support Vector Regression
+      </small>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRM – Kapitel 6.1: Gesichtserkennung</title>
+  <script type="module" src="../header.js"></script>
+  <script type="module" src="sidebar.js"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+  <site-header active="page6" title="Kapitel 6.1: Gesichtserkennung"></site-header>
+
+  <div class="layout">
+    <site-sidebar active="page6"></site-sidebar>
+
+    <main class="content" id="main-content">
+
+      <!-- ══════════════════════════════════════════
+           HERO
+      ══════════════════════════════════════════ -->
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <span class="eyebrow">Kapitel 6 · Seite 1</span>
+            <h1>Gesichts-
+              <span class="key" style="--key-color:var(--color-primary)">erkennung</span>
+            </h1>
+            <p>
+              In diesem Beispiel wird die LFW-Gesichtserkennung mit
+              <span class="key" style="--key-color:var(--color-warning)">PCA</span>,
+              <span class="key" style="--key-color:var(--color-success)">GridSearchCV</span>
+              und einer
+              <span class="key" style="--key-color:var(--color-purple)">SVC</span>
+              umgesetzt.
+            </p>
+            <div class="pill-row">
+              <span class="pill">LFW-Datensatz</span>
+              <span class="pill">PCA</span>
+              <span class="pill">GridSearchCV</span>
+              <span class="pill">SVC</span>
+              <span class="pill">Accuracy</span>
+              <span class="pill">Galerie</span>
+            </div>
+          </div>
+
+          <aside class="hero-note">
+            <h2 style="font-size:var(--text-lg)">Lernfokus dieser Seite</h2>
+            <p>Nach dieser Seite weißt du:</p>
+            <ul style="margin-top:var(--space-3); color:var(--color-text-muted)">
+              <li>Wie der LFW-Datensatz geladen und inspiziert wird</li>
+              <li>Wie Features, Labels und Train/Test-Split vorbereitet werden</li>
+              <li>Warum PCA für die Dimensionsreduktion verwendet wird</li>
+              <li>Wie SVM-Parameter mit Grid Search optimiert werden</li>
+              <li>Wie quantitative und qualitative Evaluation aussehen</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           6.1 DATENSATZ
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>6.1 Datensatz laden</h2>
+          <p>
+            Zuerst wird der LFW-Datensatz geladen und seine Struktur überprüft.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Importe</span></h3>
+            <p>
+              Es werden unter anderem <code>seaborn</code>,
+              <code>fetch_lfw_people</code>, <code>PCA</code>, <code>SVC</code>
+              und <code>GridSearchCV</code> importiert.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Datensatz laden</span></h3>
+            <p>
+              <code>lfw_people = fetch_lfw_people(min_faces_per_person=70, resize=0.4)</code>
+              lädt die Gesichter mit mindestens 70 Bildern pro Person.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Struktur prüfen</span></h3>
+            <p>
+              Die Bildform wird mit <code>lfw_people.images.shape</code> geprüft;
+              die Zielnamen kommen aus <code>lfw_people.target_names</code>.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">Datensatzumfang</span></h3>
+            <p>
+              Der Datensatz enthält Bilder von 7 Personen und wird als
+              Bildarray mit Form <code>(1288, 50, 37)</code> betrachtet.
+            </p>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+import seaborn as sns
+sns.set()
+from sklearn.datasets import fetch_lfw_people
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import accuracy_score
+from sklearn.decomposition import PCA
+from sklearn.svm import SVC
+
+lfw_people = fetch_lfw_people(min_faces_per_person=70, resize=0.4)
+
+print(lfw_people.images.shape)
+print(lfw_people.target_names)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-primary" style="margin:0">
+                <strong>Bildform</strong><br>
+                <code>(1288, 50, 37)</code>
+              </div>
+              <div class="note note-success" style="margin:0">
+                <strong>Personen</strong><br>
+                Es gibt 7 Zielklassen in <code>target_names</code>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           6.2 BEISPIELGESICHTER
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>6.2 Beispiel-Gesichter anzeigen</h2>
+          <p>
+            Anschließend werden mehrere Beispielbilder in einer Galerie
+            angezeigt.
+          </p>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-step">
+            <div class="step-no">1</div>
+            <div>
+              <strong>Subplots erzeugen</strong>
+              <p>
+                Mit <code>plt.subplots(3, 5, figsize=(8, 7))</code> wird ein
+                3x5-Raster für die Bilder erstellt.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-no">2</div>
+            <div>
+              <strong>Bilder einfügen</strong>
+              <p>
+                Jedes Bild wird mit <code>imshow</code> angezeigt und mit dem
+                passenden Personennamen beschriftet.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-no">3</div>
+            <div>
+              <strong>Achsen entfernen</strong>
+              <p>
+                Die Achsenticks werden ausgeschaltet, damit nur die Gesichter
+                sichtbar bleiben.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+fig, ax = plt.subplots(3, 5, figsize=(8, 7))
+for i, axi in enumerate(ax.flat):
+    axi.imshow(lfw_people.images[i], cmap='bone')
+    axi.set(xticks=[], yticks=[], xlabel=lfw_people.target_names[lfw_people.target[i]])
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-primary" style="margin:0">
+                <strong>Galerie</strong><br>
+                Mehrere Gesichter werden in einem Raster dargestellt.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           6.3 FEATURES / SPLIT
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>6.3 Features und Labels vorbereiten</h2>
+          <p>
+            Danach werden Bilddaten, Labels und der Trainings-/Testsplit
+            vorbereitet.
+          </p>
+        </div>
+
+        <div class="overview">
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-primary)">X</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-primary)">Feature Matrix</span></h3>
+              <p>
+                <code>X = lfw_people.data</code> enthält die flach dargestellten
+                Bildfeatures.
+              </p>
+            </div>
+          </article>
+
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-success)">y</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-success)">Labels</span></h3>
+              <p>
+                <code>y = lfw_people.target</code> ist das zu prognostizierende
+                Personen-Label.
+              </p>
+            </div>
+          </article>
+
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-warning)">Split</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-warning)">Train/Test Split</span></h3>
+              <p>
+                Mit <code>train_test_split</code> wird der Datensatz in Training
+                und Testdaten aufgeteilt.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+n_samples, h, w = lfw_people.images.shape
+
+X = lfw_people.data
+y = lfw_people.target
+target_names = lfw_people.target_names
+print(target_names)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-success" style="margin:0">
+                <strong>Vorbereitung</strong><br>
+                Die Daten werden für das Machine-Learning-Training aufgeteilt.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           6.4 PCA
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>6.4 PCA anwenden</h2>
+          <p>
+            Für die hohe Dimensionalität der Bilddaten wird eine PCA zur
+            Dimensionsreduktion verwendet.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">PCA</span></h3>
+            <p>
+              Es wird eine PCA mit <code>n_components = 150</code> berechnet.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Whitening</span></h3>
+            <p>
+              <code>whiten=True</code> wird verwendet, um die Komponenten zu
+              normieren.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Transformation</span></h3>
+            <p>
+              <code>X_train_pca</code> und <code>X_test_pca</code> entstehen
+              durch <code>pca.transform</code>.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">Ziel</span></h3>
+            <p>
+              Die PCA reduziert die Dimensionalität vor dem SVM-Training.
+            </p>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+print("Computing PCA...\n")
+n_components = 150
+pca = PCA(n_components=n_components, svd_solver='randomized', whiten=True).fit(X_train)
+X_train_pca = pca.transform(X_train)
+X_test_pca = pca.transform(X_test)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-primary" style="margin:0">
+                <strong>PCA</strong><br>
+                Die Gesichter werden in einen kompakteren Merkmalsraum projiziert.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           6.5 GRID SEARCH
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>6.5 GridSearchCV – Hyperparameter optimieren</h2>
+          <p>
+            Anschließend wird ein SVM-Klassifikator mit Grid Search auf den
+            PCA-Features trainiert.
+          </p>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-step">
+            <div class="step-no">1</div>
+            <div>
+              <strong>Parametergrid definieren</strong>
+              <p>
+                <code>C</code> und <code>gamma</code> werden über mehrere Werte
+                hinweg getestet.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-no">2</div>
+            <div>
+              <strong>SVC mit RBF-Kernel</strong>
+              <p>
+                Es wird eine <code>SVC(kernel='rbf')</code> verwendet.
+              </p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-no">3</div>
+            <div>
+              <strong>Bestes Modell auswählen</strong>
+              <p>
+                Das beste Modell wird über <code>clf.best_estimator_</code>
+                ausgegeben.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+print("Doing Grid Search...")
+
+param_grid = {
+    'C': [0.1, 1, 10, 1e2, 5e2],
+    'gamma': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1]
+}
+
+clf = GridSearchCV(SVC(kernel='rbf'), param_grid, n_jobs=-1)
+clf = clf.fit(X_train_pca, y_train)
+print(clf.best_estimator_)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-warning" style="margin:0">
+                <strong>Hyperparameter</strong><br>
+                <code>C</code> und <code>gamma</code> werden systematisch optimiert.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           6.6 EVALUATION
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>6.6 Quantitative Evaluation</h2>
+          <p>
+            Danach wird die Accuracy auf den Testdaten berechnet.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-primary)">Vorhersage</span></h3>
+            <p>
+              Mit <code>clf.predict(X_test_pca)</code> werden die Testlabels
+              vorhergesagt.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-success)">Accuracy</span></h3>
+            <p>
+              Die Modellgüte wird über
+              <code>accuracy_score(y_test, y_pred)</code> gemessen.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-warning)">Ergebnis</span></h3>
+            <p>
+              Die gegebene Ausgabe liegt ungefähr bei <code>0.854</code>.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3><span class="key" style="--key-color:var(--color-purple)">Einordnung</span></h3>
+            <p>
+              Das zeigt eine solide Klassifikationsleistung auf dem Datensatz.
+            </p>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+y_pred = clf.predict(X_test_pca)
+print(f"Accuracy of used model... {accuracy_score(y_test, y_pred)}")
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-success" style="margin:0">
+                <strong>Accuracy</strong><br>
+                Das Modell erreicht ungefähr <code>0.854</code>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════
+           6.7 GALERIE
+      ══════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>6.7 Qualitative Evaluation – Galerie mit Vorhersagen</h2>
+          <p>
+            Zum Schluss werden die Vorhersagen in einer Galerie mit echten und
+            vorhergesagten Namen angezeigt.
+          </p>
+        </div>
+
+        <div class="overview">
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-primary)">1</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-primary)">plot_gallery</span></h3>
+              <p>
+                Die Hilfsfunktion zeichnet eine Galerie aus Bildern mit Titeln.
+              </p>
+            </div>
+          </article>
+
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-success)">2</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-success)">title</span></h3>
+              <p>
+                Die Titel zeigen jeweils vorhergesagten und echten Namen an.
+              </p>
+            </div>
+          </article>
+
+          <article class="topic">
+            <div class="topic-badge" style="background:var(--color-warning)">3</div>
+            <div>
+              <h3><span class="key" style="--key-color:var(--color-warning)">prediction_titles</span></h3>
+              <p>
+                Diese Liste bereitet die Anzeigen für alle Testbilder vor.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <div class="code-cell-split" style="margin-top:var(--space-6)">
+          <div class="code-side">
+            <div class="code-side-header">
+              <span class="cell-lang">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Python
+              </span>
+            </div>
+            <pre><code>
+def plot_gallery(images, titles, h, w, n_row=3, n_col=4):
+    plt.figure(figsize=(1.8 * n_col, 2.4 * n_row))
+    plt.subplots_adjust(bottom=0, left=.01, right=.99, top=.90, hspace=.35)
+    for i in range(n_row * n_col):
+        plt.subplot(n_row, n_col, i + 1)
+        plt.imshow(images[i].reshape(h, w), cmap=plt.cm.gray)
+        plt.title(titles[i], size=12)
+        plt.xticks(())
+        plt.yticks(())
+
+def title(y_pred, y_test, target_names, i):
+    pred_name = target_names[y_pred[i]].split()[-1]
+    true_name = target_names[y_test[i]].split()[-1]
+    return f'predicted: {pred_name}\ntrue: {true_name}'
+
+prediction_titles = [title(y_pred, y_test, target_names, i)
+                     for i in range(y_pred.shape[0])]
+
+plot_gallery(X_test, prediction_titles, h, w, n_row=5)
+            </code></pre>
+          </div>
+          <div class="output-side">
+            <div class="output-side-header">
+              <span class="cell-lang">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Output
+              </span>
+            </div>
+            <div class="output-side-body">
+              <div class="note note-primary" style="margin:0">
+                <strong>Galerie</strong><br>
+                Vorhersage und echter Name werden nebeneinander sichtbar gemacht.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <small>
+        PRM Prüfungsvorbereitung · Kapitel 6 – Gesichtserkennung
+      </small>
+    </div>
+  </footer>
+</body>
+</html>
