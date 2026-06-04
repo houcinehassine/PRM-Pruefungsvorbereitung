@@ -25,7 +25,7 @@ class SiteHeader extends HTMLElement {
 
     /* ── CSS ── */
     // ── CSS aus css_codes/ laden ──────────────────────────────
-    ['tokens.css', 'base.css', 'topbar.css', 'layout.css', 'components.css', 'code.css'].forEach(file => {
+    ['base.css', 'code.css', 'components.css', 'index.css', 'layout.css', 'sidebar-styles.css', 'sidebar.css', 'tokens.css' ,'topbar.css'].forEach(file => {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = `../css_codes/${file}`;
