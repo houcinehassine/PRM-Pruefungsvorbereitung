@@ -7,6 +7,8 @@ class SiteHeader extends HTMLElement {
     const page  = this.getAttribute('active');
     const title = this.getAttribute('title') ?? 'PRM';
 
+    this.style.alignSelf = 'stretch';
+    
     document.title = title;
 
     /* ── FONTS (Fontshare: Satoshi + Zodiak) ── */
@@ -34,7 +36,7 @@ class SiteHeader extends HTMLElement {
 
     // ── MathJax ──
     const mj = document.createElement('script');
-    mj.src = '../mathjax.js';
+    mj.src = '../js_codes/mathjax.js';
     mj.defer = true;
     document.head.appendChild(mj);
 
@@ -68,7 +70,7 @@ class SiteHeader extends HTMLElement {
 
     /* ── Copy Buttons ── */
     const copyScript = document.createElement('script');
-    copyScript.src = '../copy.js';
+    copyScript.src = '../js_codes/copy.js';
     copyScript.defer = true;
     document.head.appendChild(copyScript);
 
