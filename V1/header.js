@@ -23,11 +23,7 @@ class SiteHeader extends HTMLElement {
     fonts.href = 'https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap';
     document.head.appendChild(fonts);
 
-    // --- CSS ---
-    const css = document.createElement('link');
-    css.rel = 'stylesheet';
-    css.href = 'style.css';
-    document.head.appendChild(css);
+
 
     // --- Highlight.js ---
     const hljsCss = document.createElement('link');
